@@ -1,0 +1,22 @@
+{
+  "status": "not_connected",
+  "model_name": null,
+  "model_version": null,
+  "output_type": null,
+  "output_type_note": "Must be one of: susceptibility_class | risk_category | calibrated_probability. A score is shown as a probability only if output_type = calibrated_probability and calibration is documented.",
+  "study_area": null,
+  "spatial_resolution": null,
+  "temporal_resolution": null,
+  "max_validated_lead_time_days": null,
+  "inputs": [],
+  "training_labels": null,
+  "class_balance": null,
+  "validation_method": null,
+  "metrics": {},
+  "last_trained": null,
+  "known_limitations": [
+    "No trained model has been supplied to the portal yet.",
+    "When a model is connected, document spatial/temporal validation so there is no leakage from future data."
+  ],
+  "integration_instructions": "Write one GeoJSON per reporting window to data/predictions/<window_id>.geojson (e.g. 2026-27-W01.geojson) and fill in this card. See data/predictions/README.md."
+}

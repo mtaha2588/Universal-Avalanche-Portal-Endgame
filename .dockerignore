@@ -1,0 +1,11 @@
+# Keep secrets, local environments and build output out of the image.
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.vscode/
+.git/
+dist/
+deploy/
+data/*.bak-*.geojson

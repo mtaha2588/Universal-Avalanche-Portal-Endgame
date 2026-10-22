@@ -1,0 +1,35 @@
+{
+  "review_status": "DRAFT — pending subject-matter expert review",
+  "review_date": null,
+  "general_notice": "This is general preparedness information. It is not a location-specific instruction, evacuation order, or statement that any place is safe. Follow instructions issued by NDMA, the relevant PDMA / GBDMA / SDMA, district administration and local authorities.",
+  "sources": [
+    {"name": "National Disaster Management Authority (NDMA), Pakistan", "url": "https://www.ndma.gov.pk"},
+    {"name": "Know Before You Go — avalanche awareness programme", "url": "https://kbyg.org"},
+    {"name": "WMO / national meteorological services — snowfall and weather advisories (Pakistan Meteorological Department)", "url": "https://www.pmd.gov.pk"}
+  ],
+  "audiences": [
+    {"id": "communities", "title": "Communities in avalanche-prone valleys", "items": [
+      "Know which slopes and gullies above your village have produced avalanches before; local memory is valuable evidence.",
+      "Heavy snowfall over 1–3 days, strong wind and rapid warming are the main warning signs; avoid open slopes and gully floors during and after such periods.",
+      "Agree family meeting points and a communication plan before the winter season.",
+      "Keep a winter kit: warm clothing, torch, radio, first-aid supplies, essential medicines and food for several days.",
+      "Report snow cracking, recent slides or 'whumpf' sounds to local authorities."
+    ]},
+    {"id": "travellers", "title": "Travellers and tourists", "items": [
+      "Check official weather advisories and road status from authorities before travelling into mountain districts.",
+      "Do not stop under steep snow-loaded slopes or in avalanche runout zones; pass through quickly, one vehicle at a time where authorities advise.",
+      "Carry warm clothing, water, food and a charged phone; tell someone your route and expected arrival.",
+      "Follow closures and instructions from police, district administration and road authorities."
+    ]},
+    {"id": "road_operators", "title": "Road operators (NHA, FWO, PWD)", "items": [
+      "Maintain a register of known avalanche paths crossing roads, with chainage and historical activity.",
+      "Pre-position snow-clearing equipment and crews at either side of known avalanche corridors.",
+      "Coordinate any closure decisions with district administration and communicate them through official channels only."
+    ]},
+    {"id": "responders", "title": "Response teams (Rescue 1122, district teams, PDMAs)", "items": [
+      "Survival chances fall sharply after the first 15–30 minutes of burial; organised immediate companion rescue matters most.",
+      "Equip teams with transceivers, probes and shovels, and train in their use before the season.",
+      "Assess secondary avalanche risk before committing rescuers to a debris field."
+    ]}
+  ]
+}

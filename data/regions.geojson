@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type": "Feature",
+     "properties": {"id": "all", "name": "Northern Pakistan (combined)", "short": "Northern Pakistan", "bbox": [70.8, 33.8, 77.8, 37.1],
+                    "boundary_note": "Combined indicative study extent covering all three workspaces."},
+     "geometry": {"type": "Polygon", "coordinates": [[[70.8,33.8],[77.8,33.8],[77.8,37.1],[70.8,37.1],[70.8,33.8]]]}},
+    {"type": "Feature",
+     "properties": {"id": "hindu_kush", "name": "Hindu Kush", "short": "Hindu Kush", "bbox": [70.8, 34.6, 73.3, 36.95],
+                    "boundary_note": "Indicative rectangle around Chitral, Dir, Swat-Kalam and Ghizer western valleys. Not an official boundary."},
+     "geometry": {"type": "Polygon", "coordinates": [[[70.8,34.6],[73.3,34.6],[73.3,36.95],[70.8,36.95],[70.8,34.6]]]}},
+    {"type": "Feature",
+     "properties": {"id": "karakoram", "name": "Karakoram", "short": "Karakoram", "bbox": [74.0, 34.9, 77.8, 37.1],
+                    "boundary_note": "Indicative rectangle around Hunza-Nagar, Shigar, Skardu and Ghanche. Not an official boundary."},
+     "geometry": {"type": "Polygon", "coordinates": [[[74.0,34.9],[77.8,34.9],[77.8,37.1],[74.0,37.1],[74.0,34.9]]]}},
+    {"type": "Feature",
+     "properties": {"id": "western_himalaya", "name": "Western Himalaya", "short": "W. Himalaya", "bbox": [72.8, 33.8, 75.9, 35.6],
+                    "boundary_note": "Indicative rectangle around Kaghan-Naran, Neelum, Astore and Diamer. Not an official boundary."},
+     "geometry": {"type": "Polygon", "coordinates": [[[72.8,33.8],[75.9,33.8],[75.9,35.6],[72.8,35.6],[72.8,33.8]]]}}
+  ]
+}

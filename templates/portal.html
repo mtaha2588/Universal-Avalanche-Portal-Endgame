@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pakistan Avalanche Intelligence Portal</title>
+  <meta name="description" content="{{ title }} — decision-support portal, NGT · NDMA">
+  <link rel="icon" href="{{ url_for('static', filename='img/ngt-logo.jpg') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+</head>
+<body>
+
+<!-- ============================== INTRO ============================== -->
+<div id="intro" class="intro" aria-hidden="true">
+  <div class="intro-grid"></div>
+  <div class="intro-glow"></div>
+  <div class="intro-inner">
+    <div class="intro-logos">
+      <div class="intro-logo-wrap">
+        <svg class="intro-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/></svg>
+        <img src="{{ url_for('static', filename='img/ngt-logo.jpg') }}" alt="NGT — Next Generation Technologies, NDMA" class="intro-logo">
+      </div>
+      <div class="intro-divider"></div>
+      <div class="intro-logo-wrap">
+        <svg class="intro-ring r2" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/></svg>
+        <img src="{{ url_for('static', filename='img/ndma-logo.png') }}" alt="National Disaster Management Authority" class="intro-logo ndma-img" data-fallback="ndma-fallback">
+        <div class="logo-fallback ndma-fallback" hidden><span>NDMA</span><small>Pakistan</small></div>
+      </div>
+    </div>
+    <div class="intro-org">National Disaster Management Authority · Next Generation Technologies</div>
+    <h1 class="intro-title">
+      <span>PAKISTAN AVALANCHE INTELLIGENCE</span>
+      <span>&amp; EARLY-WARNING PORTAL</span>
+    </h1>
+    <div class="intro-progress"><i></i></div>
+    <div class="intro-status" id="intro-status">Initialising secure session…</div>
+  </div>
+  <button class="intro-skip" id="intro-skip" type="button">Skip intro ›</button>
+</div>
+
+<!-- ============================== SHELL ============================== -->
+<div class="shell" id="shell">
+  <header class="topbar">
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <a class="home-btn" href="/" title="Back to the main portal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10M10 20v-5h4v5"/></svg>
+      <span>Home</span>
+    </a>
+    <div class="brand">
+      <img src="{{ url_for('static', filename='img/ngt-logo.jpg') }}" alt="NGT" class="brand-logo">
+      <img src="{{ url_for('static', filename='img/ndma-logo.png') }}" alt="NDMA" class="brand-logo ndma-img" data-fallback="brand-fallback">
+      <span class="logo-fallback brand-fallback" hidden>NDMA</span>
+      <div class="brand-text">
+        <div class="brand-title">PAKISTAN AVALANCHE INTELLIGENCE &amp; EARLY-WARNING PORTAL</div>
+        <div class="brand-sub">NDMA · Next Generation Technologies · v{{ version }}</div>
+      </div>
+    </div>
+    <div class="context">
+      <label class="ctx">
+        <span>Region</span>
+        <select id="sel-region"></select>
+      </label>
+      <label class="ctx">
+        <span>Season</span>
+        <select id="sel-season"></select>
+      </label>
+      <label class="ctx">
+        <span>Reporting window</span>
+        <select id="sel-window"></select>
+      </label>
+      <div class="chips">
+        <span class="chip" id="chip-fresh" title="Data freshness">Data: —</span>
+        <span class="chip" id="chip-model" title="Model status">Model: —</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="disclaimer" role="note">
+    <strong>Decision support only.</strong>
+    Outputs on this portal are not official avalanche warnings unless validated and issued by NDMA / PDMA / GBDMA / SDMA.
+    Seed and reference datasets are labelled; absence of data does not mean absence of hazard.
+  </div>
+
+  <section class="slotbar" id="slotbar" aria-label="Season reporting windows"></section>
+
+  <nav class="sidenav" id="sidenav" aria-label="Portal sections">
+    <a href="#overview" data-view="overview" style="--g1:#22d3ee;--g2:#0e7490"><i class="ni" data-ic="overview"></i>National Overview</a>
+    <a href="#map" data-view="map" style="--g1:#60a5fa;--g2:#1d4ed8"><i class="ni" data-ic="map"></i>Avalanche Risk Map</a>
+    <a href="#outlook" data-view="outlook" style="--g1:#a78bfa;--g2:#6d28d9"><i class="ni" data-ic="outlook"></i>15-Day Risk Outlook</a>
+    <a href="#mountains" data-view="mountains" style="--g1:#34d399;--g2:#047857"><i class="ni" data-ic="mountain"></i>Mountain System Explorer</a>
+    <a href="#hindukush" data-view="hindukush" class="sub" style="--g1:#60a5fa;--g2:#1d4ed8"><i class="ni" data-ic="hotspot"></i>Hindu Kush Hotspots</a>
+    <a href="#karakoram" data-view="karakoram" class="sub" style="--g1:#f87171;--g2:#b91c1c"><i class="ni" data-ic="hotspot"></i>Karakoram Hotspots</a>
+    <a href="#snowforecast" data-view="snowforecast" style="--g1:#a5b4fc;--g2:#7c3aed"><i class="ni" data-ic="snow"></i>Snow Outlook 2026-27</a>
+    <a href="#settlements" data-view="settlements" style="--g1:#fbbf24;--g2:#c2410c"><i class="ni" data-ic="settle"></i>Settlement Exposure</a>
+    <a href="#roads" data-view="roads" style="--g1:#f472b6;--g2:#be185d"><i class="ni" data-ic="road"></i>Highway &amp; Infrastructure</a>
+    <a href="#reports" data-view="reports" style="--g1:#a78bfa;--g2:#6d28d9"><i class="ni" data-ic="report"></i>Reports / Exports</a>
+    <a href="#about" data-view="about" style="--g1:#94a3b8;--g2:#475569"><i class="ni" data-ic="info"></i>Settings / About</a>
+    <div class="nav-foot">
+      <div>Season window convention</div>
+      <code>[start, end)</code>
+      <div class="muted">15 Dec → 15 Apr, 15-day reporting windows</div>
+    </div>
+  </nav>
+
+  <main class="main" id="main">
+    <div id="view" class="view" aria-live="polite"></div>
+    <!-- The map lives outside #view so it is created once and survives navigation -->
+    <section id="map-view" class="map-view" hidden>
+      <div id="map-canvas" class="map"></div>
+      <div class="map-banner" id="map-banner" hidden></div>
+      <aside class="map-panel" id="layer-panel">
+        <div class="panel-h">Layers</div>
+        <input type="search" id="map-search" placeholder="Search place, incident, region…" autocomplete="off">
+        <div id="search-results" class="search-results"></div>
+        <div id="layer-list"></div>
+        <div class="panel-h">Basemap</div>
+        <div class="seg" id="basemap-seg"></div>
+        <div class="map-date" id="map-date"></div>
+      </aside>
+      <aside class="map-detail" id="map-detail" hidden></aside>
+      <div class="map-legend" id="map-legend"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© National Disaster Management Authority, Pakistan — Next Generation Technologies</span>
+    <span id="foot-engine"></span>
+  </footer>
+</div>
+
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mapcache.js') }}"></script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<script src="{{ url_for('static', filename='js/views.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hindukush.js') }}"></script>
+<script src="{{ url_for('static', filename='js/snowforecast.js') }}"></script>
+<script src="{{ url_for('static', filename='js/karakoram.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

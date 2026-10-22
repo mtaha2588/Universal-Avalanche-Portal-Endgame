@@ -1,0 +1,7 @@
+# Files `railway up` must not upload (it also honours .gitignore).
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+.vscode/
+dist/

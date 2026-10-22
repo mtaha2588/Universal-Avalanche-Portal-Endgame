@@ -1,0 +1,375 @@
+{
+ "_comment": "Dataset registry. Each dataset must declare provenance. 'status' may be seed | reference | indicative | loaded; a missing file is reported as 'missing' automatically.",
+ "datasets": [
+  {
+   "id": "regions",
+   "title": "Mountain-system study areas",
+   "file": "regions.geojson",
+   "status": "indicative",
+   "kind": "Study-area extent",
+   "source": "Portal team — rectangular study-area extents drawn for filtering only",
+   "data_date": "2026-10-14",
+   "crs": "EPSG:4326",
+   "resolution": "Bounding boxes (~0.1° precision)",
+   "limitations": "NOT official mountain-system boundaries. Rectangles overlap and include adjacent terrain. Replace with a documented boundary dataset (e.g. GMBA Mountain Inventory v2) before analytical use.",
+   "fields": {
+    "id": "Region key",
+    "name": "Display name",
+    "bbox": "[west, south, east, north] in degrees"
+   }
+  },
+  {
+   "id": "settlements",
+   "title": "Reference settlements (district / tehsil centres)",
+   "file": "settlements.geojson",
+   "status": "reference",
+   "kind": "Point reference",
+   "source": "Approximate town-centre coordinates compiled by the portal team from public gazetteer knowledge; to be replaced by OpenStreetMap place=* extract (scripts/fetch_osm.py) or PBS / SoP data",
+   "data_date": "2026-10-14",
+   "crs": "EPSG:4326",
+   "resolution": "Town-centre reference, ±2–5 km",
+   "limitations": "Small reference set of main centres only. No population figures loaded. Not an exhaustive settlement inventory.",
+   "fields": {
+    "name": "Settlement name",
+    "admin_area": "Province / territory",
+    "district": "District",
+    "coord_quality": "Positional quality note",
+    "population": "Population (null = not loaded)"
+   }
+  },
+  {
+   "id": "incidents",
+   "title": "Historical avalanche incidents (seed catalogue)",
+   "file": "incidents.geojson",
+   "status": "seed",
+   "kind": "Observed events",
+   "source": "Seed records of widely reported events; each record lists the reporting organisation. Must be reconciled against NDMA / PDMA / GBDMA / SDMA records.",
+   "data_date": "2026-10-14",
+   "crs": "EPSG:4326",
+   "resolution": "Proxy locations (valley / sector / district level)",
+   "limitations": "Highly incomplete. Coordinates are proxies, not impact points. Casualty figures are as reported and unverified. Absence of a recorded incident does NOT prove absence of hazard.",
+   "fields": {
+    "incident_id": "Stable ID",
+    "event_date": "Date of event (not report date)",
+    "date_precision": "day | month",
+    "report_date": "First report / publication date",
+    "location_name": "Reported place",
+    "coord_type": "proxy | exact",
+    "coord_precision": "Positional uncertainty",
+    "fatalities_reported": "As reported, unverified unless stated",
+    "verification_status": "Verified | Unverified seed record",
+    "source_org": "Reporting organisation",
+    "source_url": "Citation link (to be added)"
+   }
+  },
+  {
+   "id": "roads",
+   "title": "Highway & road centerlines",
+   "file": "roads.geojson",
+   "kind": "Line network",
+   "source": "OpenStreetMap contributors (ODbL) — generate with scripts/fetch_osm.py roads",
+   "crs": "EPSG:4326",
+   "resolution": "OSM centerline",
+   "limitations": "Not yet downloaded. Basemap roads are visible on the map but not analysed until this file exists.",
+   "fields": {
+    "name": "Road name",
+    "ref": "Route number (e.g. N-35)",
+    "highway": "OSM highway class",
+    "length_km": "Haversine length",
+    "hazard_affected_km": "Length whose segment midpoints fall inside mapped hazard zones"
+   }
+  },
+  {
+   "id": "hazard_zones",
+   "title": "Mapped avalanche hazard / runout zones",
+   "file": "hazard_zones.geojson",
+   "kind": "Hazard polygons",
+   "source": "Not supplied — requires a mapped avalanche path / runout inventory or terrain-susceptibility model output",
+   "crs": "EPSG:4326",
+   "limitations": "Without this layer, settlement and road exposure cannot be calculated and is reported as 'Not assessed'.",
+   "fields": {
+    "category": "Hazard category",
+    "source": "Mapping source",
+    "method": "Mapping method"
+   }
+  },
+  {
+   "id": "susceptibility",
+   "title": "Terrain susceptibility (DEM-derived)",
+   "file": "susceptibility.geojson",
+   "kind": "Raster-derived polygons",
+   "source": "Not supplied — to be derived from a documented DEM (e.g. Copernicus GLO-30) using slope 30–45°, aspect, curvature",
+   "crs": "EPSG:4326",
+   "limitations": "Not yet generated.",
+   "fields": {}
+  },
+  {
+   "id": "snow_cover",
+   "title": "Snow cover (satellite-derived)",
+   "file": "snow_cover.geojson",
+   "kind": "Remote sensing",
+   "operational": true,
+   "source": "Not connected — candidate source MODIS MOD10A1 / Sentinel-2 NDSI",
+   "crs": "EPSG:4326",
+   "limitations": "No operational snow product is connected.",
+   "fields": {}
+  },
+  {
+   "id": "glaciers",
+   "title": "Glacier outlines — RGI v7.0, Region 14 (South Asia West)",
+   "file": "glaciers/rgi7_region14_systems.geojson",
+   "status": "reference",
+   "kind": "Glacier polygons (official RGI inventory)",
+   "source": "RGI 7.0 Consortium (2023). Randolph Glacier Inventory v7.0. NSIDC, doi:10.5067/F6JMOVY5NAVZ",
+   "data_date": "2023",
+   "crs": "EPSG:4326",
+   "resolution": "Glacier outlines as mapped in RGI v7.0; geometry simplified about 30 m, coordinates rounded to about 10 m",
+   "limitations": "37,562 glaciers in RGI region 14. Sub-regions are RGI classifications and include glaciers in India, China and Afghanistan. Nothing is clipped to a country border. Not a hazard inventory.",
+   "fields": {
+    "rgi_id": "RGI glacier identifier",
+    "system": "RGI sub-region (Hindu Kush, Karakoram, West Himalaya)",
+    "area_km2": "Glacier area, km2",
+    "zmin_m": "Minimum elevation, m",
+    "zmed_m": "Median elevation, m",
+    "zmax_m": "Maximum elevation, m"
+   }
+  },
+  {
+   "id": "boundaries",
+   "title": "Pakistan boundary, provinces, Line of Control and disputed areas",
+   "file": "boundaries/pakistan_boundaries.geojson",
+   "status": "reference",
+   "kind": "Administrative boundaries",
+   "source": "Natural Earth 1:10m (public domain): Admin-0 countries, Pakistan point of view; Admin-1 provinces; disputed areas; boundary lines",
+   "data_date": "Natural Earth v5.1",
+   "crs": "EPSG:4326",
+   "resolution": "1:10 million scale, simplified about 200-300 m",
+   "limitations": "Pakistan's boundary follows Pakistan's official position. Jammu & Kashmir is disputed territory and is labelled as such; the Line of Control is shown separately. Province names updated to current official names; former FATA merged into Khyber Pakhtunkhwa. Small-scale data, not for demarcation.",
+   "fields": {
+    "layer": "pakistan | province | disputed | line",
+    "name": "Feature name",
+    "note": "Administration / claim note",
+    "kind": "Province, territory or line type"
+   }
+  },
+  {
+   "id": "glacier_regions",
+   "title": "Glacier system boundaries — RGI v7.0 / GTN-G glacier regions",
+   "file": "glaciers/rgi7_o2_regions_14.geojson",
+   "status": "reference",
+   "kind": "Glacier region polygons",
+   "source": "GTN-G (2023) Glacier Regions, as used by RGI v7.0. doi:10.5904/gtng-glacreg-2023-07",
+   "data_date": "2023",
+   "crs": "EPSG:4326",
+   "resolution": "Region-scale polygons",
+   "limitations": "Official glacier-inventory regions (14-01 Hindu Kush, 14-02 Karakoram, 14-03 West Himalaya). They group glaciers for inventory purposes and cross national borders; they are not geological range limits.",
+   "fields": {
+    "o2region": "RGI second-order region code",
+    "name": "Region name"
+   }
+  },
+  {
+   "id": "glacier_extents",
+   "title": "Glacier system boundaries traced from RGI v7.0 outlines",
+   "file": "glaciers/rgi7_system_extents.geojson",
+   "status": "reference",
+   "kind": "Derived glacier-system extents",
+   "source": "Derived from RGI 7.0 Consortium (2023) glacier outlines (doi:10.5067/F6JMOVY5NAVZ), clipped to GTN-G (2023) regions (doi:10.5904/gtng-glacreg-2023-07)",
+   "data_date": "2023",
+   "crs": "EPSG:4326",
+   "resolution": "Outlines merged within about 5 km, shrunk 3.5 km, simplified about 300 m",
+   "limitations": "A reproducible envelope around each system's actual glaciers, clipped to its official region so systems never overlap. It shows where each system's ice is; it is not an official boundary and not a mountain-range limit.",
+   "fields": {
+    "name": "System",
+    "o2region": "RGI region code",
+    "glaciers": "Glacier count",
+    "glacier_area_km2": "Total glacier area"
+   }
+  },
+  {
+   "id": "major_glaciers",
+   "title": "Major named glaciers (RGI v7.0)",
+   "file": "glaciers/rgi7_major_glaciers.geojson",
+   "status": "reference",
+   "kind": "Named glacier points",
+   "source": "RGI 7.0 Consortium (2023), attributes glac_name, area_km2, lmax_m, zmin_m, zmax_m",
+   "data_date": "2023",
+   "crs": "EPSG:4326",
+   "resolution": "One label point per glacier (inside the glacier outline)",
+   "limitations": "Largest glaciers that have a name in RGI v7.0 (10 Karakoram, 7 West Himalaya, 5 Hindu Kush). Many large Hindu Kush glaciers are unnamed in RGI, so the Hindu Kush list contains smaller glaciers.",
+   "fields": {
+    "name": "Glacier name (inventory code removed)",
+    "rank": "Size rank among named glaciers in the system",
+    "area_km2": "Area",
+    "length_km": "Maximum length",
+    "zmin_m": "Lowest point",
+    "zmax_m": "Highest point"
+   }
+  },
+  {
+   "id": "hk_hotspots",
+   "title": "Hindu Kush very-high release areas (terrain screening)",
+   "file": "screening/hk_hotspots.geojson",
+   "status": "indicative",
+   "kind": "Release-area centroids",
+   "source": "Hindu Kush avalanche-terrain screening run 2026-10-15 09:39 (NGT, rule-based): Copernicus GLO-30 DEM (30 m), MODIS MOD10A1 winter snow 2015–2025, GLIMS glaciers",
+   "data_date": "2026-10-15",
+   "crs": "EPSG:4326",
+   "resolution": "30 m analysis; every contiguous Very-high area of 5 ha or more, one point per area",
+   "limitations": "Rule-based screening from permanent terrain factors (slope × elevation × aspect × shape) with approximate thresholds. It is NOT a forecast, has no time dimension and has not been validated against observed avalanches. Forest cover and ground roughness are not included. The score (0–1) is a screening index, not a probability. Points are area centroids; a centroid can fall just outside an irregular area.",
+   "fields": {
+    "rank": "Rank by area (1 = largest)",
+    "tile_id": "Analysis tile",
+    "area_ha": "Very-high area (ha)",
+    "mean_elev_m": "Mean elevation (m)",
+    "mean_slope_deg": "Mean slope (°)",
+    "max_score": "Highest screening score in the area (0–1, not a probability)",
+    "facing": "Dominant aspect"
+   }
+  },
+  {
+   "id": "hk_tiles",
+   "title": "Hindu Kush screening tile summary",
+   "file": "screening/hk_tiles.geojson",
+   "status": "indicative",
+   "kind": "Tile centres with class shares",
+   "source": "Hindu Kush avalanche-terrain screening run 2026-10-15 09:39 (NGT, rule-based): Copernicus GLO-30 DEM (30 m), MODIS MOD10A1 winter snow 2015–2025, GLIMS glaciers",
+   "data_date": "2026-10-15",
+   "crs": "EPSG:4326",
+   "resolution": "98 analysis tiles (~0.25°); point = tile centre",
+   "limitations": "Rule-based screening from permanent terrain factors (slope × elevation × aspect × shape) with approximate thresholds. It is NOT a forecast, has no time dimension and has not been validated against observed avalanches. Forest cover and ground roughness are not included. The score (0–1) is a screening index, not a probability. Tile area is derived as very-high hectares ÷ very-high share.",
+   "fields": {
+    "tile_id": "Analysis tile",
+    "share_low": "Share of tile Low",
+    "share_moderate": "Share Moderate",
+    "share_high": "Share High",
+    "share_very_high": "Share Very high",
+    "share_runout": "Share Runout",
+    "share_high_or_very_high": "Share High or Very high",
+    "very_high_area_ha": "Very-high area (ha)",
+    "tile_area_km2": "Tile area (km², derived)",
+    "max_score": "Highest score in tile",
+    "hotspots": "Very-high areas ≥ 5 ha"
+   }
+  },
+  {
+   "id": "snow_stations",
+   "title": "Snow outlook 2026-27: 36 stations",
+   "file": "forecast/snow_stations.geojson",
+   "kind": "Station points with seasonal forecast and 15-day window values",
+   "resolution": "36 ERA5-Land grid points (~9 km); 10 Hindu Kush, 16 Karakoram, 10 Himalaya",
+   "limitations": "Seasonal statistical outlook, NOT a weather forecast and not a lead-time forecast. Hindu Kush and Karakoram forecast equals the 1990-2025 normal (no method beat normal by >1 %); Himalaya uses El Nino analogs (small skill). ENSO input (ONI 2.5) is set in the notebook and not verified here. Danger days use fallback thresholds (30 / 50 cm new snow in 3 days), not learned from observed avalanches; not validated. Timing inside the season is the 1990-2025 average. Data end 31 Mar: 1-15 Apr is not modelled and left empty.",
+   "fields": {
+    "forecast_cm": "Forecast Nov-Mar snowfall (cm)",
+    "pct_of_normal": "Forecast as % of 1990-2025 normal",
+    "hNN": "Expected HIGH-danger days (>=50 cm/3 d) in window NN",
+    "sNN": "Forecast snow allocated to window NN by average timing (cm)"
+   },
+   "status": "indicative",
+   "source": "Northern Pakistan snow outlook 2026-27 (NGT notebook run Northern_Pakistan_Snow_Avalanche_2026_27): ERA5-Land daily 1990-2025 (~9 km), ENSO analog / normal method per range",
+   "data_date": "2026-10-19",
+   "crs": "EPSG:4326"
+  },
+  {
+   "id": "hk_zones",
+   "title": "Hindu Kush snow outlook: nearest-station zones",
+   "file": "forecast/hk_zones.geojson",
+   "kind": "Polygons: area nearer to a Hindu Kush station than to any other, within 60 km, inside Pakistan",
+   "resolution": "10 zones, no interpolation between stations",
+   "limitations": "Seasonal statistical outlook, NOT a weather forecast and not a lead-time forecast. Hindu Kush and Karakoram forecast equals the 1990-2025 normal (no method beat normal by >1 %); Himalaya uses El Nino analogs (small skill). ENSO input (ONI 2.5) is set in the notebook and not verified here. Danger days use fallback thresholds (30 / 50 cm new snow in 3 days), not learned from observed avalanches; not validated. Timing inside the season is the 1990-2025 average. Data end 31 Mar: 1-15 Apr is not modelled and left empty. Zones only carry the value of their one station; they are not a gridded forecast.",
+   "status": "indicative",
+   "source": "Northern Pakistan snow outlook 2026-27 (NGT notebook run Northern_Pakistan_Snow_Avalanche_2026_27): ERA5-Land daily 1990-2025 (~9 km), ENSO analog / normal method per range",
+   "data_date": "2026-10-19",
+   "crs": "EPSG:4326"
+  },
+  {
+   "id": "hk_tiles_windows",
+   "title": "Hindu Kush terrain x snow outlook by window",
+   "file": "forecast/hk_tiles_windows.geojson",
+   "kind": "Screening tile centres with relative index per window",
+   "resolution": "60 of 98 screening tiles (those inside a station zone)",
+   "limitations": "Seasonal statistical outlook, NOT a weather forecast and not a lead-time forecast. Hindu Kush and Karakoram forecast equals the 1990-2025 normal (no method beat normal by >1 %); Himalaya uses El Nino analogs (small skill). ENSO input (ONI 2.5) is set in the notebook and not verified here. Danger days use fallback thresholds (30 / 50 cm new snow in 3 days), not learned from observed avalanches; not validated. Timing inside the season is the 1990-2025 average. Data end 31 Mar: 1-15 Apr is not modelled and left empty. cNN = 100 x tile share of High/Very-high terrain x station high-danger days / maximum. A relative ranking, not a probability.",
+   "status": "indicative",
+   "source": "Northern Pakistan snow outlook 2026-27 (NGT notebook run Northern_Pakistan_Snow_Avalanche_2026_27): ERA5-Land daily 1990-2025 (~9 km), ENSO analog / normal method per range",
+   "data_date": "2026-10-19",
+   "crs": "EPSG:4326"
+  },
+  {
+   "id": "glaciers_pk",
+   "title": "Glacier outlines in the Pakistan study area — RGI v7.0",
+   "file": "glaciers/rgi7_pakistan.geojson",
+   "status": "reference",
+   "kind": "Glacier polygons clipped to the study area",
+   "source": "RGI 7.0 Consortium (2023). Randolph Glacier Inventory v7.0. NSIDC, doi:10.5067/F6JMOVY5NAVZ",
+   "data_date": "2023 (outline dates per glacier in src_date)",
+   "crs": "EPSG:4326",
+   "resolution": "RGI v7.0 outlines simplified about 30 m, coordinates rounded to about 10 m",
+   "limitations": "Study area = Pakistan-administered area: union of the province and territory polygons of Natural Earth 1:10m (Pakistan view), including Gilgit-Baltistan and Azad Jammu & Kashmir. India-administered Jammu & Kashmir, Siachen and the Shaksgam Valley are outside it. 225 glaciers cross the study-area edge and are clipped; area_km2 stays the official RGI area of the whole glacier, area_pk_km2 is the inside part. Not a hazard inventory.",
+   "fields": {
+    "rgi_id": "RGI glacier identifier",
+    "name": "RGI glac_name (most glaciers are unnamed)",
+    "system": "RGI sub-region",
+    "area_km2": "Official RGI area of the whole glacier, km2",
+    "area_pk_km2": "Area inside the study area, km2",
+    "clipped": "1 if the outline was cut at the study-area edge",
+    "lon": "RGI centroid longitude (whole outline)",
+    "lat": "RGI centroid latitude",
+    "zmin_m": "Minimum elevation, m",
+    "zmed_m": "Median elevation, m",
+    "zmax_m": "Maximum elevation, m",
+    "slope_deg": "Mean slope",
+    "aspect_sec": "RGI aspect sector (1 = N ... 8 = NW)",
+    "lmax_m": "Maximum length, m",
+    "src_date": "Date of the source imagery for the outline"
+   }
+  },
+  {
+   "id": "glaciers_context",
+   "title": "Glacier outlines outside the study area (context) — RGI v7.0",
+   "file": "glaciers/rgi7_context.geojson",
+   "status": "reference",
+   "kind": "Whole glacier polygons not wholly inside the study area",
+   "source": "RGI 7.0 Consortium (2023). Randolph Glacier Inventory v7.0. NSIDC, doi:10.5067/F6JMOVY5NAVZ",
+   "data_date": "2023",
+   "crs": "EPSG:4326",
+   "resolution": "As glaciers_pk",
+   "limitations": "Context only, drawn in grey. Includes glaciers in India-administered Jammu & Kashmir, Siachen, China and Afghanistan."
+  },
+  {
+   "id": "glacier_extents_pk",
+   "title": "Glacier-system envelopes in the study area",
+   "file": "glaciers/rgi7_system_extents_pk.geojson",
+   "status": "reference",
+   "kind": "System envelopes clipped to the study area",
+   "source": "Derived from RGI v7.0 outlines and GTN-G (2023) regions; clipped to the study area",
+   "data_date": "2023",
+   "crs": "EPSG:4326",
+   "resolution": "As glacier_extents",
+   "limitations": "A reproducible envelope around each system's ice inside the study area. Not an official boundary and not a mountain-range limit."
+  },
+  {
+   "id": "major_glaciers_pk",
+   "title": "Major named glaciers with study-area flag",
+   "file": "glaciers/rgi7_major_glaciers_pk.geojson",
+   "status": "reference",
+   "kind": "Label points",
+   "source": "RGI 7.0 Consortium (2023). Randolph Glacier Inventory v7.0. NSIDC, doi:10.5067/F6JMOVY5NAVZ, glac_name",
+   "data_date": "2023",
+   "crs": "EPSG:4326",
+   "resolution": "One point per glacier",
+   "limitations": "in_study_area is false for glaciers outside the Pakistan-administered study area (for example Siachen and Rimo)."
+  },
+  {
+   "id": "study_area",
+   "title": "Pakistan study area and border segments",
+   "file": "boundaries/study_area.geojson",
+   "status": "reference",
+   "kind": "Study-area polygon, outside mask, border split into international and claimed segments",
+   "source": "Derived from Natural Earth 1:10m (Pakistan view) in data/boundaries/pakistan_boundaries.geojson",
+   "data_date": "Natural Earth v5.1",
+   "crs": "EPSG:4326",
+   "resolution": "1:10 million",
+   "limitations": "Study area = Pakistan-administered area: union of the province and territory polygons of Natural Earth 1:10m (Pakistan view), including Gilgit-Baltistan and Azad Jammu & Kashmir. India-administered Jammu & Kashmir, Siachen and the Shaksgam Valley are outside it. The claimed segment is the edge of Pakistan's official outline around India-administered disputed territory; it is drawn dashed, not as a settled border."
+  }
+ ]
+}

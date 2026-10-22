@@ -1,0 +1,42 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{
+      "incident_id":"PAK-AV-2012-001","event_type":"Snow avalanche","event_date":"2012-04-07","date_precision":"day","report_date":"2012-04-07",
+      "location_name":"Gayari sector, Siachen","admin_area":"Gilgit-Baltistan","district":"Ghanche",
+      "coord_type":"proxy","coord_precision":"Sector-level proxy (±10 km)",
+      "description":"Large avalanche struck a military battalion headquarters at Gayari.",
+      "fatalities_reported":140,"injuries_reported":null,
+      "impact_note":"Reported as 129 soldiers and 11 civilian staff.",
+      "source_org":"ISPR (Inter-Services Public Relations) statements; international media","source_url":null,
+      "verification_status":"Unverified seed record","notes":"Reconcile with NDMA/GBDMA records; add citation URL."},
+     "geometry":{"type":"Point","coordinates":[76.93,35.17]}},
+    {"type":"Feature","properties":{
+      "incident_id":"PAK-AV-2017-001","event_type":"Snow avalanche","event_date":"2017-01-14","date_precision":"day","report_date":"2017-01-15",
+      "location_name":"Ursoon village area, Chitral","admin_area":"Khyber Pakhtunkhwa","district":"Lower Chitral",
+      "coord_type":"proxy","coord_precision":"District-level proxy (±30 km) — plotted at Chitral",
+      "description":"Avalanche struck houses in a village in Chitral district.",
+      "fatalities_reported":14,"injuries_reported":null,"impact_note":"As reported in contemporaneous media.",
+      "source_org":"PDMA Khyber Pakhtunkhwa / media reports","source_url":null,
+      "verification_status":"Unverified seed record","notes":"Event date and exact village coordinates require verification."},
+     "geometry":{"type":"Point","coordinates":[71.79,35.85]}},
+    {"type":"Feature","properties":{
+      "incident_id":"PAK-AV-2020-001","event_type":"Snow avalanche (multiple)","event_date":"2020-01-13","date_precision":"day","report_date":"2020-01-14",
+      "location_name":"Surgan / Neelum Valley","admin_area":"Azad Jammu & Kashmir","district":"Neelum",
+      "coord_type":"proxy","coord_precision":"Valley-level proxy (±15 km)",
+      "description":"Series of avalanches after heavy snowfall affected villages in Neelum valley, with Seri (Surgan) worst affected.",
+      "fatalities_reported":74,"injuries_reported":null,"impact_note":"Reported toll varied between sources as recovery progressed.",
+      "source_org":"SDMA Azad Jammu & Kashmir / NDMA situation reports","source_url":null,
+      "verification_status":"Unverified seed record","notes":"Possibly multiple distinct avalanche events — split into separate records once verified to avoid double counting."},
+     "geometry":{"type":"Point","coordinates":[74.05,34.72]}},
+    {"type":"Feature","properties":{
+      "incident_id":"PAK-AV-2023-001","event_type":"Snow avalanche","event_date":"2023-03","date_precision":"month","report_date":null,
+      "location_name":"Shounter area, Astore","admin_area":"Gilgit-Baltistan","district":"Astore",
+      "coord_type":"proxy","coord_precision":"District-level proxy (±25 km)",
+      "description":"Avalanche struck a group of travellers / nomadic families crossing toward Neelum.",
+      "fatalities_reported":11,"injuries_reported":null,"impact_note":"As reported; day of month unconfirmed.",
+      "source_org":"GBDMA / media reports","source_url":null,
+      "verification_status":"Unverified seed record","notes":"Confirm day, location and casualty count."},
+     "geometry":{"type":"Point","coordinates":[74.6,35.05]}}
+  ]
+}

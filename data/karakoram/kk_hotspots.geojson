@@ -1,0 +1,215 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     74.72,
+     36.425
+    ]
+   },
+   "properties": {
+    "rank": 1,
+    "risk_index": 0.51,
+    "class": "Considerable",
+    "elev_m": 4954.0,
+    "slope_deg": 31.0,
+    "place_name": "ضلع ہنزہ",
+    "region": "گلگت بلتستان",
+    "full_address": "تحصیل ہنزہ بالائی, ضلع ہنزہ, گلگت ڈویژن, گلگت بلتستان, 15750, پاکستان",
+    "country": "Pakistan"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     74.545,
+     36.545
+    ]
+   },
+   "properties": {
+    "rank": 2,
+    "risk_index": 0.5,
+    "class": "Considerable",
+    "elev_m": 5960.0,
+    "slope_deg": 34.0,
+    "place_name": "ضلع ہنزہ",
+    "region": "گلگت بلتستان",
+    "full_address": "تحصیل ہنزہ بالائی, ضلع ہنزہ, گلگت ڈویژن, گلگت بلتستان, 15750, پاکستان",
+    "country": "Pakistan"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     75.095,
+     36.625
+    ]
+   },
+   "properties": {
+    "rank": 3,
+    "risk_index": 0.49,
+    "class": "Moderate",
+    "elev_m": 4744.0,
+    "slope_deg": 34.0,
+    "place_name": "ضلع ہنزہ",
+    "region": "گلگت بلتستان",
+    "full_address": "تحصیل ہنزہ بالائی, ضلع ہنزہ, گلگت ڈویژن, گلگت بلتستان, 15750, پاکستان",
+    "country": "Pakistan"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     75.065,
+     36.335
+    ]
+   },
+   "properties": {
+    "rank": 4,
+    "risk_index": 0.48,
+    "class": "Moderate",
+    "elev_m": 5089.0,
+    "slope_deg": 19.0,
+    "place_name": "ضلع ہنزہ",
+    "region": "گلگت بلتستان",
+    "full_address": "تحصیل ہنزہ بالائی, ضلع ہنزہ, گلگت ڈویژن, گلگت بلتستان, 15750, پاکستان",
+    "country": "Pakistan"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     74.83,
+     36.96
+    ]
+   },
+   "properties": {
+    "rank": 5,
+    "risk_index": 0.47,
+    "class": "Moderate",
+    "elev_m": 5738.0,
+    "slope_deg": 21.0,
+    "place_name": "ضلع ہنزہ",
+    "region": "گلگت بلتستان",
+    "full_address": "تحصیل ہنزہ بالائی, ضلع ہنزہ, گلگت ڈویژن, گلگت بلتستان, 15750, پاکستان",
+    "country": "Pakistan"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     75.195,
+     36.36
+    ]
+   },
+   "properties": {
+    "rank": 6,
+    "risk_index": 0.47,
+    "class": "Moderate",
+    "elev_m": 5280.0,
+    "slope_deg": 29.0,
+    "place_name": "ضلع ہنزہ",
+    "region": "گلگت بلتستان",
+    "full_address": "تحصیل ہنزہ بالائی, ضلع ہنزہ, گلگت ڈویژن, گلگت بلتستان, 15750, پاکستان",
+    "country": "Pakistan"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     74.455,
+     36.665
+    ]
+   },
+   "properties": {
+    "rank": 7,
+    "risk_index": 0.47,
+    "class": "Moderate",
+    "elev_m": 5839.0,
+    "slope_deg": 31.0,
+    "place_name": "ضلع ہنزہ",
+    "region": "گلگت بلتستان",
+    "full_address": "تحصیل ہنزہ بالائی, ضلع ہنزہ, گلگت ڈویژن, گلگت بلتستان, 15750, پاکستان",
+    "country": "Pakistan"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     75.405,
+     36.235
+    ]
+   },
+   "properties": {
+    "rank": 8,
+    "risk_index": 0.43,
+    "class": "Moderate",
+    "elev_m": 5148.0,
+    "slope_deg": 19.0,
+    "place_name": "ضلع نگر",
+    "region": "گلگت بلتستان",
+    "full_address": "تحصیل نگر خاص, ضلع نگر, گلگت ڈویژن, گلگت بلتستان, پاکستان",
+    "country": "Pakistan"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.285,
+     36.485
+    ]
+   },
+   "properties": {
+    "rank": 9,
+    "risk_index": 0.43,
+    "class": "Moderate",
+    "elev_m": 4739.0,
+    "slope_deg": 25.0,
+    "place_name": "达布达尔乡 دەفتەر يېزىسى",
+    "region": "新疆维吾尔自治区 شىنجاڭ ئۇيغۇر ئاپتونوم رايونی",
+    "full_address": "达布达尔乡 دەفتەر يېزىسى, 塔什库尔干塔吉克自治县 تاشقۇرغان تاجیك ئاپتونوم ناھىيىسى, 喀什地区 قەشقەر ۋىلايىتى, 新疆维吾尔自治区 شىنجاڭ ئۇيغۇر ئاپتونوم رايونی, 中国",
+    "country": "China"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.165,
+     36.25
+    ]
+   },
+   "properties": {
+    "rank": 10,
+    "risk_index": 0.42,
+    "class": "Moderate",
+    "elev_m": 4774.0,
+    "slope_deg": 28.0,
+    "place_name": "达布达尔乡 دەفتەر يېزىسى",
+    "region": "新疆维吾尔自治区 شىنجاڭ ئۇيغۇر ئاپتونوم رايونی",
+    "full_address": "达布达尔乡 دەفتەر يېزىسى, 塔什库尔干塔吉克自治县 تاشقۇرغان تاجیك ئاپتونوم ناھىيىسى, 喀什地区 قەشقەر ۋىلايىتى, 新疆维吾尔自治区 شىنجاڭ ئۇيغۇر ئاپتونوم رايونی, 中国",
+    "country": "China"
+   }
+  }
+ ]
+}

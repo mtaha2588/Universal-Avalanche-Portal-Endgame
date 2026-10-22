@@ -1,0 +1,187 @@
+{
+ "run_id": "hindukush_avalanche_risk_20261015_0939",
+ "generated": "2026-10-15 09:39",
+ "method": "Rule-based screening: score = slope x elevation x aspect x shape, each 0-1, on winter-snow / glacier terrain only.",
+ "inputs": "Copernicus GLO-30 DEM (30 m), MODIS MOD10A1 winter snow 2015-2025, GLIMS glaciers",
+ "score_type": "screening_index",
+ "classes": [
+  {
+   "id": "low",
+   "label": "Low",
+   "range": "0.05-0.25",
+   "color": "#ffffb2"
+  },
+  {
+   "id": "moderate",
+   "label": "Moderate",
+   "range": "0.25-0.45",
+   "color": "#fecc5c"
+  },
+  {
+   "id": "high",
+   "label": "High",
+   "range": "0.45-0.65",
+   "color": "#fd8d3c"
+  },
+  {
+   "id": "very_high",
+   "label": "Very high",
+   "range": "0.65+",
+   "color": "#bd0026"
+  },
+  {
+   "id": "runout",
+   "label": "Runout",
+   "range": "gentle ground (<20\u00b0) within 1 km below a release zone",
+   "color": "#8c6bb1"
+  },
+  {
+   "id": "snow",
+   "label": "Winter snow, not steep enough",
+   "range": "",
+   "color": "#dbebf7",
+   "in_overlay": false
+  }
+ ],
+ "class_area_km2": {
+  "low": 5512,
+  "moderate": 11820,
+  "high": 10406,
+  "very_high": 3524,
+  "runout": 7073
+ },
+ "tiles": 98,
+ "hotspots": 16388,
+ "hotspot_area_ha_total": 266582.0,
+ "hotspot_min_ha": 5.0,
+ "not_included": "Forest cover, ground roughness, glacier snout / snow-line bands (no data in the inputs).",
+ "validation": "Not validated against observed avalanches. Thresholds are approximate (Hindu Kush Avalanche Terrain Thresholds).",
+ "settings": {
+  "pixel_m": 30.0,
+  "slope_x": [
+   0,
+   20,
+   25,
+   30,
+   35,
+   40,
+   45,
+   50,
+   55,
+   60,
+   90
+  ],
+  "slope_y": [
+   0.02,
+   0.05,
+   0.2,
+   0.6,
+   1.0,
+   1.0,
+   0.85,
+   0.4,
+   0.2,
+   0.1,
+   0.1
+  ],
+  "elev_x": [
+   0,
+   1800,
+   2000,
+   2250,
+   2500,
+   5300,
+   5600,
+   6500,
+   9000
+  ],
+  "elev_y": [
+   0,
+   0,
+   0.3,
+   0.7,
+   1.0,
+   1.0,
+   0.8,
+   0.5,
+   0.5
+  ],
+  "aspect_score": [
+   1.0,
+   1.0,
+   0.8,
+   0.7,
+   0.7,
+   0.7,
+   0.8,
+   1.0
+  ],
+  "concave_score": 1.0,
+  "convex_score": 0.6,
+  "min_snow_elev": 1800,
+  "smooth_px": 1.5,
+  "hotspot_min_ha": 5.0,
+  "release_min_px": 12,
+  "runout_max_slope": 20,
+  "runout_dist_m": 1000,
+  "classes": [
+   [
+    0.05,
+    "Low",
+    "#ffffb2"
+   ],
+   [
+    0.25,
+    "Moderate",
+    "#fecc5c"
+   ],
+   [
+    0.45,
+    "High",
+    "#fd8d3c"
+   ],
+   [
+    0.65,
+    "Very high",
+    "#bd0026"
+   ]
+  ],
+  "runout_colour": "#8c6bb1"
+ },
+ "overlay": {
+  "image": "/static/img/hindukush/hk_classes.png",
+  "coordinates": [
+   [
+    71.05454,
+    37.29833
+   ],
+   [
+    74.22843,
+    37.29833
+   ],
+   [
+    74.22843,
+    34.72876
+   ],
+   [
+    71.05454,
+    34.72876
+   ]
+  ],
+  "pixel_deg": [
+   0.001855,
+   0.001855
+  ],
+  "tick_fit_residual_deg": 0.00058,
+  "width_px": 1711,
+  "height_px": 1385,
+  "pixels_by_class": {
+   "low": 150580,
+   "moderate": 323564,
+   "high": 284633,
+   "very_high": 95218,
+   "runout": 194361
+  },
+  "note": "Display layer re-sampled from the run figure 01_avalanche_risk_map.png (about 207 m per pixel N-S; the model itself is 30 m). Spots under the figure's labels, hotspot circles, north arrow and scale bar are blank, and the 'winter snow, not steep enough' class is not reproduced (indistinguishable from label boxes)."
+ }
+}

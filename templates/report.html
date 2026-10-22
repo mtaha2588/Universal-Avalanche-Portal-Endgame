@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avalanche Situation Brief</title>
+<style>
+  :root { --ink:#0d1b2e; --muted:#5b6b80; --line:#d5dde8; --accent:#0e8fa0; --amber:#a86a00; }
+  body { margin:0; background:#eef2f7; color:var(--ink); font:13px/1.5 "Segoe UI", Inter, system-ui, sans-serif; }
+  .page { max-width:900px; margin:24px auto; background:#fff; padding:36px 44px; box-shadow:0 4px 24px rgba(0,0,0,.08); }
+  header { display:flex; align-items:center; gap:14px; border-bottom:3px solid var(--ink); padding-bottom:14px; }
+  header img { width:62px; height:62px; border-radius:50%; object-fit:cover; }
+  header .t { font-weight:800; letter-spacing:.04em; font-size:15px; }
+  header .s { color:var(--muted); font-size:12px; }
+  .badge { margin-left:auto; border:1.5px solid var(--amber); color:var(--amber); padding:4px 10px; font-weight:700; font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+  h2 { font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); margin:22px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th, td { text-align:left; padding:5px 7px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:#f3f6fa; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; }
+  .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .kpi { border:1px solid var(--line); padding:10px; }
+  .kpi b { display:block; font-size:20px; }
+  .kpi span { font-size:11px; color:var(--muted); }
+  .disc { background:#fff6e5; border-left:4px solid var(--amber); padding:10px 12px; font-size:12px; margin-top:14px; }
+  ul { margin:4px 0; padding-left:18px; }
+  .muted { color:var(--muted); }
+  .bar { position:sticky; top:0; background:#0d1b2e; color:#fff; padding:8px 16px; text-align:center; font-size:13px; }
+  .bar button { margin-left:10px; padding:5px 14px; border:0; background:#22c7d8; color:#001a1f; font-weight:700; cursor:pointer; border-radius:4px; }
+  @media print { body { background:#fff; } .page { box-shadow:none; margin:0; padding:0 4px; max-width:none; } .bar { display:none; } }
+</style>
+</head>
+<body>
+<div class="bar"><a href="javascript:history.length > 1 ? history.back() : location.assign('/portal')" style="color:#22c7d8;margin-right:16px;font-weight:700;text-decoration:none">← Back to portal</a>Printable brief preview <button onclick="window.print()">Print / Save as PDF</button></div>
+<div class="page">
+  <header>
+    <img src="{{ url_for('static', filename='img/ngt-logo.jpg') }}" alt="NGT">
+    <img src="{{ url_for('static', filename='img/ndma-logo.png') }}" alt="NDMA" onerror="this.remove()">
+    <div>
+      <div class="t">{{ title }}</div>
+      <div class="s">Avalanche situation brief · NDMA — Next Generation Technologies · generated {{ today }} · portal v{{ version }}</div>
+    </div>
+    <div class="badge">Decision support · not approved</div>
+  </header>
+
+  <h2>Context</h2>
+  <table>
+    <tr><th style="width:180px">Region</th><td>{{ region.name if region else 'Northern Pakistan (combined)' }} <span class="muted">— {{ region.boundary_note if region else '' }}</span></td></tr>
+    <tr><th>Reporting window</th><td>{{ window or '—' }} <span class="muted">(15-day reporting window; not a forecast lead time)</span></td></tr>
+    <tr><th>Model</th><td>{% if model.status == 'not_connected' %}Not connected — no model predictions included{% else %}{{ model.model_name }} {{ model.model_version }} ({{ model.output_type }}){% endif %}</td></tr>
+    <tr><th>Model output for window</th><td>{{ 'Available' if summary.prediction_available else 'None — no prediction is shown or implied' }}</td></tr>
+  </table>
+
+  <h2>Key figures</h2>
+  <div class="kpis">
+    <div class="kpi"><b>{{ summary.incidents_total }}</b><span>recorded incidents (seed, {{ summary.incidents_verified }} verified)</span></div>
+    <div class="kpi"><b>{{ incidents | selectattr('properties.fatalities_reported') | sum(attribute='properties.fatalities_reported') }}</b><span>reported fatalities (unverified)</span></div>
+    <div class="kpi"><b>{{ summary.settlements_total }}</b><span>reference settlements</span></div>
+    <div class="kpi"><b>{{ summary.roads_total }}</b><span>road segments analysed</span></div>
+  </div>
+
+  <h2>Key findings</h2>
+  <ul>
+    {% if not summary.prediction_available %}<li>No model output exists for the selected window; this brief contains no risk prediction.</li>{% endif %}
+    {% if summary.incidents_total %}<li>{{ summary.incidents_total }} historical avalanche event(s) are recorded in this region in the seed catalogue. Locations are proxies and figures are as reported.</li>{% else %}<li>No incidents recorded in the seed catalogue for this region — this does not indicate absence of hazard.</li>{% endif %}
+    {% set assessed = settlements | selectattr('properties.hazard_layer_available') | list %}
+    <li>Settlement exposure: {% if assessed %}{{ assessed | length }} settlement(s) assessed against mapped hazard zones.{% else %}not assessed — no mapped hazard / runout layer is loaded.{% endif %}</li>
+    <li>Road exposure: {% if roads %}{{ roads | length }} segment(s) reviewed; wording limited to “potential exposure”.{% else %}road centerline dataset not loaded.{% endif %}</li>
+  </ul>
+
+  <h2>Historical incidents</h2>
+  {% if incidents %}
+  <table>
+    <tr><th>ID</th><th>Event date</th><th>Location (type)</th><th>Fatalities (rep.)</th><th>Source</th><th>Status</th></tr>
+    {% for f in incidents %}{% set p = f.properties %}
+    <tr><td>{{ p.incident_id }}</td><td>{{ p.event_date }}</td><td>{{ p.location_name }} <span class="muted">({{ p.coord_type }}, {{ p.coord_precision }})</span></td><td>{{ p.fatalities_reported if p.fatalities_reported is not none else '—' }}</td><td>{{ p.source_org }}</td><td>{{ p.verification_status }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">None recorded for this region.</p>{% endif %}
+
+  <h2>Settlements in region</h2>
+  <table>
+    <tr><th>Settlement</th><th>District</th><th>Coordinates</th><th>Exposure</th><th>Incidents ≤10 km</th></tr>
+    {% for f in settlements %}{% set p = f.properties %}
+    <tr><td>{{ p.name }}</td><td>{{ p.district }}</td><td>{{ '%.4f, %.4f' % (p.lon, p.lat) }}</td><td>{{ p.exposure_category }}</td><td>{{ p.incidents_within_10km }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Data sources and timestamps</h2>
+  <table>
+    <tr><th>Dataset</th><th>Status</th><th>Source</th><th>Data date</th></tr>
+    {% for d in catalog %}<tr><td>{{ d.title }}</td><td>{{ d.status }}</td><td>{{ d.source }}</td><td>{{ d.data_date or '—' }}</td></tr>{% endfor %}
+  </table>
+
+  <div class="disc"><b>Disclaimer.</b> {{ disclaimer }} This brief has not been through an approval workflow. Historical records are incomplete; proxy coordinates are not impact points; study-area extents are not official boundaries. Operational decisions require authorised review and local conditions.</div>
+</div>
+</body>
+</html>

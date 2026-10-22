@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"name":"Gilgit","admin_area":"Gilgit-Baltistan","district":"Gilgit","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[74.3089,35.9208]}},
+    {"type":"Feature","properties":{"name":"Skardu","admin_area":"Gilgit-Baltistan","district":"Skardu","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[75.6333,35.2971]}},
+    {"type":"Feature","properties":{"name":"Karimabad (Hunza)","admin_area":"Gilgit-Baltistan","district":"Hunza","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[74.6589,36.3236]}},
+    {"type":"Feature","properties":{"name":"Sost","admin_area":"Gilgit-Baltistan","district":"Hunza","coord_quality":"Approximate ±5 km","population":null},"geometry":{"type":"Point","coordinates":[74.82,36.69]}},
+    {"type":"Feature","properties":{"name":"Astore","admin_area":"Gilgit-Baltistan","district":"Astore","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[74.8556,35.3667]}},
+    {"type":"Feature","properties":{"name":"Chilas","admin_area":"Gilgit-Baltistan","district":"Diamer","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[74.0961,35.4206]}},
+    {"type":"Feature","properties":{"name":"Khaplu","admin_area":"Gilgit-Baltistan","district":"Ghanche","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[76.3333,35.15]}},
+    {"type":"Feature","properties":{"name":"Shigar","admin_area":"Gilgit-Baltistan","district":"Shigar","coord_quality":"Approximate ±5 km","population":null},"geometry":{"type":"Point","coordinates":[75.74,35.42]}},
+    {"type":"Feature","properties":{"name":"Gupis","admin_area":"Gilgit-Baltistan","district":"Ghizer","coord_quality":"Approximate ±5 km","population":null},"geometry":{"type":"Point","coordinates":[73.44,36.23]}},
+    {"type":"Feature","properties":{"name":"Chitral","admin_area":"Khyber Pakhtunkhwa","district":"Lower Chitral","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[71.7864,35.8518]}},
+    {"type":"Feature","properties":{"name":"Drosh","admin_area":"Khyber Pakhtunkhwa","district":"Lower Chitral","coord_quality":"Approximate ±5 km","population":null},"geometry":{"type":"Point","coordinates":[71.7833,35.5667]}},
+    {"type":"Feature","properties":{"name":"Booni","admin_area":"Khyber Pakhtunkhwa","district":"Upper Chitral","coord_quality":"Approximate ±5 km","population":null},"geometry":{"type":"Point","coordinates":[72.25,36.27]}},
+    {"type":"Feature","properties":{"name":"Dir","admin_area":"Khyber Pakhtunkhwa","district":"Upper Dir","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[71.8756,35.2056]}},
+    {"type":"Feature","properties":{"name":"Kalam","admin_area":"Khyber Pakhtunkhwa","district":"Swat","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[72.585,35.4889]}},
+    {"type":"Feature","properties":{"name":"Besham","admin_area":"Khyber Pakhtunkhwa","district":"Shangla","coord_quality":"Approximate ±5 km","population":null},"geometry":{"type":"Point","coordinates":[72.88,34.93]}},
+    {"type":"Feature","properties":{"name":"Dasu","admin_area":"Khyber Pakhtunkhwa","district":"Upper Kohistan","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[73.2906,35.2917]}},
+    {"type":"Feature","properties":{"name":"Naran","admin_area":"Khyber Pakhtunkhwa","district":"Mansehra","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[73.651,34.9087]}},
+    {"type":"Feature","properties":{"name":"Muzaffarabad","admin_area":"Azad Jammu & Kashmir","district":"Muzaffarabad","coord_quality":"Town centre ±2 km","population":null},"geometry":{"type":"Point","coordinates":[73.4711,34.37]}},
+    {"type":"Feature","properties":{"name":"Athmuqam","admin_area":"Azad Jammu & Kashmir","district":"Neelum","coord_quality":"Approximate ±5 km","population":null},"geometry":{"type":"Point","coordinates":[73.9,34.58]}},
+    {"type":"Feature","properties":{"name":"Kel","admin_area":"Azad Jammu & Kashmir","district":"Neelum","coord_quality":"Approximate ±5 km","population":null},"geometry":{"type":"Point","coordinates":[74.35,34.83]}}
+  ]
+}
