@@ -252,7 +252,7 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
 - Storm prelude (`Storm` in home.html, `#storm`, styles `.storm-*`): plays whenever the intro plays, including "▶ Intro" replays (`intro()` calls
   `Storm.play()`). ~5 s: dense canvas snow (four depth layers batched as one Path2D each + fine specks), aurora, light rays, out-of-focus flakes, glints, then a cyan scan that traces
   the real relief of northern Pakistan from the portal's DEM tiles (`/api/dem/7/89-91/50.png`, 70.3-78.8 E, 34.3-36.6 N: latitude profiles,
-  contours 3,000-7,000 m, summits = local maxima > 6,000 m), the header title and the quote "Reading glaciers before they move."
+  contours 3,000-7,000 m, summits = local maxima > 6,000 m), the title "Snow Avalanche Prediction Using AI" (the page header keeps the portal name) and the quote "Reading glaciers before they move."
   `intro()` awaits `Storm.clear()` (at least 5 s after start, at most 12 s; the DEM grid is fetched once at page load), and the snow blows clear onto chapter 1's wide view.
   Storm HUD (`.storm-hud`, `.sh-*`): corner brackets, a boot log of what the intro really loads, UTC clock, scan longitude, DEM cells scanned, running max
   cell elevation, a graticule draped on the relief and a reticle on the highest 3.4 km DEM cell (Nanga Parbat massif). Every read-out comes from the DEM grid.
