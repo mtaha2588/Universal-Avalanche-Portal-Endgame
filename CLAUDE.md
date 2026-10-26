@@ -218,5 +218,70 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   terrain tiles + MapLibre demo glyphs (30 days). `map-lib-v1` = versioned mapbox-gl-js and `/static/vendor` (cache-first). Mapbox's `sku`
   billing parameter is stripped from cache keys. Portal pages, JS/CSS, images and `/api` are never cached by the worker.
 - Measured on #hindukush: tile average 586 ms (first visit) -> 92 ms (second), mapbox-gl.js 1.1 s -> 0. Settings / About shows counts + "Clear map cache".
+- Terrain elevation for EVERY 3D map (home Mapbox + MapLibre, map.js, hindukush.js) is `MapPerf.dem()`: open AWS Terrain Tiles (terrarium,
+  SRTM-based, z12 = ~30 m) served by the portal at `/api/dem/{z}/{x}/{y}.png` from `data/dem/terrarium` (one-year immutable cache + the
+  worker's `map-open` cache). Build with `python scripts/fetch_dem.py` (6,658 tiles, ~400 MB: glacier systems to z12, Pakistan to z9); missing tiles
+  302 to the public copy. `data/dem/` is git/docker-ignored; the Dockerfile downloads it in its own layer. Mapbox's DEM is no longer used, and
+  Mapbox tiles must never be bulk-downloaded or stored beyond their headers (their terms) — the user asked for that and was told no.
 - Bump `VER` in sw.js to drop old caches. Headless Chrome inside the Bash sandbox cannot open CacheStorage ("Unexpected internal error");
   test the cache with a profile outside the sandbox.
+
+## Home-page cinematic intro
+
+- `bgMap.intro()` in home.html (styles `.cine-*`, overlay `#cine`): Mapbox globe from orbit -> Pakistan (study-area mask dims to 0.8, official border
+  glow pulses) -> Hindu Kush / Karakoram / West Himalaya (fly-in, radar ping, system glow pulse, count-up figures, dive to the largest named glacier with
+  its outline highlighted) -> overview of all three. About 75 s. Plays once per browser session (`sessionStorage.homeIntro`), always with `/#intro`,
+  never with reduced motion or another deep link. "▶ Intro" chip replays it; any click, wheel, Esc or Space skips.
+- Only camera moves and highlight styling: boundary geometry is untouched, every figure comes from `/api/glaciers/pakistan`. MapLibre (no token) has no
+  globe and starts from a flat world view. Libraries stay Mapbox/MapLibre + CSS keyframes; Three.js/GSAP were considered and not needed.
+- Idle orbit steps at ~30 fps and stops while a module window is open (GPU load).
+- Map smoothness rules (home.html): never change a filter or a data-driven paint expression on the `glaciers` source at runtime; Mapbox /
+  MapLibre then re-tile all 12,888 outlines (this was the intro's stutter). Glaciers are drawn as per-system layers `glacier-fill-hk|kk|wh` and
+  `glacier-line-*` with fixed filters; system dimming changes only zoom constants (`paintSelection`), and the selected outline is feature-state
+  `sel` (`selOutline(id)`). Intro pulses use paint transitions, not per-frame `setPaintProperty`. The intro preloads each next leg's tiles with
+  `flyTo({preloadOnly})` (Mapbox only, only while the camera is still: flyTo stops any running move) and its panels use no
+  `backdrop-filter`. Intro look: the ORIGINAL intro (glacier colours, camera path, pitch-72 glacier dive, white
+  outline of the largest glacier) at the user's exaggeration setting; experiments with bare terrain, a glacier fly-through and an intro-only
+  exaggeration boost were rejected. Smoothness: `warm()` preloads every stop's destination tiles during the Pakistan chapter, and `settle()`
+  holds each arrival until the map is "idle" (max 1.8 / 2.2 s) so the orbit starts on full-detail terrain. Relief: hillshade lit from 315°
+  (exaggeration 0.6) and Mapbox Terrain v2 contour lines (`contour-line` from z9.5, labelled every 5th/10th line from z11, Layers toggle
+  "Contour lines", Mapbox only). `move()` listens for `moveend` only after starting the move (a stale synchronous moveend used to skip legs).
+- Intro relief mode (`relief(true|false)`): while the intro plays, glacier fills drop to a tint (0.2 at z5) and outlines to 0.7, the
+  system tint (`ext-fill`) to `EXT_FILL.relief`, and hillshade exaggeration rises 0.6 -> 0.9, so the DEM relief is not hidden under three
+  coloured surfaces. Terrain heights and exaggeration are unchanged. Test helper `bgMap.jump(camera)` holds a fixed view for screenshots.
+- Storm prelude (`Storm` in home.html, `#storm`, styles `.storm-*`): plays whenever the intro plays, including "▶ Intro" replays (`intro()` calls
+  `Storm.play()`). ~4 s: canvas snow, aurora, light rays, out-of-focus flakes, glints, then a cyan scan that traces
+  the real relief of northern Pakistan from the portal's DEM tiles (`/api/dem/7/89-91/50.png`, 70.3-78.8 E, 34.3-36.6 N: latitude profiles,
+  contours 3,000-7,000 m, summits = local maxima > 6,000 m), the header title and the quote "Reading glaciers before they move."
+  `intro()` awaits `Storm.clear()` (at least 4 s after start, at most 11 s; the DEM grid is fetched once at page load), and the snow blows clear onto chapter 1's wide view.
+  `body.storming` hides the home panels meanwhile. Esc / Space / click skips storm and intro.
+- Header badges flip to the same official logo file on the back (no generated stand-in faces).
+- Intro chapter 1 "Northern Pakistan" (replaced the old globe "Earth" chapter): the storm clears onto a wide oblique 3D view of all three systems,
+  the camera pulls back, the systems light up one by one, then the DEM / mapping layers and the HUD come on and stay for the whole intro.
+  `Intel` in home.html (layers `ci-*`, HUD `#ci-legend` / `#ci-hud`, styles `.ci-*`), loaded only when an intro plays (`Intel.load()`):
+  intro palette `INTRO_COLORS` (Hindu Kush orange, Karakoram blue, West Himalaya green) on the RGI v7.0 extents (`ext` source; the rest of the page
+  keeps `GLACIER_COLORS`); DEM elevation tint + 1,000 m contours (marching squares, ~2 km) from the z7 DEM mosaic x 89-91, y 49-51; mapping
+  network = highest DEM point per 0.12° cell inside a system, linked to neighbours, draped on terrain (a VISUALIZATION, not glacier-flow data);
+  icy RGI outlines (`ci-ice`, replaces the coloured glacier layers during the intro); Hindu Kush screening hotspots >= 120 ha.
+  HUD: DEM elevation / slope / aspect at the camera target (z12 tiles, Horn 3x3), selected 15-day window (model "not connected", per-window
+  snowfall bars of the nearest outlook station), weather card = nearest snow-outlook station; live temperature / wind / precipitation show
+  "No live weather feed connected" (none exists). Glacier flow paths and snow cover are listed as no data. Layers are added once at opacity 0
+  under the storm and only fade afterwards (no re-tiling); `ci-tint` is also set to visibility none when off (draped rasters can linger).
+- Chapter 1 "tech mapping" look (division view only): `Intel.grade(true)` recolours the DEM hillshade blue/cyan (same relief), contours every
+  500 m (1,000 m lines brighter + glow) and a fine 0.045° mesh, node halos, `Intel.wake()` glow beats (paint transitions), and a screen-space
+  scan sweep + faint grid (`.ci-scan`, class `scan` on `#cine`; decorative, not data). Grade and scan end at chapter 2.
+- Memory / lag rule for the intro: contours and the fine mesh are PRE-DRAWN into one 1536 px canvas (`ci-lines`, image source, blob URL) draped on
+  the terrain, never GeoJSON. As vector GeoJSON they were ~136,000 segments and crashed Chrome ("Out of Memory") on a laptop. The build runs in
+  steps (`await idle()`) with typed arrays and a rasterised system mask, so the storm keeps animating; HK screening comes pre-filtered from
+  `/api/export/hk_hotspots.geojson?min_ha=120`. Measured (headless, 20 s): JS heap 105 -> 65 MB, longest main-thread stall 1.5 s -> 0.77 s
+  (the page's own map start-up is 0.69 s). No CSS blend modes over the map (a full-screen re-blend every frame).
+
+## Historical overview (past events)
+
+- Home module "Historical Overview" (`special: "history"` in home.html; `HIST` array, `historyHTML` / `openEvent` / `pane`). Event cards open a detail
+  view with key figures, tabs 3D presentation | Figures | What changed | Summary | Downloads, and the "model reconstruction, not observation" note.
+- Batura Glacier avalanche, 09 Aug 1974: NGT notebook outputs copied unchanged into `static/history/batura_1974/` (`story.html` = the supplied
+  `batura_avalanche_3D_story.html`, self-contained WebGL2, embedded same-origin in an iframe only after "Play"; figures, mp4, CSV, slide text, `3d/`
+  GLB/OBJ/GeoTIFF/CSV). The 14.7 MB `batura_terrain.obj` was left out (same mesh as the GLB). Catalog id `history_batura_1974`
+  (`data/history/batura_1974/avalanche_features.geojson`). Release point, path, speed and duration are model estimates; weather is one ~28 km ERA5 tile.
+- To add an event: copy its outputs to `static/history/<id>/`, add an entry to `HIST`, register it in `data/catalog.json`.

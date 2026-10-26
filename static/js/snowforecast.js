@@ -295,7 +295,8 @@ const HKF = (() => {
   async function toggle(el, auto) { on ? off() : await enter(el, auto); }
 
   async function enter(el, auto) {
-    const btn = el.querySelector("#hk-snow"), hk = HK.state;
+    // The page no longer has a "Snow forecast" button (forecast mode is always on); a detached stand-in keeps the busy states harmless.
+    const btn = el.querySelector("#hk-snow") || document.createElement("button"), hk = HK.state;
     btn.disabled = true; btn.classList.add("busy");
     try {
       for (let n = 0; n < 60 && !hk.ready; n++) await new Promise(r => setTimeout(r, 250));
@@ -345,7 +346,7 @@ const HKF = (() => {
     el.querySelector(".hk-stage").classList.add("hk-fc-on");
     HK.apply();
     m.easeTo({ center: [72.5, 35.7], zoom: 6.9, pitch: 55, bearing: -12, duration: 2600,
-      padding: { top: 70, bottom: 60, left: 230, right: window.innerWidth > 1100 ? 420 : 20 } });
+      padding: { top: 70, bottom: 60, left: el.querySelector(".hk-ctl") ? 230 : 110, right: window.innerWidth > 1100 ? 420 : 20 } });
 
     last = summarise();
     buildCap(el); buildRail(el);

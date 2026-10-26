@@ -370,6 +370,18 @@
    "crs": "EPSG:4326",
    "resolution": "1:10 million",
    "limitations": "Study area = Pakistan-administered area: union of the province and territory polygons of Natural Earth 1:10m (Pakistan view), including Gilgit-Baltistan and Azad Jammu & Kashmir. India-administered Jammu & Kashmir, Siachen and the Shaksgam Valley are outside it. The claimed segment is the edge of Pakistan's official outline around India-administered disputed territory; it is drawn dashed, not as a settled border."
+  },
+  {
+   "id": "history_batura_1974",
+   "title": "Batura Glacier avalanche, 09 Aug 1974: modelled reconstruction",
+   "file": "history/batura_1974/avalanche_features.geojson",
+   "status": "indicative",
+   "kind": "Modelled release point, avalanche path and run-out, ERA5 tiles; figures, factor table and 3D story in static/history/batura_1974/",
+   "source": "NGT notebook run Batura_1974_08_09_avalanche_outputs (ERA5 / ERA5-Land daily, Copernicus DEM)",
+   "data_date": "Event 1974-08-09; normal 1970-1990 (event year left out)",
+   "crs": "EPSG:4326",
+   "resolution": "ERA5 0.25° tile (~28 km); DEM 120 m grid",
+   "limitations": "Release point, path, speed and duration are model estimates (steepest descent, alpha-beta run-out, PCM speed), not observations; they should be checked against reports or imagery. Weather factors describe a ~28 km ERA5 tile, not the slope."
   }
  ]
 }

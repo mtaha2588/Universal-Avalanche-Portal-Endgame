@@ -83,6 +83,22 @@ def test_home_portal_and_report(client):
     assert r.status_code == 200 and b"Decision support" in r.data
 
 
+def test_dem_tiles_local_or_redirect(client, tmp_path):
+    # A tile on disk is served with a long cache; anything else is redirected to the public open-data copy.
+    from config import Config
+
+    class Cfg(Config):
+        DATA_DIR = tmp_path
+    (tmp_path / "dem" / "terrarium" / "3" / "5").mkdir(parents=True)
+    (tmp_path / "dem" / "terrarium" / "3" / "5" / "3.png").write_bytes(b"PNG fake")
+    c = create_app(Cfg).test_client()
+    hit = c.get("/api/dem/3/5/3.png")
+    assert hit.status_code == 200 and hit.data == b"PNG fake" and "immutable" in hit.headers["Cache-Control"]
+    miss = c.get("/api/dem/3/5/2.png")
+    assert miss.status_code == 302 and miss.headers["Location"].endswith("/elevation-tiles-prod/terrarium/3/5/2.png")
+    assert c.get("/api/dem/3/9/2.png").status_code == 404      # outside the tile grid
+
+
 def test_windows_api(client):
     j = client.get("/api/windows?season=2026").get_json()
     assert j["windows"][0]["id"] == "2026-27-W01"

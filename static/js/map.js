@@ -51,7 +51,7 @@ const MapView = (() => {
       sat: { type: "raster", tiles: [mb("satellite-streets-v12")], tileSize: 256, attribution: "© Mapbox © OpenStreetMap © Maxar" },
       topo: { type: "raster", tiles: [mb("outdoors-v12")], tileSize: 256, attribution: "© Mapbox © OpenStreetMap" },
       dark: { type: "raster", tiles: [mb("dark-v11")], tileSize: 256, attribution: "© Mapbox © OpenStreetMap" },
-      dem: { type: "raster-dem", url: "mapbox://mapbox.mapbox-terrain-dem-v1", tileSize: 512 },
+      dem: MapPerf.dem(),
     } : {
       sat: { type: "raster", tileSize: 256, maxzoom: 18, attribution: "Imagery © Esri, Maxar, Earthstar Geographics",
              tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"] },
@@ -61,8 +61,7 @@ const MapView = (() => {
               tiles: ["https://a.tile.opentopomap.org/{z}/{x}/{y}.png", "https://b.tile.opentopomap.org/{z}/{x}/{y}.png"] },
       dark: { type: "raster", tileSize: 256, attribution: "© CARTO © OpenStreetMap contributors",
               tiles: ["https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"] },
-      dem: { type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: 14, attribution: "Elevation: Terrain Tiles (AWS Open Data, Mapzen)",
-             tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"] },
+      dem: MapPerf.dem(),
     };
     const layers = [
       { id: "bg", type: "background", paint: { "background-color": "#0b1626" } },

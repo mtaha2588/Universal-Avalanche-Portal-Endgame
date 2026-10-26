@@ -3,9 +3,9 @@
    Keeps map tiles and map libraries in Cache Storage so a tile already seen is drawn from disk instead of the network.
    - Mapbox, Esri, CARTO tiles / styles / glyphs: kept only as long as the provider's own Cache-Control max-age allows
      (Mapbox 12 h, Esri 24 h). Their terms allow caching within those headers, not permanent storage or bulk download.
-   - AWS Terrain Tiles (open data) and the MapLibre demo glyphs: kept for 30 days.
+   - AWS Terrain Tiles (open data), including the portal's own copy at /api/dem/, and the MapLibre demo glyphs: kept for 30 days.
    - Versioned map libraries (mapbox-gl-js vX.Y.Z) and /static/vendor: cache-first.
-   - The portal's own pages, JS, CSS and /api data are NOT cached here, so edits and data rebuilds always show. */
+   - The portal's own pages, JS, CSS and /api data (except /api/dem terrain tiles) are NOT cached here, so edits and data rebuilds always show. */
 "use strict";
 
 const VER = "v1";
@@ -13,7 +13,7 @@ const TILES = `map-tiles-${VER}`;       // provider tiles, expiry from their hea
 const OPEN = `map-open-${VER}`;         // open-data tiles, 30 days
 const LIB = `map-lib-${VER}`;           // versioned libraries and static vendor files
 const KEEP = [TILES, OPEN, LIB];
-const MAX = { [TILES]: 9000, [OPEN]: 9000, [LIB]: 400 };
+const MAX = { [TILES]: 9000, [OPEN]: 15000, [LIB]: 400 };
 const OPEN_TTL = 30 * 24 * 3600;
 const STAMP = "sw-fetched";             // header added to stored copies: seconds since epoch at fetch time
 
@@ -33,6 +33,7 @@ function route(url) {
   if (h === "s3.amazonaws.com" && p.startsWith("/elevation-tiles-prod/")) return OPEN;
   if (h === "demotiles.maplibre.org") return OPEN;
   if (url.origin === self.location.origin && p.startsWith("/static/vendor/")) return LIB;
+  if (url.origin === self.location.origin && p.startsWith("/api/dem/")) return OPEN;   // open terrain tiles, never change
   return null;
 }
 

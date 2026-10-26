@@ -27,14 +27,21 @@ const MapPerf = (() => {
   }
 
   // Per-map options: keep many decoded tiles in memory (panning back is instant), do not re-request tiles that expire
-  // mid-session, draw CJK labels with a local font instead of downloading glyph ranges, skip performance telemetry.
+  // mid-session, cap the drawing resolution, draw CJK labels with a local font instead of downloading glyph ranges, skip performance telemetry.
   const opts = extra => Object.assign({
     maxTileCacheSize: 1500,
     refreshExpiredTiles: false,
     localIdeographFontFamily: "'Noto Sans', 'Microsoft YaHei', sans-serif",
     performanceMetricsCollection: false,
     fadeDuration: 120,
+    pixelRatio: Math.min(window.devicePixelRatio || 1, 1.5),   // 4K / 200 % screens would otherwise draw 4x the pixels
   }, extra);
+
+  // Terrain elevation for every 3D map: open AWS Terrain Tiles (terrarium), served by the portal itself from data/dem
+  // (scripts/fetch_dem.py) with a one-year browser cache; tiles not on disk are redirected to the public copy (app.py).
+  // Not Mapbox's DEM: Mapbox's terms forbid storing their tiles, these may be kept.
+  const dem = () => ({ type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: 14,
+    tiles: [location.origin + "/api/dem/{z}/{x}/{y}.png"], attribution: "Elevation: Terrain Tiles (AWS Open Data, Mapzen; SRTM)" });
 
   // Cache statistics / clearing, answered by the service worker.
   async function ask(msg) {
@@ -49,6 +56,6 @@ const MapPerf = (() => {
   }
   const clear = () => ask("clear");
 
-  return { tune, opts, ready, stats, clear };
+  return { tune, opts, ready, stats, clear, dem };
 })();
 window.MapPerf = MapPerf;

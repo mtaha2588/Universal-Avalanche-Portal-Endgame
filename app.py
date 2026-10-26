@@ -11,7 +11,7 @@ import threading
 from datetime import date
 from pathlib import Path
 
-from flask import Flask, Response, abort, jsonify, render_template, request, send_from_directory
+from flask import Flask, Response, abort, jsonify, redirect, render_template, request, send_from_directory
 
 from config import Config
 from portal.services import exports, hotspot_register
@@ -67,6 +67,23 @@ def create_app(config: type[Config] = Config) -> Flask:
         # Map tile cache. Served from the root so its scope covers / and /portal; never cached itself, so updates apply.
         resp = send_from_directory(app.static_folder, "sw.js", mimetype="application/javascript")
         resp.headers["Cache-Control"] = "no-cache"
+        return resp
+
+    # Terrain elevation tiles (open AWS Terrain Tiles, terrarium PNG) for every 3D map. Tiles downloaded by scripts/fetch_dem.py
+    # are served from disk and cached by the browser for a year (they never change); anything else is redirected to the public copy.
+    dem_dir = config.DATA_DIR / "dem" / "terrarium"
+
+    @app.get("/api/dem/<int:z>/<int:x>/<int:y>.png")
+    def dem_tile(z: int, x: int, y: int):
+        if not (0 <= z <= 15 and 0 <= x < 2 ** z and 0 <= y < 2 ** z):
+            abort(404)
+        if (dem_dir / str(z) / str(x) / f"{y}.png").is_file():
+            resp = send_from_directory(dem_dir / str(z) / str(x), f"{y}.png", mimetype="image/png", max_age=31536000)
+            resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        else:
+            resp = redirect(f"https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png", 302)
+            resp.headers["Cache-Control"] = "public, max-age=86400"
+        resp.headers["Access-Control-Allow-Origin"] = "*"
         return resp
 
     @app.get("/portal")

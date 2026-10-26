@@ -1,0 +1,10 @@
+• Batura Glacier avalanche: 09 August 1974
+• Data: ERA5 / ERA5-Land daily, tile N36.625_E74.625 (0.25°), normal = 1970–1990 (event year left out); terrain: Copernicus DEM 120 m grid.
+• Build-up: no clear multi-day build-up above the threshold.
+• Most unusual factors in the last 3 days: Snowfall, last 3 days (90th percentile), Snowfall (77th percentile), Max wind (10 m) (77th percentile), Max gust (72nd percentile).
+• Freezing level on the day: 5,381 m (ERA5 zero-degree level + tile ground height).
+• Most likely release: south wall of the glacier valley, on a SW-facing slope (232°, 38° steep) at 4,607 m.
+• Wind over the last 7 days blew from SW at 0.6 m/s (lee slopes face NE).
+• Modelled path: 1.6 km, 723 m drop, max speed 51 m/s (184 km/h), stops after ~71 s.
+• Method: release = steep slope (30–50°) in the snow band near the freezing level, scored by sun, wind loading and steepness; path = steepest descent; run-out = alpha–beta model; speed = PCM model tuned to that run-out.
+• Limits: ERA5 tiles are ~28 km wide; release point, path and speed are model estimates and should be checked against reports or imagery.

@@ -1,0 +1,17 @@
+factor,unit,mean days -45 to -15,mean last 14 days,event day,normal for the date (median),event-day percentile
+Freezing level,m a.s.l.,5135.05,5225.58,5381.32,5459.34,41.0
+Max gust,m/s,6.87,8.33,5.93,7.25,13.0
+"Snowmelt, last 3 days",mm w.e.,13.51,2.89,2.78,2.84,49.0
+Sea-level pressure,hPa,1014.79,1012.44,1014.28,1012.71,71.0
+"Warmth, last 5 days",°C·days,1.42,8.0,5.87,17.76,18.0
+Rain,mm,0.35,1.97,0.4,1.09,33.0
+"Snowfall, last 3 days",mm w.e.,2.68,3.12,3.09,0.18,83.0
+Snowfall,mm w.e.,0.67,1.03,0.0,0.02,31.0
+Snowmelt,mm w.e.,4.55,0.87,0.28,0.82,38.0
+Sunshine (solar radiation),W/m²,343.33,306.19,323.8,297.58,77.0
+Snowpack change (SWE),mm/day,-4.26,-0.36,-0.43,-0.04,32.0
+Max temperature,°C,2.11,6.4,7.02,8.03,36.0
+Night (min) temperature,°C,-8.24,-4.95,-7.22,-2.1,10.0
+Night cloud (no refreeze),0–1,0.53,0.34,0.37,0.45,44.0
+Snowpack temperature gradient,K/m,-0.31,-0.3,-0.26,-0.32,82.0
+Max wind (10 m),m/s,0.78,0.98,0.78,0.85,29.0

@@ -13,6 +13,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+# Local copy of the open terrain tiles (scripts/fetch_dem.py, ~400 MB), in its own layer so rebuilds reuse it.
+# A failed download only means those tiles are fetched from the public copy at run time.
+COPY scripts/fetch_dem.py scripts/fetch_dem.py
+RUN python scripts/fetch_dem.py | tail -3 || true
+
 COPY . .
 RUN useradd --create-home portal && chown -R portal /app
 USER portal

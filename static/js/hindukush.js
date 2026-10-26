@@ -31,6 +31,8 @@ const HK = (() => {
   // Keep the class layer clear of the floating panels when framing the study area.
   const pad = () => window.innerWidth > 1500 ? { top: 112, bottom: 40, left: 230, right: 410 }
     : window.innerWidth > 1100 ? { top: 210, bottom: 40, left: 230, right: 410 } : 30;
+  // The layer controls sit in the header dock, so only the icon rail (about 90 px) covers the map's left edge.
+  const padMap = () => { const p = pad(); return typeof p === "number" ? p : { ...p, left: 110, top: Math.min(p.top, 112) }; };
   const fmt = (n, d = 0) => n == null ? "—" : Number(n).toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
   const fc = f => ({ type: "FeatureCollection", features: f });
 
@@ -88,17 +90,15 @@ const HK = (() => {
     const sources = kind === "mapbox" ? {
       sat: { type: "raster", tiles: [mb("satellite-v9")], tileSize: 256, attribution: "© Mapbox © Maxar" },
       dark: { type: "raster", tiles: [mb("dark-v11")], tileSize: 256, attribution: "© Mapbox © OpenStreetMap" },
-      dem: { type: "raster-dem", url: "mapbox://mapbox.mapbox-terrain-dem-v1", tileSize: 512 },
-      demhs: { type: "raster-dem", url: "mapbox://mapbox.mapbox-terrain-dem-v1", tileSize: 512 },
+      dem: MapPerf.dem(),
+      demhs: MapPerf.dem(),
     } : {
       sat: { type: "raster", tileSize: 256, maxzoom: 18, attribution: "Imagery © Esri, Maxar, Earthstar Geographics",
              tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"] },
       dark: { type: "raster", tileSize: 256, attribution: "© CARTO © OpenStreetMap contributors",
               tiles: ["https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png", "https://b.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png"] },
-      dem: { type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: 14, attribution: "Elevation: AWS Terrain Tiles (Mapzen)",
-             tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"] },
-      demhs: { type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: 14,
-               tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"] },
+      dem: MapPerf.dem(),
+      demhs: MapPerf.dem(),
     };
     return {
       version: 8, sources,
@@ -133,7 +133,7 @@ const HK = (() => {
     map.on("error", e => console.warn("HK map:", e && e.error && e.error.message));
     await new Promise(res => { if (map.isStyleLoaded()) res(); else { map.once("style.load", res); map.once("load", res); } });
     if (st.map !== map) return;
-    map.fitBounds(HK_BOUNDS, { padding: pad(), duration: 2600, essential: true });
+    map.fitBounds(HK_BOUNDS, { padding: padMap(), duration: 2600, essential: true });
 
     const ov = st.run.overlay || {};
     if (ov.available) {
@@ -170,7 +170,9 @@ const HK = (() => {
       "circle-color": ["interpolate", ["linear"], ["get", "max_score"], 0.65, "#fd8d3c", 0.85, "#e31a1c", 1, "#800026"],
       "circle-stroke-color": "#fff", "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 7.2, 0.4, 12, 1.4],
       "circle-opacity": ["interpolate", ["linear"], ["zoom"], 7.2, 0, 7.8, 0.9] } });
-    map.addLayer({ id: "hs-hover", type: "circle", source: "hs", filter: ["==", ["get", "rank"], -1], paint: {
+    // The hover ring has its own one-point source: filtering the 16,388-point "hs" source would re-tile it on every hover.
+    map.addSource("hs-hover", { type: "geojson", data: fc([]) });
+    map.addLayer({ id: "hs-hover", type: "circle", source: "hs-hover", paint: {
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 10, 12, 30], "circle-color": "rgba(254,204,92,0.22)",
       "circle-stroke-color": "#fecc5c", "circle-stroke-width": 2.2 } });
     map.addLayer({ id: "hs-sel", type: "circle", source: "hs", filter: ["==", ["get", "rank"], -1], paint: {
@@ -215,7 +217,10 @@ const HK = (() => {
 
   // Hover ring on the map, shared by map points, list rows and rank badges.
   function hover(rank) {
-    if (st.ready && st.map.getLayer("hs-hover")) st.map.setFilter("hs-hover", ["==", ["get", "rank"], rank == null ? -1 : rank]);
+    const src = st.ready && st.map.getSource("hs-hover");
+    if (!src) return;
+    const f = rank == null ? null : filtered().find(x => x.properties.rank === rank);
+    src.setData(fc(f ? [{ type: "Feature", geometry: f.geometry, properties: {} }] : []));
   }
   const tipHtml = p => `<div class="hk-tip-h"><span class="hk-rk ${p.rank <= 10 ? "top" : ""}">${p.rank}</span> <b>${fmt(p.area_ha, 1)} ha</b> very-high area</div>
     ${fmt(p.mean_elev_m)} m · ${fmt(p.mean_slope_deg, 1)}° · faces ${UI.esc(p.facing)}<br>
@@ -331,7 +336,7 @@ const HK = (() => {
   function clearTile() {
     st.tile = ""; const sel = $("#hk-tile"); if (sel) sel.value = "";
     refreshData();
-    if (st.ready) st.map.fitBounds(HK_BOUNDS, { padding: pad(), pitch: st.terrain ? 45 : 0, duration: 1500 });
+    if (st.ready) st.map.fitBounds(HK_BOUNDS, { padding: padMap(), pitch: st.terrain ? 45 : 0, duration: 1500 });
   }
 
   // ------------------------------------------------------------ guided tour
@@ -493,22 +498,24 @@ const HK = (() => {
     const tileRank = st.tiles.slice().sort((a, b) => b.properties.share_high_or_very_high - a.properties.share_high_or_very_high);
     el.innerHTML = `<div class="hk-bar"><div class="hk-bar-t"><span class="eyebrow">Hindu Kush</span><b>Avalanche terrain screening</b>
         <span class="tag hk-tag" title="Screening layer, not a forecast or warning. It shows where slopes can release, from terrain that does not change; it says nothing about current snowpack or timing. The score is an index (0-1), not a probability, and has not been validated against observed avalanches. Locations need field verification.">Screening · not a forecast</span></div>
-        <div class="toolbar" style="margin:0"><button class="btn primary hk-tourbtn" type="button" id="hk-tour">${UI.ICON.play} Tour top 10</button><button class="btn hk-snowbtn" type="button" id="hk-snow" title="Overlay the 2026-27 snow outlook on the terrain">${window.SF ? SF.ICON : ""} Snow forecast 2026-27</button><a class="btn" href="#karakoram">Karakoram →</a><a class="btn" href="#mountains">All mountain systems</a></div></div>
-      <div class="hk-stage no-kpi">
+        <div class="hk-dock" role="toolbar" aria-label="Map layers">
+          <span class="hk-dock-h">Layers</span>
+          <label class="hk-chip c-cls" title="Terrain class overlay from the screening run"><input type="checkbox" id="hk-l-ov" ${st.overlay ? "checked" : ""} ${run.overlay && run.overlay.available ? "" : "disabled"}><i class="hk-li li-cls"></i><span>Terrain classes</span>
+            <input type="range" class="hk-chip-op" id="hk-op" min="0.1" max="1" step="0.05" value="${st.overlayOp}" aria-label="Class layer opacity" title="Opacity"></label>
+          <label class="hk-chip c-heat" title="Hotspot density (heat map)"><input type="checkbox" id="hk-l-heat" ${st.showHeat ? "checked" : ""}><i class="hk-li li-heat"></i><span>Density</span></label>
+          <label class="hk-chip c-pts" title="Very-high areas, sized by hectares"><input type="checkbox" id="hk-l-pts" ${st.showPts ? "checked" : ""}><i class="hk-li li-pts"></i><span>Very-high</span></label>
+          <label class="hk-chip c-tiles" title="Analysis tile summary"><input type="checkbox" id="hk-l-tiles" ${st.showTiles ? "checked" : ""}><i class="hk-li li-tiles"></i><span>Tiles</span></label>
+          <label class="hk-chip c-set" title="Settlements (approximate town centres)"><input type="checkbox" id="hk-l-set" ${st.showSet ? "checked" : ""}><i class="hk-li li-set"></i><span>Settlements</span></label>
+          <span class="hk-dock-sep"></span>
+          <div class="hk-seg"><button type="button" data-b="sat" class="${st.base === "sat" ? "on" : ""}">Satellite</button><button type="button" data-b="dark" class="${st.base === "dark" ? "on" : ""}">Dark</button></div>
+          <button type="button" class="hk-3d ${st.terrain ? "on" : ""}" id="hk-3d" title="Toggle 3D terrain"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 20 9 7l4 7 3-4 6 10z"/></svg>3D</button>
+          <button type="button" class="hk-reset" id="hk-reset" title="Reset view" aria-label="Reset view"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg></button>
+          <span class="hk-dock-sep"></span>
+          <button class="btn primary hk-tourbtn" type="button" id="hk-tour">${UI.ICON.play} Tour top 10</button>
+        </div></div>
+      <div class="hk-stage no-kpi hk-docked">
         <div class="hk-mapwrap">
           <div id="hk-map" class="hk-map"></div>
-          <div class="hk-ctl">
-            <div class="hk-ctl-h">Layers</div>
-            <label><input type="checkbox" id="hk-l-ov" ${st.overlay ? "checked" : ""} ${run.overlay && run.overlay.available ? "" : "disabled"}><i class="hk-li li-cls"></i> Terrain classes</label>
-            <div class="op"><input type="range" id="hk-op" min="0.1" max="1" step="0.05" value="${st.overlayOp}" aria-label="Class layer opacity"></div>
-            <label><input type="checkbox" id="hk-l-heat" ${st.showHeat ? "checked" : ""}><i class="hk-li li-heat"></i> Hotspot density</label>
-            <label><input type="checkbox" id="hk-l-pts" ${st.showPts ? "checked" : ""}><i class="hk-li li-pts"></i> Very-high areas</label>
-            <label><input type="checkbox" id="hk-l-tiles" ${st.showTiles ? "checked" : ""}><i class="hk-li li-tiles"></i> Tile summary</label>
-            <label><input type="checkbox" id="hk-l-set" ${st.showSet ? "checked" : ""}><i class="hk-li li-set"></i> Settlements</label>
-            <div class="hk-seg"><button type="button" data-b="sat" class="${st.base === "sat" ? "on" : ""}">Satellite</button><button type="button" data-b="dark" class="${st.base === "dark" ? "on" : ""}">Dark</button></div>
-            <button type="button" class="hk-3d ${st.terrain ? "on" : ""}" id="hk-3d">3D terrain</button>
-            <button type="button" class="hk-reset" id="hk-reset">Reset view</button>
-          </div>
           <div class="hk-legend">
             <div class="hk-ctl-h">Terrain class</div>
             ${run.classes.filter(c => c.in_overlay !== false).map(c => `<div><span class="hk-sw" style="background:${c.color}"></span>${UI.esc(c.label)}</div>`).join("")}
@@ -574,8 +581,7 @@ const HK = (() => {
       st.base = b.dataset.b; el.querySelectorAll(".hk-seg button").forEach(x => x.classList.toggle("on", x === b)); applyLayers();
     }));
     on("#hk-3d", "click", e => { st.terrain = !st.terrain; e.currentTarget.classList.toggle("on", st.terrain); applyLayers(); });
-    on("#hk-reset", "click", () => { stopTour(); if (st.ready) st.map.fitBounds(HK_BOUNDS, { padding: pad(), pitch: st.terrain ? 45 : 0, bearing: 0, duration: 1400 }); });
-    on("#hk-snow", "click", () => HKF.toggle(el));
+    on("#hk-reset", "click", () => { stopTour(); if (st.ready) st.map.fitBounds(HK_BOUNDS, { padding: padMap(), pitch: st.terrain ? 45 : 0, bearing: 0, duration: 1400 }); });
     on("#hk-tour", "click", () => st.tour ? stopTour() : startTour());
     on("#hk-min", "input", e => { st.minHa = +e.target.value; el.querySelector("#hk-minv").textContent = st.minHa + " ha"; });
     on("#hk-min", "change", () => { stopTour(); refreshData(); });
