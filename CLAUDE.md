@@ -259,7 +259,10 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   Canvas rule: every `ctx.save()` in `Storm.frame` needs its `restore()`; a missing one once shifted all the snow half a screen to the right.
   `body.storming` hides the home panels meanwhile. Esc / Space / click skips storm and intro.
 - Header badges flip to the same official logo file on the back (no generated stand-in faces).
-- Intro chapter 1 "Northern Pakistan" (replaced the old globe "Earth" chapter): the storm clears onto a wide oblique 3D view of all three systems,
+- Globe prologue (Mapbox only; MapLibre v4 has no globe): the storm clears onto the Earth (globe at zoom 1.25), which turns west to east for 7 s
+  until Pakistan faces the camera (caption "NDMA · NGT / Snow Avalanche Prediction Using AI"), then flies 5.2 s into chapter 1's wide view, whose
+  tiles are warmed meanwhile. Chapter 1's progress bar covers it (27 s instead of 15 s). Everything after it is unchanged.
+- Intro chapter 1 "Northern Pakistan" (follows the globe prologue): the storm clears onto a wide oblique 3D view of all three systems,
   the camera pulls back, the systems light up one by one, then the DEM / mapping layers and the HUD come on and stay for the whole intro.
   `Intel` in home.html (layers `ci-*`, HUD `#ci-legend` / `#ci-hud`, styles `.ci-*`), loaded only when an intro plays (`Intel.load()`):
   system colours `INTRO_COLORS` (= `SYS_COL`, see "One palette") on the RGI v7.0 extents (`ext` source); DEM elevation tint + 1,000 m contours (marching squares, ~2 km) from the z7 DEM mosaic x 89-91, y 49-51; mapping

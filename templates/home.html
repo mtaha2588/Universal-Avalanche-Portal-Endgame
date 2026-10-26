@@ -3856,7 +3856,7 @@ const bgMap = (() => {
       // 1 · Northern Pakistan: the storm clears onto a wide oblique view of all three systems on the DEM terrain,
       // then the camera pulls back while the boundaries light up and the DEM / mapping layers and the HUD come on.
       const later = (ms, fn) => setTimeout(() => { if (!run.done) fn(); }, ms);
-      setStep(0, 15000);
+      setStep(0, engine === "mapbox" && !reducedMotion ? 27000 : 15000);   // + the revolving-globe prologue (Mapbox)
       // Under the storm: wait (at most 9 s) for the boundaries and the intro layers, then place the camera, so its tiles load unseen.
       await step(Promise.race([Promise.all([layersReady, Intel.load()]).catch(() => {}), new Promise(r => setTimeout(r, 9000))]));
       Intel.ensure();
@@ -3864,10 +3864,21 @@ const bgMap = (() => {
       spotlight(true);
       relief(true);
       const wide = Intel.wideCam();
-      if (wide) map.jumpTo(wide.start);
+      // Prologue (Mapbox only: MapLibre v4 has no globe): the storm clears onto the revolving Earth, which turns until
+      // Pakistan faces the camera, then the camera dives into chapter 1's wide view. Chapter 1's tiles load meanwhile.
+      const globe = engine === "mapbox" && wide && !reducedMotion;
+      if (globe) { warm([wide.start]); map.jumpTo({ center: [-25, 16], zoom: 1.25, pitch: 0, bearing: 0 }); }
+      else if (wide) map.jumpTo(wide.start);
       // The storm prelude clears onto this camera; skipping the storm skips the intro too.
       await step(Storm.clear());
       if (Storm.skipped) { Storm.skipped = false; endIntro(true); return; }
+      if (globe) {
+        caption({ color: "#67e8f9", eyebrow: "NDMA · NGT", title: "Snow Avalanche Prediction Using AI",
+          sub: "Turning to northern Pakistan: the Hindu Kush, Karakoram and West Himalaya glacier systems.", stats: null });
+        await move("easeTo", { center: [70, 30], zoom: 1.55, duration: 7000, easing: t => t });              // one steady turn, west to east
+        cineEl.querySelector(".cine-cap").classList.add("out");
+        await move("flyTo", { ...wide.start, duration: 5200, curve: 1.6 });
+      }
       await wait(document.getElementById("splash").classList.contains("done") ? 200 : 1300);
       caption({ color: "#67e8f9", eyebrow: "Chapter 1 · Northern Pakistan", title: "Three systems",
         sub: "Hindu Kush, Karakoram and West Himalaya on SRTM terrain. Each boundary is the RGI v7.0 sub-region extent inside the study area.",
