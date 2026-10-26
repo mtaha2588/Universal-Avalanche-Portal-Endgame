@@ -1,7 +1,8 @@
 /* Boot, intro sequence, router and global context (region / season / window). */
 "use strict";
-// One vivid colour per reporting window, shared with the home page.
-const SLOT_COL = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#14b8a6", "#3b82f6", "#6366f1", "#a855f7", "#ec4899"];
+// One fluorescent colour per reporting window, shared with the home page; SLOT_INK keeps the text readable on it.
+const SLOT_COL = ["#FF0000", "#FF3D00", "#FFFF00", "#39FF00", "#00FFFF", "#0047FF", "#8F00FF", "#FF00FF", "#D00020"];
+const SLOT_INK = ["#fff", "#fff", "#0a0a0a", "#0a0a0a", "#0a0a0a", "#fff", "#fff", "#fff", "#fff"];
 
 const App = (() => {
   const view = () => document.getElementById("view");
@@ -43,7 +44,7 @@ const App = (() => {
         <div class="sg-h"><b>${g.name}</b>${UI.esc(g.label)}</div>
         <div class="sg-b">${g.wins.map(w => {
           const isToday = today >= w.start && today < w.end_exclusive;
-          return `<button type="button" class="slot ${w.id === S.window ? "sel" : ""}" data-id="${w.id}" style="--pc:${SLOT_COL[S.windows.indexOf(w) % SLOT_COL.length]}" title="${w.id}: [${w.start}, ${w.end_exclusive})${w.prediction_available ? " · model output" : " · no model output"}">
+          return `<button type="button" class="slot ${w.id === S.window ? "sel" : ""}" data-id="${w.id}" style="--pc:${SLOT_COL[S.windows.indexOf(w) % SLOT_COL.length]};--ink:${SLOT_INK[S.windows.indexOf(w) % SLOT_INK.length]}" title="${w.id}: [${w.start}, ${w.end_exclusive})${w.prediction_available ? " · model output" : " · no model output"}">
             ${isToday ? '<span class="flag today">TODAY</span>' : w.prediction_available ? '<span class="flag model">MODEL</span>' : ""}
             ${UI.fmtDay(w.start)} – ${UI.fmtDay(w.last_day)}<small>${w.id.slice(-3)} · ${w.days}d</small></button>`;
         }).join("")}</div></div>`;

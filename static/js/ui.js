@@ -85,10 +85,10 @@ UI.ICON = {
 
 /* Season phases: windows are grouped by the month they start in (descriptive labels only). */
 UI.PHASES = [
-  { m: 12, name: "Dec", label: "Phase 1 · Early winter", c: "#22d3ee" },
-  { m: 1, name: "Jan", label: "Phase 2 · Peak winter", c: "#60a5fa" },
-  { m: 2, name: "Feb", label: "Phase 3 · Late winter", c: "#a78bfa" },
-  { m: 3, name: "Mar", label: "Phase 4 · Spring transition", c: "#f59e0b" },
-  { m: 4, name: "Apr", label: "Phase 5 · Melt onset", c: "#34d399" },
+  { m: 12, name: "Dec", label: "Phase 1 · Early winter", c: "#FF3D00" },
+  { m: 1, name: "Jan", label: "Phase 2 · Peak winter", c: "#FFFF00" },
+  { m: 2, name: "Feb", label: "Phase 3 · Late winter", c: "#00FFFF" },
+  { m: 3, name: "Mar", label: "Phase 4 · Spring transition", c: "#8F00FF" },
+  { m: 4, name: "Apr", label: "Phase 5 · Melt onset", c: "#FF00FF" },
 ];
 UI.fmtDay = iso => new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });

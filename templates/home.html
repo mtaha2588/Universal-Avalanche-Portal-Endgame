@@ -227,13 +227,17 @@
   .sg-h { text-align: center; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; white-space: nowrap; }
   .sg-h b { color: var(--pc); font-weight: 800; margin-right: 6px; }
   .sg-b { display: flex; gap: 6px; }
-  .slot { flex: 1; min-width: 104px; position: relative; cursor: pointer; text-align: center; padding: 6px 10px 7px; border-radius: 9px; border: 1px solid rgba(130, 175, 255, .2); border-bottom: 2px solid var(--pc);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--pc) 94%, #fff 6%), color-mix(in srgb, var(--pc) 68%, #08111f)); border-color: color-mix(in srgb, var(--pc) 70%, #fff 30%); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
-    box-shadow: 0 0 14px color-mix(in srgb, var(--pc) 40%, transparent); font: 700 13px/1.25 var(--font); transition: transform .15s, background .2s, box-shadow .2s; }
-  .slot:hover { transform: translateY(-2px); border-color: var(--pc); filter: brightness(1.15); }
-  .slot small { display: block; font: 600 10px var(--mono); color: rgba(255, 255, 255, .9); letter-spacing: .06em; }
-  .slot.sel { color: #fff; border-color: #fff; border-bottom-color: #fff; transform: translateY(-2px); filter: saturate(1.15); background: linear-gradient(180deg, color-mix(in srgb, var(--pc) 88%, #fff 12%), color-mix(in srgb, var(--pc) 65%, #0b172c)); box-shadow: 0 0 20px color-mix(in srgb, var(--pc) 55%, transparent); }
-  .slot.sel small { color: rgba(255, 255, 255, .88); }
+  /* Fluorescent solid fills (SLOT_COL); the bright 2 px rim is an inset shadow so the tab keeps its size. --ink is dark on yellow / green / cyan. */
+  .slot { --ink: #fff; flex: 1; min-width: 104px; position: relative; cursor: pointer; text-align: center; padding: 6px 10px 7px; border-radius: 9px; border: 1px solid var(--pc); border-bottom: 2px solid var(--pc);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--pc) 90%, #fff 10%), var(--pc) 55%, color-mix(in srgb, var(--pc) 82%, #000)); color: var(--ink); font: 800 13px/1.25 var(--font);
+    text-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 10%, rgba(0, 0, 0, .45));
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--pc) 55%, #fff 45%), inset 0 1px 0 3px rgba(255, 255, 255, .08), 0 0 12px color-mix(in srgb, var(--pc) 45%, transparent);
+    transition: transform .15s, box-shadow .2s, filter .2s; }
+  .slot[style*="--ink:#0"] { text-shadow: 0 1px 0 rgba(255, 255, 255, .35); }
+  .slot:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--pc) 35%, #fff 65%), 0 0 18px color-mix(in srgb, var(--pc) 60%, transparent); }
+  .slot small { display: block; font: 700 10px var(--mono); color: color-mix(in srgb, var(--ink) 88%, transparent); letter-spacing: .06em; }
+  .slot.sel { transform: translateY(-2px); border-color: #fff; border-bottom-color: #fff;
+    box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px color-mix(in srgb, var(--pc) 70%, transparent), 0 0 22px color-mix(in srgb, var(--pc) 75%, transparent), 0 6px 18px rgba(0, 0, 0, .45); }
   .slot .flag { position: absolute; top: -7px; right: -5px; font: 800 8.5px var(--font); letter-spacing: .08em; padding: 1px 5px; border-radius: 4px; background: var(--amber); color: #1a1205; }
   .splay { flex: none; display: flex; align-items: center; gap: 12px; padding: 6px 16px 6px 8px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(12px); min-width: 176px; }
   .splay button { width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer; color: #fff; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #67e8f9, #2563eb 75%); box-shadow: 0 0 18px rgba(56, 189, 248, .5); transition: transform .2s; }
@@ -553,6 +557,27 @@
   .hb-facts b { font: 600 13.5px/1.35 var(--font); color: #f1f5f9; }
   .hb-lead { margin: 6px 0 14px; font: 500 15px/1.6 var(--font); color: #e2e8f0; max-width: 78ch; }
   .hb-cta { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; } .hb-link { color: var(--ice); font: 600 13px var(--font); text-decoration: none; }
+  /* key figures ribbon (HIST.kpi): every tile is a supplied model or ERA5 value */
+  .hb-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; margin: 4px 0 18px; border-radius: 14px; overflow: hidden;
+    border: 1px solid rgba(103,232,249,.22); background: rgba(103,232,249,.14); }
+  .hb-kpis div { position: relative; padding: 14px 14px 12px; background: linear-gradient(180deg, rgba(10,22,40,.96), rgba(4,10,22,.96)); animation: hbUp .6s var(--d) cubic-bezier(.2,.8,.2,1) both; }
+  .hb-kpis div::before { content: ""; position: absolute; left: 14px; right: 14px; top: 0; height: 2px; background: linear-gradient(90deg, #22d3ee, transparent); opacity: .7; }
+  .hb-kpis b { display: block; font: 800 21px/1.15 var(--font); letter-spacing: -.01em; background: linear-gradient(180deg, #fff, #a5f3fc); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hb-kpis span { display: block; margin-top: 5px; font: 600 10.5px/1.35 var(--font); letter-spacing: .04em; color: #8ea3bf; }
+  @keyframes hbUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  /* modelled run on a time axis */
+  .hb-runread { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0 4px; }
+  .hb-runread div { padding: 8px 12px; border-radius: 10px; background: rgba(2,6,23,.55); border: 1px solid var(--line); }
+  .hb-runread span { display: block; font: 600 9.5px var(--font); letter-spacing: .14em; text-transform: uppercase; color: #64748b; }
+  .hb-runread b { font: 800 18px var(--mono); color: #e0f7ff; font-variant-numeric: tabular-nums; }
+  .hb-runsvg .hb-runarea { fill: rgba(56,189,248,.10); } .hb-runsvg .hb-runz { fill: none; stroke: #7dd3fc; stroke-width: 2; }
+  .hb-runtick { stroke: rgba(226,232,240,.28); stroke-dasharray: 2 3; } .hb-runlab { font: 700 11px var(--font); fill: #e2e8f0; }
+  .hb-runhead { stroke: #fff; stroke-width: 1.5; filter: drop-shadow(0 0 4px #22d3ee); } .hb-runknob { fill: #fff; stroke: #22d3ee; stroke-width: 3; }
+  .hb-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+  .hb-phases div { padding: 10px 12px; border-radius: 12px; background: rgba(2,6,23,.5); border: 1px solid color-mix(in srgb, var(--pc) 35%, transparent); border-left: 3px solid var(--pc); }
+  .hb-phases small { font: 700 9.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--pc); }
+  .hb-phases b { display: block; font: 700 15px var(--font); color: #fff; margin: 2px 0 4px; } .hb-phases span { display: block; font: 500 12px/1.5 var(--font); color: #94a3b8; }
+  @media (max-width: 700px) { .hb-runread, .hb-phases { grid-template-columns: 1fr 1fr; } }
   .hb-method { margin: 14px 0 0; font: 500 12px/1.55 var(--font); color: #94a3b8; max-width: 100ch; }
   .hb-sec { display: grid; gap: 14px; }
   .hb-sh { display: flex; gap: 14px; align-items: flex-start; }
@@ -809,6 +834,29 @@
   @keyframes stormTitle { from { opacity: 0; letter-spacing: .22em; transform: scale(.97); } to { opacity: 1; letter-spacing: -.012em; transform: none; } }
   @keyframes stormSweep { from { background-position: 100% 0; } to { background-position: 0 0; } }
   @keyframes stormLine { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: .9; } }
+  /* storm HUD: corner brackets, a boot log of what is actually loading, and live read-outs taken from the DEM grid and the clock */
+  .storm-hud { position: absolute; inset: 0; pointer-events: none; font: 600 10.5px var(--mono); letter-spacing: .12em; color: rgba(165,243,252,.82); text-transform: uppercase;
+    animation: stormIn .9s .3s both; transition: opacity .6s; }
+  .storm.clear .storm-hud { opacity: 0; }
+  .storm-hud::after { content: ""; position: absolute; inset: 0; opacity: .5;
+    background: repeating-linear-gradient(180deg, rgba(103,232,249,.035) 0 1px, transparent 1px 3px); }
+  .sh-c { position: absolute; width: 46px; height: 46px; border: 2px solid rgba(103,232,249,.7); filter: drop-shadow(0 0 6px rgba(34,211,238,.7)); }
+  .sh-c.tl { left: 22px; top: 22px; border-right: 0; border-bottom: 0; } .sh-c.tr { right: 22px; top: 22px; border-left: 0; border-bottom: 0; }
+  .sh-c.bl { left: 22px; bottom: 22px; border-right: 0; border-top: 0; } .sh-c.br { right: 22px; bottom: 22px; border-left: 0; border-top: 0; }
+  .sh-log { position: absolute; left: 40px; bottom: 82px; display: grid; gap: 5px; max-width: 30vw; }
+  .sh-log p { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 8px rgba(34,211,238,.6), 0 1px 3px #000;
+    animation: shType .55s steps(28, end) both; }
+  .sh-log p b { color: #39ff88; font-weight: 800; margin-left: 8px; } .sh-log p b.na { color: #fbbf24; }
+  .sh-log p::before { content: "▸ "; color: #22d3ee; }
+  @keyframes shType { from { clip-path: inset(0 100% 0 0); opacity: .4; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
+  .sh-tel { position: absolute; right: 40px; top: 40px; margin: 0; display: grid; gap: 6px; text-align: right; }
+  .sh-tel div { display: flex; justify-content: flex-end; gap: 14px; }
+  .sh-tel dt { color: rgba(148,197,253,.6); } .sh-tel dd { margin: 0; min-width: 13ch; color: #e0f7ff; font-weight: 800; text-shadow: 0 0 10px rgba(34,211,238,.7); font-variant-numeric: tabular-nums; }
+  .sh-bar { position: absolute; left: 40px; bottom: 50px; display: flex; align-items: center; gap: 12px; color: rgba(148,197,253,.7); }
+  .sh-bar b { color: #e0f7ff; min-width: 4ch; text-align: right; font-variant-numeric: tabular-nums; }
+  .sh-bar i { width: 180px; height: 4px; background: rgba(103,232,249,.15); border-radius: 2px; overflow: hidden; }
+  .sh-bar u { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #0ea5e9, #67e8f9); box-shadow: 0 0 10px #22d3ee; }
+  @media (max-width: 900px) { .sh-log, .sh-bar span { display: none; } .sh-tel { right: 28px; top: 28px; font-size: 9px; } .sh-bar { left: 28px; bottom: 54px; } }
   @media (max-width: 700px) { .storm-tx { top: 10vh; } .storm-src { font-size: 8.5px; letter-spacing: .06em; } }
   .cine-cap.out > * { animation: cineOut .6s ease both !important; }
   @keyframes cineOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); filter: blur(6px); } }
@@ -894,7 +942,7 @@
   <div class="bg-veil"></div>
 </div>
 
-<!-- ============ STORM PRELUDE (Storm): ~2 s before bgMap.intro, then clears onto the live map ============ -->
+<!-- ============ STORM PRELUDE (Storm): ~5 s before bgMap.intro, then clears onto the live map ============ -->
 <div class="storm" id="storm" hidden>
   <canvas id="storm-cv"></canvas>
   <div class="storm-tx">
@@ -903,6 +951,17 @@
     <p class="storm-q">“Reading glaciers before they move.”</p>
   </div>
   <div class="storm-src">Relief traced from SRTM elevation (AWS Terrain Tiles) · 70.3°–78.8° E · 34.3°–36.6° N</div>
+  <div class="storm-hud" aria-hidden="true">
+    <i class="sh-c tl"></i><i class="sh-c tr"></i><i class="sh-c bl"></i><i class="sh-c br"></i>
+    <div class="sh-log" id="sh-log"></div>
+    <dl class="sh-tel">
+      <div><dt>UTC</dt><dd id="sh-utc">--</dd></div>
+      <div><dt>Scan λ</dt><dd id="sh-lon">--</dd></div>
+      <div><dt>DEM cells</dt><dd id="sh-cells">--</dd></div>
+      <div><dt>Max cell elev.</dt><dd id="sh-max">--</dd></div>
+    </dl>
+    <div class="sh-bar"><b id="sh-pct">0%</b><i><u id="sh-prog"></u></i><span>Terrain scan</span></div>
+  </div>
 </div>
 
 <!-- ============ CINEMATIC INTRO (bgMap.intro) ============ -->
@@ -1130,15 +1189,18 @@ function seasonWindows() {
   return { label: `${start}-${String((start + 1) % 100).padStart(2, "0")}`, wins: out, inSeason: today >= s && today < e, daysTo: Math.ceil((s - today) / DAY), today };
 }
 const SEASON = seasonWindows();
-// One vivid colour per reporting window (red, orange, yellow, green, teal, blue, indigo, violet, pink).
-const SLOT_COL = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#14b8a6", "#3b82f6", "#6366f1", "#a855f7", "#ec4899"];
+// One fluorescent colour per reporting window (blood red, hazard orange, acid yellow, toxic green, laser cyan, electric blue,
+// violent purple, hot magenta, black cherry); SLOT_INK is the text colour that stays readable on it. Keep in sync with app.js.
+const SLOT_COL = ["#FF0000", "#FF3D00", "#FFFF00", "#39FF00", "#00FFFF", "#0047FF", "#8F00FF", "#FF00FF", "#D00020"];
+const SLOT_INK = ["#fff", "#fff", "#0a0a0a", "#0a0a0a", "#0a0a0a", "#fff", "#fff", "#fff", "#fff"];
+const slotVars = k => `--pc:${SLOT_COL[k % SLOT_COL.length]};--ink:${SLOT_INK[k % SLOT_INK.length]}`;
 const WCOL = ["#22d3ee", "#38bdf8", "#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#d946ef", "#ec4899", "#f59e0b"];
 const fmt = d => new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", timeZone: "UTC" });
 SEASON.wins.forEach(w => { w.id = `${SEASON.label}-W${String(w.i).padStart(2, "0")}`; });
 const PHASES = [
-  { m: 11, name: "Dec", label: "Phase 1 · Early winter", c: "#22d3ee" }, { m: 0, name: "Jan", label: "Phase 2 · Peak winter", c: "#60a5fa" },
-  { m: 1, name: "Feb", label: "Phase 3 · Late winter", c: "#a78bfa" }, { m: 2, name: "Mar", label: "Phase 4 · Spring transition", c: "#f59e0b" },
-  { m: 3, name: "Apr", label: "Phase 5 · Melt onset", c: "#34d399" }];
+  { m: 11, name: "Dec", label: "Phase 1 · Early winter", c: "#FF3D00" }, { m: 0, name: "Jan", label: "Phase 2 · Peak winter", c: "#FFFF00" },
+  { m: 1, name: "Feb", label: "Phase 3 · Late winter", c: "#00FFFF" }, { m: 2, name: "Mar", label: "Phase 4 · Spring transition", c: "#8F00FF" },
+  { m: 3, name: "Apr", label: "Phase 5 · Melt onset", c: "#FF00FF" }];
 const phaseOf = w => PHASES.find(p => p.m === new Date(w.s).getUTCMonth());
 const isoD = t => new Date(t).toISOString().slice(0, 10);
 let selW = Math.max(0, SEASON.wins.findIndex(w => SEASON.today >= w.s && SEASON.today < w.e));
@@ -1153,7 +1215,7 @@ function renderSlots() {
     if (!ws.length) return "";
     return `<div class="sgroup ${ws.includes(cur) ? "active" : ""}" style="--pc:${ph.c};flex:${ws.length}">
       <div class="sg-h"><b>${ph.name}</b>${ph.label}</div>
-      <div class="sg-b">${ws.map(w => `<button type="button" class="slot ${w === cur ? "sel" : ""}" data-k="${SEASON.wins.indexOf(w)}" style="--pc:${SLOT_COL[SEASON.wins.indexOf(w) % SLOT_COL.length]}" title="${w.id}: [${isoD(w.s)}, ${isoD(w.e)})">
+      <div class="sg-b">${ws.map(w => `<button type="button" class="slot ${w === cur ? "sel" : ""}" data-k="${SEASON.wins.indexOf(w)}" style="${slotVars(SEASON.wins.indexOf(w))}" title="${w.id}: [${isoD(w.s)}, ${isoD(w.e)})">
         ${SEASON.today >= w.s && SEASON.today < w.e ? '<span class="flag">TODAY</span>' : ""}${fmt(w.s)} – ${fmt(w.e - 864e5)}<small>W${String(w.i).padStart(2, "0")} · ${w.d}d</small></button>`).join("")}</div></div>`;
   }).join("") + `<div class="splay"><button type="button" id="play" aria-label="${playT ? "Pause" : "Play"}">${playT ? PAUSE : PLAY}</button>
       <div><small>${playT ? "PLAYING" : "WINDOW"}</small><b>W${String(selW + 1).padStart(2, "0")} <span style="font:500 11px var(--mono);color:var(--muted)">${selW + 1} of ${SEASON.wins.length}</span></b>
@@ -1396,6 +1458,8 @@ function hbRender(e, d) {
       <div><span>Location</span><b>Batura Glacier region, northern Pakistan</b></div><div><span>Analysis type</span><b>Historical weather analysis and modelled terrain reconstruction</b></div>
     </div>
     <p class="hb-lead">The reconstruction combines historical atmospheric data with terrain-derived slope characteristics to investigate possible avalanche release conditions and a potential downslope path.</p>
+    <div class="hb-kpis" aria-label="Key figures of the reconstruction">${e.kpi.map(([v, l], i) =>
+      `<div style="--d:${i * 60}ms"><b>${hesc(v)}</b><span>${hesc(l)}</span></div>`).join("")}</div>
     <div class="hb-cta"><button type="button" class="btn primary" id="hb-3d">▶ Open the 3D experience</button><a class="hb-link" href="#hb-files">Original figures &amp; files ↓</a></div>
     <p class="hb-method"><b>Method note.</b> Weather: ERA5 / ERA5-Land daily values for one 0.25° tile (N36.625 E74.625, ~28 km across), so they describe the wider area, not a single slope.
       "Normal" = 1970–1990 with 1974 left out, using days within ±7 days of the same date. Terrain: Copernicus DEM on a 120 m grid. Release point, path, speed and duration are model outputs.</p>
@@ -1449,7 +1513,17 @@ function hbRender(e, d) {
     </div>
   </section>
 
-  <section class="hb-sec"><div class="hb-sh"><i>H</i><div><h4>What does this mean?</h4><p>Evidence, interpretation and open questions, kept apart.</p></div></div>
+  <section class="hb-sec"><div class="hb-sh"><i>D</i><div><h4>How did the modelled avalanche run?</h4><p>The model's ${P.length} path points on a time axis: release, peak speed and run-out, from avalanche_path_with_time.csv.</p></div></div>
+    <div class="hb-card hb-runcard"><div class="hb-ch"><h5>Modelled run · ${fmtN(tEnd, 1)} s from release to the last model point</h5>
+        <button type="button" class="btn ghost" id="hb-runplay">▶ Replay the run</button></div>
+      <div class="hb-runread" id="hb-runread"></div>
+      <div id="hb-runsv"></div>
+      <div class="hb-phases" id="hb-phases"></div>
+      <p class="hb-cap">Colour = modelled speed (cyan slow → red fast). The replay runs 5× faster than model time and interpolates linearly between the model points for display only.
+        Phases are split at the peak speed and where the speed falls below half of the peak. All values are model outputs, not measurements.</p></div>
+  </section>
+
+  <section class="hb-sec"><div class="hb-sh"><i>E</i><div><h4>What does this mean?</h4><p>Evidence, interpretation and open questions, kept apart.</p></div></div>
     <div class="hb-mean">
       <div><h6>Observed or dataset-derived</h6><ul><li>Historical weather variables from ERA5 / ERA5-Land for a ~28 km tile.</li><li>Terrain elevation, slope and aspect calculated from the 120 m DEM.</li>
         <li>Comparisons with the 1970–1990 normal computed by the analysis (no clear multi-day build-up; on the day snowfall ${fmtN(ev && ev.snowfall_mmwe, 1)} mm w.e., freezing level ${d.fl || "—"} m).</li></ul></div>
@@ -1470,7 +1544,7 @@ function hbRender(e, d) {
   host.querySelector("#hb-3d").onclick = () => openExperience(e);
   host.querySelector(".hb-link").onclick = ev2 => { ev2.preventDefault(); const f = document.getElementById("hb-files"); f.open = true; f.scrollIntoView({ behavior: "smooth" }); };
   host.querySelectorAll(".hfigs img").forEach(img => { img.onclick = () => lightbox(img.src, img.alt); });
-  hbTimeline(d); hbVersus(d); hbPercentiles(d); hbProfile(d);
+  hbTimeline(d); hbVersus(d); hbPercentiles(d); hbProfile(d); hbRun(d);
   if (d.panel) hbTerrain(e, d); else host.querySelector(".hb-map").innerHTML = '<p class="desc" style="padding:20px">Terrain panel not built: run python scripts/build_batura_panel.py</p>';
 }
 
@@ -1568,6 +1642,47 @@ function hbProfile(d) {
   s += `<polyline points="${P.map(p => `${X(p.distance_m)},${Y2(p.speed_ms)}`).join(" ")}" class="hb-sline"/>` + P.map(p => `<circle cx="${X(p.distance_m)}" cy="${Y2(p.speed_ms)}" r="3" class="hb-spt"><title>${fmtN(p.distance_m)} m · ${p.speed_ms} m/s · t = ${p.time_s} s</title></circle>`).join("");
   s += [0, 400, 800, 1200, 1600].map(v => `<text x="${X(v)}" y="${130 - 10}" class="hb-ax" text-anchor="middle">${v} m</text>`).join("");
   document.getElementById("hb-speed").innerHTML = `<h6>Modelled speed (m/s) at the same points</h6>` + sv(W, 130, s);
+}
+
+// ----- the modelled run on a time axis: speed-coloured segments, milestones, three phases and a replay play-head -----
+function hbRun(d) {
+  const host = document.getElementById("hb-runsv"); if (!host) return;
+  const P = d.pts, T = P[P.length - 1].time_s, vmax = Math.max(...P.map(p => p.speed_ms)), W = 1000, H = 150, L = 20, R = 20;
+  const X = t => L + t / T * (W - L - R), Yz = (() => { const z = P.map(p => p.elevation_m), lo = Math.min(...z), hi = Math.max(...z); return v => 22 + (1 - (v - lo) / (hi - lo)) * 46; })();
+  const col = v => { const k = v / vmax; return k < 0.5 ? `color-mix(in srgb, #22d3ee ${100 - k * 200}%, #fbbf24)` : `color-mix(in srgb, #fbbf24 ${200 - k * 200}%, #ef4444)`; };
+  const pk = P.reduce((b, p, i) => p.speed_ms > P[b].speed_ms ? i : b, 0);
+  let hf = P.findIndex((p, i) => i > pk && p.speed_ms < P[pk].speed_ms / 2); if (hf < 0) hf = P.length - 1;
+  // elevation trace above, speed band below
+  let g = `<path d="M${X(0)} 68 ${P.map(p => `L${X(p.time_s)} ${Yz(p.elevation_m)}`).join(" ")} L${X(T)} 68Z" class="hb-runarea"/>`;
+  g += `<polyline points="${P.map(p => `${X(p.time_s)},${Yz(p.elevation_m)}`).join(" ")}" class="hb-runz"/>`;
+  g += P.slice(1).map((p, i) => `<rect x="${X(P[i].time_s)}" y="82" width="${Math.max(0, X(p.time_s) - X(P[i].time_s) - 1.5)}" height="16" rx="3" style="fill:${col((P[i].speed_ms + p.speed_ms) / 2)}"><title>${P[i].time_s}–${p.time_s} s · ${P[i].speed_ms}–${p.speed_ms} m/s</title></rect>`).join("");
+  const ms = [[0, "Release", `${fmtN(P[0].elevation_m)} m`], [pk, "Peak speed", `${fmtN(P[pk].speed_ms, 1)} m/s · ${fmtN(P[pk].distance_m)} m along`],
+    [hf, "Below half peak", `${fmtN(P[hf].speed_ms, 1)} m/s`], [P.length - 1, "Last model point", `${fmtN(P[P.length - 1].elevation_m)} m · ${fmtN(P[P.length - 1].distance_m / 1000, 2)} km`]];
+  g += ms.map(([i, a, b], k) => { const x = X(P[i].time_s), anc = k === 0 ? "start" : k === ms.length - 1 ? "end" : "middle";
+    return `<line x1="${x}" x2="${x}" y1="${Yz(P[i].elevation_m)}" y2="106" class="hb-runtick"/><circle cx="${x}" cy="${Yz(P[i].elevation_m)}" r="4.5" class="${k === 0 ? "hb-rel" : k === ms.length - 1 ? "hb-run" : "hb-ptE"}"/>
+      <text x="${x}" y="122" text-anchor="${anc}" class="hb-runlab">${a} · t = ${fmtN(P[i].time_s, 1)} s</text><text x="${x}" y="138" text-anchor="${anc}" class="hb-ax">${b}</text>`; }).join("");
+  g += `<g id="hb-head" style="display:none"><line y1="14" y2="104" class="hb-runhead"/><circle r="6" cy="90" class="hb-runknob"/></g>`;
+  host.innerHTML = sv(W, H, g, "hb-runsvg");
+  const ph = [[0, pk, "Acceleration", "#22d3ee"], [pk, hf, "Deceleration", "#fbbf24"], [hf, P.length - 1, "Run-out", "#ef4444"]];
+  document.getElementById("hb-phases").innerHTML = ph.map(([a, b, n, c], k) => `<div style="--pc:${c}"><small>Phase ${k + 1}</small><b>${n}</b>
+    <span>${fmtN(P[a].time_s, 1)}–${fmtN(P[b].time_s, 1)} s · ${fmtN(P[a].speed_ms, 1)} → ${fmtN(P[b].speed_ms, 1)} m/s</span>
+    <span>${fmtN(P[b].distance_m - P[a].distance_m)} m along · ${fmtN(P[a].elevation_m - P[b].elevation_m)} m drop</span></div>`).join("");
+  const read = document.getElementById("hb-runread"), head = host.querySelector("#hb-head");
+  const show = t => {
+    let i = 0; while (i < P.length - 2 && P[i + 1].time_s < t) i++;
+    const a = P[i], b = P[i + 1], f = Math.max(0, Math.min(1, (t - a.time_s) / (b.time_s - a.time_s))), lerp = k => a[k] + (b[k] - a[k]) * f;
+    head.setAttribute("transform", `translate(${X(Math.min(t, T))} 0)`);
+    read.innerHTML = [["Model time", `${fmtN(Math.min(t, T), 1)} s`], ["Speed", `${fmtN(lerp("speed_ms"), 1)} m/s`], ["Along path", `${fmtN(lerp("distance_m"))} m`], ["Elevation", `${fmtN(lerp("elevation_m"))} m`]]
+      .map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("");
+  };
+  show(0);
+  let raf = 0;
+  document.getElementById("hb-runplay").onclick = () => {
+    cancelAnimationFrame(raf); head.style.display = "";
+    const t0 = performance.now();
+    const step = now => { const t = (now - t0) / 1000 * 5; show(t); if (t < T && host.isConnected) raf = requestAnimationFrame(step); };
+    if (reduceMotion()) show(T); else raf = requestAnimationFrame(step);
+  };
 }
 
 function hbCompass(w) {
@@ -1913,19 +2028,21 @@ const PLAY_INTRO = (() => {
   return true;
 })();
 
-// Storm prelude (~4 s) in front of the intro, also on every "▶ Intro" replay: wind-driven snow under an aurora, then a scan that
+// Storm prelude (~5 s) in front of the intro, also on every "▶ Intro" replay: dense wind-driven snow under an aurora, then a scan that
 // traces the real relief of northern Pakistan (SRTM elevation from the portal's own DEM tiles: latitude profiles, contours, the
 // highest summits), the portal title and the quote. bgMap.intro() calls Storm.clear() once the live map is ready, and the snow
 // blows clear onto that map. Nothing here is invented: every line and point is drawn from elevation values.
 const Storm = (() => {
   const el = document.getElementById("storm");
   const cv = document.getElementById("storm-cv"), ctx = cv.getContext("2d");
-  const MIN_MS = 4000, CLEAR_MS = 1100, MAX_WAIT_MS = 11000;  // the storm clears after MIN_MS once asked, and never later than MAX_WAIT_MS
+  const MIN_MS = 5000, CLEAR_MS = 1100, MAX_WAIT_MS = 12000;  // the storm clears after MIN_MS once asked, and never later than MAX_WAIT_MS
   let W = 0, H = 0, dpr = 1, relief = null, demGrid = null, peaks = [], dots = [], run = null;
   const api = { skipped: false, clear, play, get active() { return !!run && !run.done; } };
+  const SCAN_AT = 1.0, SCAN_S = 1.9;                         // the relief scan runs from SCAN_AT for SCAN_S seconds
 
-  // ----- snow: three depth layers of wind-driven streaks, plus a few large out-of-focus flakes close to the lens -----
-  let flakes = [], bokeh = [];
+  // ----- snow: four depth layers of wind-driven streaks (one path each), fine far specks, and large out-of-focus flakes near the lens -----
+  const DEPTHS = 4;
+  let flakes = [], specks = [], bokeh = [];
   const sprite = document.createElement("canvas");
   sprite.width = sprite.height = 64;
   { const g = sprite.getContext("2d"), rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
@@ -1935,14 +2052,25 @@ const Storm = (() => {
     dpr = Math.min(1.5, window.devicePixelRatio || 1);
     W = innerWidth; H = innerHeight;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    const n = Math.min(650, Math.round(W * H / 2600));
-    flakes = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, z: 0.25 + Math.random() * 0.75, p: Math.random() * 6.28, g: Math.random() < 0.06 }));
-    bokeh = Array.from({ length: 16 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 18 + Math.random() * 46, p: Math.random() * 6.28, v: 0.4 + Math.random() * 0.6 }));
+    const n = Math.min(1500, Math.round(W * H / 1000));
+    flakes = Array.from({ length: n }, () => {
+      const d = Math.floor(Math.random() * DEPTHS);
+      return { x: Math.random() * W, y: Math.random() * H, d, z: 0.25 + (d + Math.random()) / DEPTHS * 0.75, p: Math.random() * 6.28, g: Math.random() < 0.05 };
+    });
+    specks = Array.from({ length: Math.min(900, Math.round(W * H / 2000)) }, () => ({ x: Math.random() * W, y: Math.random() * H, v: 0.5 + Math.random() * 0.5 }));
+    bokeh = Array.from({ length: 26 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 16 + Math.random() * 52, p: Math.random() * 6.28, v: 0.4 + Math.random() * 0.6 }));
     if (demGrid) buildRelief(demGrid);
   }
 
   // ----- relief: DEM tiles z7 x 89-91, y 50 (70.3-78.8 E, 34.3-36.6 N), decoded from terrarium RGB to metres -----
   const R = 3, GW = 768 / R, GH = Math.floor(256 / R), LEVELS = [3000, 4000, 5000, 6000, 7000];
+  // Grid cell <-> longitude / latitude (Web Mercator, z7: 32,768 px around the world; the mosaic starts at tile x 89, y 50).
+  const WORLD = 256 * 128, X0 = 89 * 256, Y0 = 50 * 256;
+  const lonOf = i => (X0 + (i + 0.5) * R) / WORLD * 360 - 180;
+  const latOf = j => Math.atan(Math.sinh(Math.PI * (1 - 2 * (Y0 + (j + 0.5) * R) / WORLD))) * 180 / Math.PI;
+  const colOf = lon => ((lon + 180) / 360 * WORLD - X0) / R - 0.5;
+  const rowOf = lat => { const f = lat * Math.PI / 180; return ((1 - Math.log(Math.tan(f) + 1 / Math.cos(f)) / Math.PI) / 2 * WORLD - Y0) / R - 0.5; };
+  let colMax = null;                                         // running maximum of the cell means, west to east (for the scan read-out)
   function loadDem() {
     const tiles = [89, 90, 91].map(x => new Promise((res, rej) => {
       const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = `/api/dem/7/${x}/50.png`;
@@ -2012,7 +2140,30 @@ const Storm = (() => {
     }
     cand.sort((p, q) => q[0] - p[0]);
     peaks = [];
-    cand.forEach(([h, i, j]) => { if (peaks.length < 22 && peaks.every(p => Math.hypot(p.i - i, p.j - j) > 10)) peaks.push({ h, i, j, xy: proj(i, j, h) }); });
+    cand.forEach(([h, i, j]) => { if (peaks.length < 22 && peaks.every(p => Math.hypot(p.i - i, p.j - j) > 10)) peaks.push({ h, i, j, xy: proj(i, j, h), lat: latOf(j), lon: lonOf(i) }); });
+    // Graticule draped on the relief: meridians every 1°, parallels at 35° and 36° N, labelled along the near and west edges.
+    const Ei = (i, j) => E(Math.max(0, Math.min(GW - 1, Math.round(i))), Math.max(0, Math.min(GH - 1, Math.round(j))));
+    g.save();
+    g.setLineDash([3, 5]); g.lineWidth = 0.8; g.strokeStyle = "rgba(125,211,252,.42)";
+    g.font = "600 10px ui-monospace, Consolas, monospace"; g.fillStyle = "rgba(165,243,252,.75)"; g.textAlign = "center";
+    for (let lon = 71; lon <= 78; lon++) {
+      const i = colOf(lon);
+      g.beginPath();
+      for (let j = 0; j < GH; j++) { const [x, y] = proj(i, j, Ei(i, j)); j ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke();
+      const [x, y] = proj(i, 0, Ei(i, 0)); g.fillText(`${lon}°E`, x, y - 10);   // on the far (northern) ridge line, clear of the HUD
+    }
+    [35, 36].forEach(lat => {
+      const j = rowOf(lat);
+      if (j < 0 || j > GH - 1) return;
+      g.beginPath();
+      for (let i = 0; i < GW; i++) { const [x, y] = proj(i, j, Ei(i, j)); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke();
+      const [x, y] = proj(0, j, Ei(0, j)); g.textAlign = "left"; g.fillText(`${lat}°N`, x + 6, y - 6);
+    });
+    g.restore();
+    colMax = new Float32Array(GW);
+    for (let i = 0, m = -1e9; i < GW; i++) { for (let j = 0; j < GH; j++) m = Math.max(m, E(i, j)); colMax[i] = m; }
     // Data points that the snow settles into: contour vertices, weighted to the high, glaciated levels.
     const pool = bands.flat().filter(s => s[0] >= 4500);
     dots = Array.from({ length: Math.min(170, pool.length) }, () => {
@@ -2060,7 +2211,7 @@ const Storm = (() => {
       ctx.fillStyle = ag; ctx.fill();
     });
     // light through the haze: soft rays from above the title, strongest as the title lands
-    const shine = (0.35 + 0.65 * bell(t, 2.4, 0.9)) * live;
+    const shine = (0.35 + 0.65 * bell(t, 2.8, 1.0)) * live;
     ctx.translate(W / 2, -H * 0.12);
     for (let k = 0; k < 7; k++) {
       const ang = -0.55 + k * 0.18 + Math.sin(t * 0.4 + k) * 0.03, ray = ctx.createLinearGradient(0, 0, 0, H * 0.95);
@@ -2073,13 +2224,14 @@ const Storm = (() => {
     const hg = ctx.createRadialGradient(W / 2, H * 0.52, 0, W / 2, H * 0.52, W * 0.55);
     hg.addColorStop(0, `rgba(14,116,144,${0.16 * live})`); hg.addColorStop(1, "rgba(14,116,144,0)");
     ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 1; ctx.fillStyle = hg; ctx.fillRect(0, 0, W, H); ctx.restore();
+    ctx.restore();                                         // closes the aurora's save(): without it the snow was drawn shifted half a screen right
     };
     ctx.globalAlpha = dawn;
 
     // relief, revealed by the scan, with a slow push-in of the camera
-    const scan = ease((t - 0.9) / 1.5), sx = -0.08 * W + scan * 1.16 * W;
+    const scan = ease((t - SCAN_AT) / SCAN_S), sx = -0.08 * W + scan * 1.16 * W;
     if (relief && scan > 0) {
-      const z = 1 + 0.025 * t, pulse = bell(t, 2.6, 0.25);
+      const z = 1 + 0.025 * t, pulse = bell(t, SCAN_AT + SCAN_S + 0.1, 0.3);
       ctx.save();
       ctx.globalAlpha *= (0.82 + 0.18 * pulse) * (1 - c);
       ctx.beginPath(); ctx.rect(0, 0, Math.max(0, sx), H); ctx.clip();
@@ -2092,6 +2244,13 @@ const Storm = (() => {
         const gr = ctx.createLinearGradient(sx - 140, 0, sx + 6, 0);
         gr.addColorStop(0, "rgba(34,211,238,0)"); gr.addColorStop(0.85, "rgba(34,211,238,.12)"); gr.addColorStop(1, "rgba(165,243,252,.75)");
         ctx.fillStyle = gr; ctx.fillRect(sx - 140, H * 0.22, 146, H * 0.78);
+        // tick marks along the scan line and its longitude at the near (southern) edge
+        ctx.fillStyle = "rgba(224,247,255,.85)";
+        for (let y = H * 0.24; y < H * 0.98; y += 14) ctx.fillRect(sx - (Math.round(y / 14) % 5 ? 3 : 8), y, Math.round(y / 14) % 5 ? 3 : 8, 1);
+        const lon = lonOf(Math.max(0, Math.min(GW - 1, ((sx - W / 2) / (W * 1.06) + 0.5) * (GW - 1))));
+        ctx.font = "700 11px ui-monospace, Consolas, monospace"; ctx.textAlign = "left";
+        ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 8;
+        ctx.fillText(`λ ${lon.toFixed(2)}°E`, sx + 8, H * 0.25); ctx.shadowBlur = 0;
       }
       // summits light up as the scan passes them
       ctx.save();
@@ -2105,6 +2264,21 @@ const Storm = (() => {
         ctx.globalAlpha = (1 - c) * 0.95; ctx.fillStyle = "#e0f7ff";
         ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 10; ctx.beginPath(); ctx.arc(x, y, 1.9, 0, 6.29); ctx.fill(); ctx.shadowBlur = 0;
       });
+      // target lock on the highest DEM cell once the scan has passed it: rotating brackets and its coordinates
+      const top = peaks[0];
+      if (top && sx > top.xy[0]) {
+        const k = ease((sx - top.xy[0]) / (W * 0.18)), [x, y] = top.xy, rr = 34 - 12 * k, rot = t * 0.9;
+        ctx.globalAlpha = (1 - c) * k; ctx.strokeStyle = "#a5f3fc"; ctx.lineWidth = 1.6; ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 12;
+        for (let q = 0; q < 4; q++) { ctx.beginPath(); ctx.arc(x, y, rr, rot + q * Math.PI / 2, rot + q * Math.PI / 2 + 0.7); ctx.stroke(); }
+        ctx.beginPath(); ctx.moveTo(x - rr - 10, y); ctx.lineTo(x - rr + 4, y); ctx.moveTo(x + rr - 4, y); ctx.lineTo(x + rr + 10, y);
+        ctx.moveTo(x, y - rr - 10); ctx.lineTo(x, y - rr + 4); ctx.stroke();
+        const s = x + 380 > W ? -1 : 1;                    // the label leans away from the nearer screen edge
+        ctx.beginPath(); ctx.moveTo(x + s * rr * 0.7, y - rr * 0.7); ctx.lineTo(x + s * 70, y - 58); ctx.lineTo(x + s * 330, y - 58); ctx.stroke();
+        ctx.shadowBlur = 0; ctx.fillStyle = "#e0f7ff"; ctx.textAlign = s > 0 ? "left" : "right";
+        ctx.font = "800 11px ui-monospace, Consolas, monospace"; ctx.fillText("HIGHEST DEM CELL", x + s * 74, y - 64);
+        ctx.font = "600 10.5px ui-monospace, Consolas, monospace"; ctx.fillStyle = "rgba(165,243,252,.9)";
+        ctx.fillText(`${top.lat.toFixed(2)}°N ${top.lon.toFixed(2)}°E · ${Math.round(top.h).toLocaleString("en-US")} m (3.4 km mean)`, x + s * 74, y - 44);
+      }
       ctx.restore();
     }
     atmosphere();
@@ -2113,19 +2287,34 @@ const Storm = (() => {
     const wind = 1 + 5 * c * c, gust = 0.75 + 0.25 * Math.sin(t * 1.6) + 0.12 * Math.sin(t * 4.1);
     ctx.globalAlpha = 1;
     ctx.lineCap = "round";
-    const fade = ease(t / 0.6) * (1 - c * 0.6);
+    const fade = ease(t / 0.6) * (1 - c * 0.6), len = 0.018 * wind;
+    // fine far specks: one path for all of them
+    ctx.fillStyle = `rgba(214,234,255,${0.45 * fade})`;
+    ctx.beginPath();
+    for (const s of specks) {
+      s.x += 160 * s.v * gust * wind * dt; s.y += 60 * s.v * dt;
+      if (s.x > W + 4) { s.x -= W + 8; s.y = Math.random() * H; }
+      if (s.y > H + 4) { s.y -= H + 8; s.x = Math.random() * W; }
+      ctx.rect(s.x, s.y, 1.2, 1.2);
+    }
+    ctx.fill();
+    // streaks, one path per depth layer (far layers thin and faint, near layers long and bright)
+    const paths = Array.from({ length: DEPTHS }, () => new Path2D()), glints = [];
     for (const f of flakes) {
-      const vx = (220 + 400 * f.z) * gust * wind, vy = (80 + 150 * f.z) + 45 * Math.sin(t * 1.5 + f.p);
+      const vx = (220 + 420 * f.z) * gust * wind, vy = (80 + 160 * f.z) + 45 * Math.sin(t * 1.5 + f.p);
       f.x += vx * dt; f.y += vy * dt;
       if (f.x > W + 40) { f.x -= W + 80; f.y = Math.random() * H; }
       if (f.y > H + 20) { f.y -= H + 40; f.x = Math.random() * W; }
-      const len = 0.018 * wind;
-      ctx.strokeStyle = `rgba(226,240,255,${(0.18 + 0.55 * f.z) * fade})`; ctx.lineWidth = 0.5 + 1.5 * f.z;
-      ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(f.x - vx * len, f.y - vy * len); ctx.stroke();
-      if (f.g) {                                           // a few flakes catch the light and glint
-        const tw = Math.pow(Math.max(0, Math.sin(t * 3 + f.p * 3)), 8) * fade;
-        if (tw > 0.05) { ctx.fillStyle = `rgba(240,250,255,${tw})`; ctx.fillRect(f.x - 3, f.y - 0.5, 6, 1); ctx.fillRect(f.x - 0.5, f.y - 3, 1, 6); }
-      }
+      paths[f.d].moveTo(f.x, f.y); paths[f.d].lineTo(f.x - vx * len, f.y - vy * len);
+      if (f.g) glints.push(f);
+    }
+    paths.forEach((p, d) => {
+      const z = (d + 0.5) / DEPTHS;
+      ctx.strokeStyle = `rgba(226,240,255,${(0.16 + 0.6 * z) * fade})`; ctx.lineWidth = 0.5 + 1.7 * z; ctx.stroke(p);
+    });
+    for (const f of glints) {                              // a few flakes catch the light and glint
+      const tw = Math.pow(Math.max(0, Math.sin(t * 3 + f.p * 3)), 8) * fade;
+      if (tw > 0.05) { ctx.fillStyle = `rgba(240,250,255,${tw})`; ctx.fillRect(f.x - 3, f.y - 0.5, 6, 1); ctx.fillRect(f.x - 0.5, f.y - 3, 1, 6); }
     }
     // big soft flakes drifting past the lens, out of focus
     bokeh.forEach(b => {
@@ -2155,14 +2344,48 @@ const Storm = (() => {
       hz.addColorStop(0, "rgba(220,235,250,0)"); hz.addColorStop(0.5, `rgba(220,235,250,${0.22 * Math.sin(Math.PI * c)})`); hz.addColorStop(1, "rgba(220,235,250,0)");
       ctx.globalAlpha = 1; ctx.fillStyle = hz; ctx.fillRect(0, 0, W, H);
     }
+    hud(r0, t, scan, sx);
     if (c >= 1) { finish(r0); return; }
     requestAnimationFrame(frame);
+  }
+
+  // HUD: a boot log of what this intro really loads and draws, and read-outs computed from the DEM grid (updated ~12 times a second).
+  const $ = id => document.getElementById(id);
+  const LOG = [
+    [0.25, () => ["Avalanche intelligence portal · NDMA", "ready"]],
+    [0.6, () => ["SRTM DEM · AWS Terrain Tiles · z7 x89–91 y50", relief ? "3/3 ok" : null]],
+    [1.0, () => [`Elevation grid · ${GW} × ${GH} cells · ≈3.4 km`, relief ? "ok" : null]],
+    [1.5, () => ["Contours 3,000–7,000 m · marching squares", relief ? "ok" : null]],
+    [2.1, () => ["Summits above 6,000 m", relief ? `${peaks.length} found` : null]],
+    [2.7, () => ["RGI v7.0 glacier outlines · Region 14", "queued"]],
+    [3.3, () => ["Snow outlook 2026-27 · seasonal statistical", "queued"]],
+    [3.9, () => ["3D terrain · Hindu Kush · Karakoram · W. Himalaya", "rendering"]],
+  ];
+  function hud(r, t, scan, sx) {
+    while (r.log < LOG.length && t >= LOG[r.log][0]) {
+      const [text, ok] = LOG[r.log++][1](), p = document.createElement("p");
+      p.textContent = text;
+      const b = document.createElement("b"); b.textContent = ok || "unavailable"; if (!ok) b.className = "na";
+      p.append(b); $("sh-log").append(p);
+    }
+    if (t - r.hudAt < 0.08) return;
+    r.hudAt = t;
+    $("sh-utc").textContent = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const pct = Math.round(scan * 100);
+    $("sh-pct").textContent = `${pct}%`; $("sh-prog").style.width = `${pct}%`;
+    if (!relief || scan <= 0) return;
+    const i = Math.max(0, Math.min(GW - 1, Math.floor(((sx - W / 2) / (W * 1.06) + 0.5) * (GW - 1))));
+    $("sh-lon").textContent = `${lonOf(i).toFixed(2)}° E`;
+    $("sh-cells").textContent = `${Math.round(scan * GW * GH).toLocaleString("en-US")} / ${(GW * GH).toLocaleString("en-US")}`;
+    $("sh-max").textContent = `${Math.round(colMax[i]).toLocaleString("en-US")} m`;
   }
 
   // Starts (or replays) the storm. The overlay's CSS animations restart because it comes back from display: none.
   function play() {
     if (api.active) return;
-    const r = run = { t0: performance.now(), last: performance.now(), clearAt: 0, done: false };
+    const r = run = { t0: performance.now(), last: performance.now(), clearAt: 0, done: false, log: 0, hudAt: -1 };
+    $("sh-log").textContent = "";
+    ["sh-utc", "sh-lon", "sh-cells", "sh-max"].forEach(id => { $(id).textContent = "--"; });
     r.cleared = new Promise(res => { r.resolve = res; });
     api.skipped = false;
     el.classList.remove("clear"); el.style.background = "";

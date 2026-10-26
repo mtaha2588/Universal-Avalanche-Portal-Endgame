@@ -430,20 +430,22 @@ body.map-mode .main { min-height: 0; }
 .sg-h { text-align: center; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; white-space: nowrap; }
 .sg-h b { color: var(--pc); font-weight: 800; margin-right: 6px; }
 .sg-b { display: flex; gap: 6px; }
+/* Fluorescent solid fills (SLOT_COL in app.js); the bright 2 px rim is an inset shadow so the tab keeps its size. */
 .slot {
-  flex: 1; min-width: 100px; position: relative; cursor: pointer; text-align: center; color: var(--text);
-  padding: 5px 10px 6px; border-radius: 8px; border: 1px solid #23406b; border-bottom: 2px solid var(--pc);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--pc) 94%, #fff 6%), color-mix(in srgb, var(--pc) 68%, #08111f)); border-color: color-mix(in srgb, var(--pc) 70%, #fff 30%); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--pc) 38%, transparent); font: 700 12.5px/1.25 var(--font); transition: transform .15s, background .2s, box-shadow .2s;
+  --ink: #fff; flex: 1; min-width: 100px; position: relative; cursor: pointer; text-align: center;
+  padding: 5px 10px 6px; border-radius: 8px; border: 1px solid var(--pc); border-bottom: 2px solid var(--pc);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pc) 90%, #fff 10%), var(--pc) 55%, color-mix(in srgb, var(--pc) 82%, #000)); color: var(--ink);
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 10%, rgba(0, 0, 0, .45));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--pc) 55%, #fff 45%), 0 0 10px color-mix(in srgb, var(--pc) 45%, transparent);
+  font: 800 12.5px/1.25 var(--font); transition: transform .15s, box-shadow .2s, filter .2s;
 }
-.slot:hover { transform: translateY(-1px); border-color: var(--pc); }
-.slot small { display: block; font: 600 9.5px var(--mono); color: rgba(255,255,255,.9); letter-spacing: .06em; }
+.slot[style*="--ink:#0"] { text-shadow: 0 1px 0 rgba(255, 255, 255, .35); }
+.slot:hover { transform: translateY(-1px); filter: brightness(1.08); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--pc) 35%, #fff 65%), 0 0 16px color-mix(in srgb, var(--pc) 60%, transparent); }
+.slot small { display: block; font: 700 9.5px var(--mono); color: color-mix(in srgb, var(--ink) 88%, transparent); letter-spacing: .06em; }
 .slot.sel {
-  color: #fff; border-color: transparent; border-bottom-color: #fff;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--pc) 85%, #fff 15%), color-mix(in srgb, var(--pc) 70%, #0b172c));
-  box-shadow: 0 0 18px color-mix(in srgb, var(--pc) 55%, transparent);
+  transform: translateY(-1px); border-color: #fff; border-bottom-color: #fff;
+  box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px color-mix(in srgb, var(--pc) 70%, transparent), 0 0 20px color-mix(in srgb, var(--pc) 75%, transparent), 0 5px 14px rgba(0, 0, 0, .45);
 }
-.slot.sel small { color: rgba(255,255,255,.85); }
 .slot .flag { position: absolute; top: -6px; right: -4px; font: 800 8.5px var(--font); letter-spacing: .08em; padding: 1px 5px; border-radius: 4px; }
 .slot .flag.today { background: var(--amber); color: #1a1205; }
 .slot .flag.model { background: var(--ok); color: #03140c; }

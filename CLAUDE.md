@@ -250,10 +250,13 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   system tint (`ext-fill`) to `EXT_FILL.relief`, and hillshade exaggeration rises 0.6 -> 0.9, so the DEM relief is not hidden under three
   coloured surfaces. Terrain heights and exaggeration are unchanged. Test helper `bgMap.jump(camera)` holds a fixed view for screenshots.
 - Storm prelude (`Storm` in home.html, `#storm`, styles `.storm-*`): plays whenever the intro plays, including "▶ Intro" replays (`intro()` calls
-  `Storm.play()`). ~4 s: canvas snow, aurora, light rays, out-of-focus flakes, glints, then a cyan scan that traces
+  `Storm.play()`). ~5 s: dense canvas snow (four depth layers batched as one Path2D each + fine specks), aurora, light rays, out-of-focus flakes, glints, then a cyan scan that traces
   the real relief of northern Pakistan from the portal's DEM tiles (`/api/dem/7/89-91/50.png`, 70.3-78.8 E, 34.3-36.6 N: latitude profiles,
   contours 3,000-7,000 m, summits = local maxima > 6,000 m), the header title and the quote "Reading glaciers before they move."
-  `intro()` awaits `Storm.clear()` (at least 4 s after start, at most 11 s; the DEM grid is fetched once at page load), and the snow blows clear onto chapter 1's wide view.
+  `intro()` awaits `Storm.clear()` (at least 5 s after start, at most 12 s; the DEM grid is fetched once at page load), and the snow blows clear onto chapter 1's wide view.
+  Storm HUD (`.storm-hud`, `.sh-*`): corner brackets, a boot log of what the intro really loads, UTC clock, scan longitude, DEM cells scanned, running max
+  cell elevation, a graticule draped on the relief and a reticle on the highest 3.4 km DEM cell (Nanga Parbat massif). Every read-out comes from the DEM grid.
+  Canvas rule: every `ctx.save()` in `Storm.frame` needs its `restore()`; a missing one once shifted all the snow half a screen to the right.
   `body.storming` hides the home panels meanwhile. Esc / Space / click skips storm and intro.
 - Header badges flip to the same official logo file on the back (no generated stand-in faces).
 - Intro chapter 1 "Northern Pakistan" (replaced the old globe "Earth" chapter): the storm clears onto a wide oblique 3D view of all three systems,
