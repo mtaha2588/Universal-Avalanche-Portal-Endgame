@@ -1,0 +1,21 @@
+{
+ "source": "Batura_1974_08_09_avalanche_outputs/3D_files/dem_m.tif (Copernicus DEM grid, EPSG:4326, PixelIsArea)",
+ "bounds": [
+  74.249329,
+  36.40013,
+  74.950056,
+  36.760543
+ ],
+ "cols": 522,
+ "rows": 332,
+ "cell_deg": [
+  0.0013423899309902125,
+  0.001085579880586213
+ ],
+ "cell_m": 120,
+ "elev_min_m": 2382,
+ "elev_max_m": 7739,
+ "zone_cells": 35,
+ "image": "tile.png",
+ "image_rows": "Web Mercator spacing (resampled for display)"
+}

@@ -187,7 +187,7 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
 ## Home dock, Hindu Kush side list and regional hotspot register
 
 - Home page: the left window panel and the "How it works" / "Launch" buttons are gone (the "Launch Live Portal" tile is an `<a href="/portal">`).
-  The right dock is one column of module tabs styled like the season tabs; Incidents, Precautions, Data & Model, How it works, Principles
+  The right dock is one column of module tabs (dark glass; each tab's colour is only an accent: left bar, icon badge, faint tint); Incidents, Precautions, Data & Model, How it works, Principles
   and Live Preview tiles were removed. Modules renumber automatically.
 - `#hindukush` forecast mode: the right-hand list follows the icon that is on (`HKF.sideList()` feeds `HK.renderList()`): General risk = main
   hotspots of the current slot, DEM hotspots = all DEM very-high areas, Snow & weather = heavy-snow tiles. Rows show coordinates and the nearest
@@ -262,8 +262,7 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
 - Intro chapter 1 "Northern Pakistan" (replaced the old globe "Earth" chapter): the storm clears onto a wide oblique 3D view of all three systems,
   the camera pulls back, the systems light up one by one, then the DEM / mapping layers and the HUD come on and stay for the whole intro.
   `Intel` in home.html (layers `ci-*`, HUD `#ci-legend` / `#ci-hud`, styles `.ci-*`), loaded only when an intro plays (`Intel.load()`):
-  intro palette `INTRO_COLORS` (Hindu Kush orange, Karakoram blue, West Himalaya green) on the RGI v7.0 extents (`ext` source; the rest of the page
-  keeps `GLACIER_COLORS`); DEM elevation tint + 1,000 m contours (marching squares, ~2 km) from the z7 DEM mosaic x 89-91, y 49-51; mapping
+  system colours `INTRO_COLORS` (= `SYS_COL`, see "One palette") on the RGI v7.0 extents (`ext` source); DEM elevation tint + 1,000 m contours (marching squares, ~2 km) from the z7 DEM mosaic x 89-91, y 49-51; mapping
   network = highest DEM point per 0.12° cell inside a system, linked to neighbours, draped on terrain (a VISUALIZATION, not glacier-flow data);
   icy RGI outlines (`ci-ice`, replaces the coloured glacier layers during the intro); Hindu Kush screening hotspots >= 120 ha.
   HUD: DEM elevation / slope / aspect at the camera target (z12 tiles, Horn 3x3), selected 15-day window (model "not connected", per-window
@@ -287,4 +286,18 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   `batura_avalanche_3D_story.html`, self-contained WebGL2, embedded same-origin in an iframe only after "Play"; figures, mp4, CSV, slide text, `3d/`
   GLB/OBJ/GeoTIFF/CSV). The 14.7 MB `batura_terrain.obj` was left out (same mesh as the GLB). Catalog id `history_batura_1974`
   (`data/history/batura_1974/avalanche_features.geojson`). Release point, path, speed and duration are model estimates; weather is one ~28 km ERA5 tile.
+- "On the map" (default mode of the full-page 3D experience, `bxMap()` / `.bxm-*`; "3D story" and "Video" stay as other modes): the model's own DEM tile
+  (dem_m.tif, 522 x 332 cells, 74.2493-74.9501 E, 36.4001-36.7605 N, PixelIsArea) draped as an image source at its exact extent on the 3D
+  satellite map, plus its outline, the release zone cells, the speed-coloured path, release / run-out / reference points, the ERA5 tile and the
+  official boundaries. Camera tour Pakistan -> tile -> avalanche, then a replay of the model run (5x, as section D). Built by
+  `python scripts/build_batura_map.py` (system Python, numpy + Pillow) into `static/history/batura_1974/map/` (tile.png rows resampled to Web
+  Mercator spacing so the 4-corner image sits on its cells; tile.json; release_zone.geojson). Uses `bgMap.lib()` (the home map's engine).
+  Its map container selector is `.bxm .bxm-map`: Mapbox CSS sets `.mapboxgl-map { position: relative }`, which made it 0 px tall.
 - To add an event: copy its outputs to `static/history/<id>/`, add an entry to `HIST`, register it in `data/catalog.json`.
+
+## One palette (home page)
+
+- `SLOT_COL` (season tabs' fluorescent set, defined above `M` in home.html) is the only palette: module tabs take `TAB_COL[id]`, the three glacier
+  systems take `SYS_COL` (Hindu Kush #00FFFF, Karakoram #FF0000, West Himalaya #39FF00), and the mountain-system tabs use exactly those.
+  `GLACIER_COLORS` and `INTRO_COLORS` both point at `SYS_COL`; `GLACIER_LIGHT` holds the bright outline tints. The Season Timeline tab's accent
+  bar is the full `SLOT_COL` gradient. Keep `SLOT_COL` in sync with app.js.

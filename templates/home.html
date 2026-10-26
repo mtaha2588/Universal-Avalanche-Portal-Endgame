@@ -102,7 +102,7 @@
   .sw.loc { height: 0; border-top: 2.5px dashed #f87171; }
   .sw.prov { height: 0; border-top: 1.5px dashed rgba(255, 255, 255, .7); }
   .sw.reg { background: linear-gradient(90deg, rgba(59,130,246,.35), rgba(239,68,68,.35), rgba(34,197,94,.35)); border: 1.5px dashed #e2e8f0; }
-  .sw.gla { background: linear-gradient(90deg, #3b82f6, #ef4444, #22c55e); }
+  .sw.gla { background: linear-gradient(90deg, #00FFFF, #FF0000, #39FF00); }   /* = SYS_COL */
   .sw.lab { height: 12px; background: none; border: 0; font: 900 10px var(--font); color: #fff; }
   .sw.lab::before { content: "Aa"; }
   .sw.hs { background: linear-gradient(135deg, #f1f5f9, #334155); }
@@ -491,25 +491,28 @@
     .deck { justify-content: center; margin-left: -12px; }
     .deck-h { margin-bottom: 8px; }
     .tiles { grid-template-columns: 1fr; grid-auto-rows: auto; gap: 8px; flex: none; }
-    .tile { flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; padding: 8px 34px 8px 10px; min-height: 54px; border-radius: 12px;
-      border: 1px solid rgba(130, 175, 255, .2); border-bottom: 2px solid var(--g1);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--g1) 14%, #15294b), #0f1f3a); }
-    .tile::before { display: none; }
-    .tile::after { display: block; content: "\203A"; position: absolute; width: auto; height: auto; right: 12px; top: 50%; border-radius: 0; background: none;
-      transform: translateY(-54%); font: 400 24px/1 var(--font); color: var(--g1); opacity: .6; transition: transform .2s, opacity .2s; }
-    .tile:hover::after { transform: translate(3px, -54%); opacity: 1; color: #fff; }
+    /* Calm dark-glass tabs; the palette colour (--pc, from SLOT_COL / SYS_COL) is only an accent: left bar (--bar), icon badge, faint tint */
+    .tile, .tile.hero { flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; padding: 8px 34px 8px 16px; min-height: 54px; border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, .16); color: #e8eef7;
+      background: linear-gradient(100deg, color-mix(in srgb, var(--pc) 9%, rgba(11, 21, 40, .92)), rgba(9, 17, 33, .9) 70%);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .28); transition: transform .2s, border-color .2s, box-shadow .2s, background .2s; }
+    .tile::before, .tile.hero::before { display: block; content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; right: auto; width: 3px; height: auto;
+      border-radius: 0 3px 3px 0; background: var(--bar); opacity: .95; box-shadow: 0 0 8px color-mix(in srgb, var(--pc) 55%, transparent); }
+    .tile::after, .tile.hero::after { display: block; content: "\203A"; position: absolute; width: auto; height: auto; right: 12px; top: 50%; border-radius: 0; background: none;
+      transform: translateY(-54%); font: 400 22px/1 var(--font); color: #94a3b8; opacity: .55; transition: transform .2s, opacity .2s, color .2s; }
+    .tile:hover::after { transform: translate(3px, -54%); opacity: 1; color: var(--pc); }
     .tile .n { display: none; }
-    .tile .t span { display: block; font-size: 10.5px; margin-top: 1px; color: var(--muted); letter-spacing: .02em; }
-    .tile .ic { flex: none; width: 36px; height: 36px; border-radius: 10px; }
-    .tile .ic svg { width: 19px; height: 19px; }
-    .tile .t b { font-size: 13px; line-height: 1.25; font-weight: 700; }
-    .tile:hover, .tile:focus-visible { transform: translateX(4px); border-color: var(--g1); border-bottom-color: #fff;
-      background: linear-gradient(180deg, color-mix(in srgb, var(--g1) 85%, #fff 15%), color-mix(in srgb, var(--g2) 80%, #0b172c));
-      box-shadow: 0 0 20px color-mix(in srgb, var(--g1) 50%, transparent); }
-    .tile:hover .t span, .tile:focus-visible .t span { color: rgba(255, 255, 255, .9); }
-    .tile.hero { grid-column: auto; min-height: 58px; justify-content: flex-start; border-color: transparent; border-bottom-color: #fff; }
+    .tile .t b { font-size: 13px; line-height: 1.25; font-weight: 700; color: #f1f5f9; }
+    .tile .t span, .tile.hero .t span { display: block; font-size: 10.5px; margin-top: 1px; color: #8fa1b8; letter-spacing: .02em; }
+    .tile .ic, .tile.hero .ic { flex: none; width: 34px; height: 34px; border-radius: 9px; color: var(--pc);
+      background: color-mix(in srgb, var(--pc) 13%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pc) 38%, transparent); }
+    .tile .ic svg { width: 18px; height: 18px; }
+    .tile:hover, .tile:focus-visible { transform: translateX(3px); border-color: color-mix(in srgb, var(--pc) 45%, transparent);
+      background: linear-gradient(100deg, color-mix(in srgb, var(--pc) 17%, rgba(11, 21, 40, .94)), rgba(9, 17, 33, .92) 75%);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--pc) 20%, transparent), 0 6px 20px color-mix(in srgb, var(--pc) 16%, rgba(0, 0, 0, .3)); }
+    .tile.hero { grid-column: auto; min-height: 58px; border-color: rgba(103, 232, 249, .3);
+      background: linear-gradient(100deg, rgba(0, 71, 255, .32), rgba(9, 17, 33, .92) 80%); }
     .tile.hero .t b { font-size: 14px; }
-    .tile.hero::after { color: #fff; opacity: .9; }
   }
   @media (min-width: 1101px) and (max-height: 860px) { .tile { min-height: 46px; padding: 5px 30px 5px 9px; } .tile .ic { width: 30px; height: 30px; } .tile .t span { display: none; } }
   /* ===== Reports & exports window: one division per mountain system ===== */
@@ -651,6 +654,29 @@
   .bx-load i { width: 38px; height: 38px; border-radius: 50%; border: 3px solid rgba(103,232,249,.2); border-top-color: #67e8f9; animation: bxSpin 1s linear infinite; } @keyframes bxSpin { to { transform: rotate(360deg); } }
   .bx-note { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); z-index: 1; padding: 4px 12px; border-radius: 999px; background: rgba(2,6,23,.75); font: 500 11px var(--font); color: #94a3b8; pointer-events: none; white-space: nowrap; }
   .bx-play, .bx-msg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 3; padding: 14px 24px; border-radius: 999px; border: 0; background: #67e8f9; color: #06222b; font: 700 15px var(--font); cursor: pointer; }
+  /* "On the map": the model tile and the modelled avalanche at their supplied coordinates on the 3D map (.bxm-*) */
+  /* .bxm .bxm-map, not .bxm-map: Mapbox / MapLibre CSS sets .mapboxgl-map { position: relative }, which would leave the map 0 px tall */
+  .bxm { position: absolute; inset: 0; } .bxm .bxm-map { position: absolute; inset: 0; background: #070b12; }
+  .bxm-card { position: absolute; left: 16px; top: 16px; z-index: 2; width: min(330px, calc(100% - 32px)); max-height: calc(100% - 120px); overflow: auto; padding: 14px 16px;
+    border-radius: 14px; border: 1px solid rgba(103,232,249,.28); background: rgba(4,10,20,.88); color: #cbd5e1; font: 500 12px/1.45 var(--font); box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+  .bxm-card h5 { margin: 0 0 2px; font: 700 14px var(--font); color: #fff; } .bxm-card p { margin: 6px 0; }
+  .bxm-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0 8px; }
+  .bxm-card button { padding: 7px 8px; border-radius: 9px; border: 1px solid rgba(148,163,184,.35); background: rgba(255,255,255,.04); color: #e2e8f0; font: 600 11.5px var(--font); cursor: pointer; }
+  .bxm-card button:hover, .bxm-card button.on { border-color: #67e8f9; color: #67e8f9; }
+  .bxm-card .bxm-run { width: 100%; padding: 9px; border: 0; background: #67e8f9; color: #06222b; font-weight: 700; }
+  .bxm-card .bxm-run:hover { color: #06222b; filter: brightness(1.1); }
+  .bxm-runread { min-height: 17px; margin: 6px 0 2px; font: 600 11.5px var(--font); color: #e2e8f0; font-variant-numeric: tabular-nums; }
+  .bxm-kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 8px 0; } .bxm-kv span { color: #94a3b8; } .bxm-kv b { color: #f1f5f9; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .bxm-lg { display: grid; gap: 4px; margin: 8px 0; } .bxm-lg span { display: flex; align-items: center; gap: 8px; }
+  .bxm-lg i { flex: none; width: 18px; height: 10px; border-radius: 2px; }
+  .bxm-tg { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; } .bxm-tg button { padding: 5px 9px; }
+  .bxm-fine { font-size: 10.5px; color: #94a3b8; }
+  .bxm-read { position: absolute; right: 16px; bottom: 16px; z-index: 2; padding: 5px 11px; border-radius: 8px; background: rgba(2,6,23,.8); color: #cbd5e1; font: 500 11px var(--font); font-variant-numeric: tabular-nums; pointer-events: none; }
+  .bxm-lbl { pointer-events: none; padding: 3px 8px; border-radius: 6px; background: rgba(2,6,23,.82); border: 1px solid var(--c, #67e8f9); color: #f1f5f9; font: 600 11px var(--font); white-space: nowrap; transform: translateY(-22px); }
+  .bxm-lbl small { display: block; font-weight: 500; font-size: 10px; color: #94a3b8; }
+  .bxm-pin { display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; } .bxm-pin .bxm-lbl { transform: none; }
+  .bxm-dot { margin-bottom: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--c); border: 2px solid #fff; box-shadow: 0 0 12px var(--c); }
+  .bxm .zfar .bxm-near, .bxm .zfar .bxm-mid, .bxm .zmid .bxm-close, .bxm-map:not(.zmid) .bxm-mid { display: none; }
   @media (max-width: 700px) { .bx-note { display: none; } }
   /* ---------- Historical overview (past events, model reconstructions) ---------- */
   .hevs { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
@@ -1120,6 +1146,15 @@ const ICON = {
 };
 
 /* ---------- modules ---------- */
+// One fluorescent colour per reporting window (blood red, hazard orange, acid yellow, toxic green, laser cyan, electric blue,
+// violent purple, hot magenta, black cherry); SLOT_INK is the text colour that stays readable on it. Keep in sync with app.js.
+// The same set colours the module tabs (pc below) and the three glacier systems (SYS_COL), so tabs and map read as one palette.
+const SLOT_COL = ["#FF0000", "#FF3D00", "#FFFF00", "#39FF00", "#00FFFF", "#0047FF", "#8F00FF", "#FF00FF", "#D00020"];
+const SLOT_INK = ["#fff", "#fff", "#0a0a0a", "#0a0a0a", "#0a0a0a", "#fff", "#fff", "#fff", "#fff"];
+const inkOn = c => SLOT_INK[SLOT_COL.indexOf(c)] || "#fff";
+const SYS_COL = { "Hindu Kush": "#00FFFF", "Karakoram": "#FF0000", "West Himalaya": "#39FF00" };
+const SEASON_FILL = `linear-gradient(180deg, ${SLOT_COL.join(", ")})`;      // the Season Timeline tab's accent bar shows every window colour
+
 const M = [
   { id: "overview", n: "01", t: "National Overview", s: "Situation summary", c: "--cyan", ic: "overview", shot: "overview",
     d: "A consolidated national picture for the selected region and 15-day reporting window, all on one screen.",
@@ -1145,6 +1180,12 @@ const M = [
 ];
 
 M.filter(m => !m.hero && !m.go).forEach((m, k) => { m.n = String(k + 1).padStart(2, "0"); });
+// Module tab colours: members of SLOT_COL; the mountain-system tabs use exactly their glacier-system colour on the map.
+const TAB_COL = { overview: "#FFFF00", map: "#0047FF", outlook: "#8F00FF", hindukush: SYS_COL["Hindu Kush"], karakoram: SYS_COL["Karakoram"],
+  himalaya: SYS_COL["West Himalaya"], history: "#FF00FF", exposure: "#FF3D00", reports: "#D00020", season: "#8F00FF", launch: "#0047FF" };
+const TAB_BAR = { season: SEASON_FILL, launch: "linear-gradient(180deg, #00FFFF, #0047FF, #8F00FF)" };
+const tabVars = m => { const c = TAB_COL[m.id] || "#00FFFF";
+  return `--pc:${c};--ink:${inkOn(c)};--g1:${c};--g2:color-mix(in srgb, ${c} 55%, #000);--bar:${TAB_BAR[m.id] || c}`; };
 
 /* ---------- gradient pairs for icon badges ---------- */
 const GRAD = { "--cyan": ["#22d3ee", "#0e7490"], "--teal": ["#2dd4bf", "#0f766e"], "--blue": ["#60a5fa", "#1d4ed8"], "--violet": ["#a78bfa", "#6d28d9"],
@@ -1153,7 +1194,7 @@ const GRAD = { "--cyan": ["#22d3ee", "#0e7490"], "--teal": ["#2dd4bf", "#0f766e"
 /* ---------- tiles ---------- */
 const tiles = document.getElementById("tiles");
 tiles.innerHTML = M.map((m, i) => `
-  <${m.hero ? 'a href="/portal"' : 'button type="button"'} class="tile ${m.hero ? "hero" : ""}" data-i="${i}" style="--c:var(${m.c});--g1:${GRAD[m.c][0]};--g2:${GRAD[m.c][1]};animation-delay:${.9 + i * 0.04}s">
+  <${m.hero ? 'a href="/portal"' : 'button type="button"'} class="tile ${m.hero ? "hero" : ""}" data-i="${i}" style="--c:var(${m.c});${tabVars(m)};animation-delay:${.9 + i * 0.04}s">
     <span class="n">${m.n || ""}</span>
     <span class="ic">${ICON[m.ic]}</span>
     <span class="t"><b>${m.t}</b><span>${m.s}</span></span>
@@ -1189,10 +1230,6 @@ function seasonWindows() {
   return { label: `${start}-${String((start + 1) % 100).padStart(2, "0")}`, wins: out, inSeason: today >= s && today < e, daysTo: Math.ceil((s - today) / DAY), today };
 }
 const SEASON = seasonWindows();
-// One fluorescent colour per reporting window (blood red, hazard orange, acid yellow, toxic green, laser cyan, electric blue,
-// violent purple, hot magenta, black cherry); SLOT_INK is the text colour that stays readable on it. Keep in sync with app.js.
-const SLOT_COL = ["#FF0000", "#FF3D00", "#FFFF00", "#39FF00", "#00FFFF", "#0047FF", "#8F00FF", "#FF00FF", "#D00020"];
-const SLOT_INK = ["#fff", "#fff", "#0a0a0a", "#0a0a0a", "#0a0a0a", "#fff", "#fff", "#fff", "#fff"];
 const slotVars = k => `--pc:${SLOT_COL[k % SLOT_COL.length]};--ink:${SLOT_INK[k % SLOT_INK.length]}`;
 const WCOL = ["#22d3ee", "#38bdf8", "#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#d946ef", "#ec4899", "#f59e0b"];
 const fmt = d => new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", timeZone: "UTC" });
@@ -1854,7 +1891,7 @@ function openExperience(e) {
     bxEl = document.createElement("div"); bxEl.className = "bx"; bxEl.hidden = true;
     bxEl.innerHTML = `<div class="bx-top"><button type="button" class="bx-back">← Back to the reconstruction</button>
         <div class="bx-title"><b></b><span class="hb-badge warn">MODELLED / NOT INDEPENDENTLY VERIFIED</span></div>
-        <div class="bx-tools"><button type="button" data-m="story" class="on">3D story</button><button type="button" data-m="video">Video</button><button type="button" class="bx-fs">⛶ Full screen</button></div></div>
+        <div class="bx-tools"><button type="button" data-m="map" class="on">On the map</button><button type="button" data-m="story">3D story</button><button type="button" data-m="video">Video</button><button type="button" class="bx-fs">⛶ Full screen</button></div></div>
       <div class="bx-stage"></div>
       <div class="bx-load"><i></i><b>Loading the 3D reconstruction</b><span>DEM terrain · modelled release and path · 45 days of ERA5 weather</span></div>
       <div class="bx-note">Retrospective model reconstruction of 9 Aug 1974 — not video evidence, not a forecast.</div>`;
@@ -1867,14 +1904,18 @@ function openExperience(e) {
   bxEl.querySelector(".bx-title b").textContent = `${e.t} · ${e.date}`;
   bxEl.hidden = false;
   requestAnimationFrame(() => bxEl.classList.add("on"));
-  bxMode(e, "story");
+  bxMode(e, "map");
 }
 function bxMode(e, mode) {
   const st = bxEl.querySelector(".bx-stage"), load = bxEl.querySelector(".bx-load");
   bxEl.querySelectorAll("[data-m]").forEach(b => b.classList.toggle("on", b.dataset.m === mode));
+  bxMapClose();
   st.innerHTML = ""; load.classList.remove("off");
   const done = () => load.classList.add("off");
-  if (mode === "story") {
+  bxEl.querySelector(".bx-note").hidden = mode === "map";       // the map card carries the same note
+  if (mode === "map") {
+    bxMap(e, st, done).catch(err => { console.warn("Batura map view:", err); bxMode(e, "story"); });
+  } else if (mode === "story") {
     const f = document.createElement("iframe");
     f.title = `${e.t}: 3D story`; f.allow = "fullscreen"; f.setAttribute("allowfullscreen", "");
     f.onload = () => {
@@ -1901,10 +1942,210 @@ function bxMode(e, mode) {
     });
   }
 }
+// ----- "On the map": the supplied model DEM tile and the modelled avalanche, each at its own coordinates, on the 3D map of Pakistan -----
+// Tile extent, release zone and path come from the supplied GeoTIFFs / GeoJSON / CSV (scripts/build_batura_map.py); terrain under them is
+// the portal's own SRTM-based DEM (MapPerf.dem), boundaries only from the official layers. Nothing is moved, snapped or estimated here.
+let bxM = null;
+const BXM_EXAG = 1.5;
+function bxMapClose() {
+  if (!bxM) return;
+  cancelAnimationFrame(bxM.raf); clearTimeout(bxM.tour);
+  try { bxM.map.remove(); } catch { /* already gone */ }
+  bxM = null;
+}
+async function bxMap(e, st, done) {
+  let L = bgMap.lib();
+  if (!L) { loadCss("/static/vendor/maplibre-gl.css"); await loadScript("/static/vendor/maplibre-gl.js"); L = { gl: window.maplibregl, engine: "maplibre" }; }
+  const { gl, engine } = L, get = u => fetch(u).then(r => { if (!r.ok) throw new Error(u + " " + r.status); return r; });
+  const [tile, zone, feats, pathCsv, bnd, study] = await Promise.all([get(e.dir + "map/tile.json").then(r => r.json()), get(e.dir + "map/release_zone.geojson").then(r => r.json()),
+    get(e.dir + "3d/avalanche_features.geojson").then(r => r.json()), get(e.dir + "3d/avalanche_path_with_time.csv").then(r => r.text()),
+    get("/api/layer/boundaries").then(r => r.json()), get("/api/layer/study_area").then(r => r.json())]);
+  const pr = parseCSV(pathCsv), ph = pr.shift(), P = pr.map(r => Object.fromEntries(ph.map((h, i) => [h, +r[i]])));
+  const [W, S, E, N] = tile.bounds, first = P[0], last = P[P.length - 1], vmax = Math.max(...P.map(p => p.speed_ms)), len = last.distance_m;
+  const era5 = feats.features.find(f => f.properties.name === "ERA5 tile N36.625_E74.625");   // the tile the weather analysis used
+  const ref = feats.features.find(f => /reference point/.test(f.properties.name));
+  const rect = [[W, N], [E, N], [E, S], [W, S], [W, N]];
+  const mix = (a, b, k) => "#" + [0, 2, 4].map(i => Math.round(parseInt(a.substr(i + 1, 2), 16) * (1 - k) + parseInt(b.substr(i + 1, 2), 16) * k).toString(16).padStart(2, "0")).join("");
+  const spCol = v => { const k = v / vmax; return k < 0.5 ? mix("#22d3ee", "#fbbf24", k * 2) : mix("#fbbf24", "#ef4444", (k - 0.5) * 2); };   // section D's scale
+  const grad = ["interpolate", ["linear"], ["line-progress"], ...P.flatMap(p => [p.distance_m / len, spCol(p.speed_ms)])];
+  const f4 = v => v.toFixed(5);
+
+  st.innerHTML = `<div class="bxm"><div class="bxm-map" id="bxm-map"></div>
+    <div class="bxm-card">
+      <h5>Batura 1974 on the map of Pakistan</h5>
+      <p>The model's DEM tile and the modelled avalanche sit at their own georeferenced coordinates on 3D terrain, inside the official boundaries.</p>
+      <div class="bxm-steps"><button type="button" data-cam="pak">Pakistan</button><button type="button" data-cam="tile">Model tile</button><button type="button" data-cam="ava">Avalanche</button></div>
+      <button type="button" class="bxm-run" id="bxm-run">▶ Replay the modelled run</button>
+      <div class="bxm-runread" id="bxm-runread"></div>
+      <div class="bxm-kv">
+        <span>Release (model)</span><b>${f4(first.lat)}°N ${f4(first.lon)}°E · ${fmtN(first.elevation_m)} m</b>
+        <span>Run-out (model)</span><b>${f4(last.lat)}°N ${f4(last.lon)}°E · ${fmtN(last.elevation_m)} m</b>
+        <span>Path</span><b>${fmtN(len / 1000, 2)} km · ${fmtN(first.elevation_m - last.elevation_m)} m drop · max ${fmtN(vmax)} m/s</b>
+        <span>Model tile</span><b>${W.toFixed(4)}–${E.toFixed(4)}°E, ${S.toFixed(4)}–${N.toFixed(4)}°N</b>
+        <span>Tile grid</span><b>${tile.cols} × ${tile.rows} cells · ${tile.cell_m} m · ${fmtN(tile.elev_min_m)}–${fmtN(tile.elev_max_m)} m</b>
+      </div>
+      <div class="bxm-lg">
+        <span><i style="background:linear-gradient(90deg,#22d3ee,#fbbf24,#ef4444)"></i>Modelled path, coloured by modelled speed</span>
+        <span><i style="background:#f97316"></i>Modelled release zone (${zone.features.length} cells, 120 m)</span>
+        <span><i style="background:none;border:2px solid #67e8f9"></i>Model DEM tile (Copernicus 120 m), shaded</span>
+        <span><i style="background:none;border:2px dashed #fbbf24"></i>ERA5 weather tile used (~28 km)</span>
+        <span><i style="background:#fff;height:3px"></i>Pakistan boundary (official view); dashed = LoC / claim line</span>
+      </div>
+      <div class="bxm-tg"><button type="button" class="on" id="bxm-tile">Model tile shading: on</button><button type="button" id="bxm-exag">Heights ×${BXM_EXAG}</button></div>
+      <p class="bxm-fine">Retrospective model reconstruction of 9 Aug 1974, not observation and not a forecast. Release point, path, speed and duration are model estimates.
+        3D terrain under the tile: SRTM-based AWS Terrain Tiles served by the portal; the shaded tile is the notebook's own Copernicus DEM. Boundaries: Natural Earth 1:10m,
+        Pakistan's official view; Jammu &amp; Kashmir is disputed territory and the Line of Control is shown dashed.</p>
+    </div>
+    <div class="bxm-read" id="bxm-read">Move the cursor over the map</div></div>`;
+
+  const style = engine === "mapbox" ? "mapbox://styles/mapbox/satellite-streets-v12" : { version: 8,
+    sources: { sat: { type: "raster", tileSize: 256, maxzoom: 18, attribution: "Imagery © Esri, Maxar, Earthstar Geographics",
+      tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"] } },
+    layers: [{ id: "sat", type: "raster", source: "sat" }] };
+  const map = new gl.Map(MapPerf.opts({ container: "bxm-map", style, bounds: [[60.8, 23.6], [77.9, 37.2]], fitBoundsOptions: { padding: 40 },
+    pitch: 0, bearing: 0, maxPitch: 80, attributionControl: false, fadeDuration: 0 }));
+  bxM = { map, raf: 0, tour: 0 };
+  const me = bxM, alive = () => bxM === me;
+  map.addControl(new gl.AttributionControl({ compact: true }), "bottom-left");
+  map.addControl(new gl.NavigationControl({ visualizePitch: true }), "top-right");
+  map.addControl(new gl.ScaleControl({ maxWidth: 120, unit: "metric" }), "top-right");
+  await new Promise((res, rej) => {        // a single failed tile is not fatal; a rejected style or key is
+    map.once("load", res);
+    map.on("error", ev => { const s = ev.error && ev.error.status; if (!map.loaded() && (s === 401 || s === 403)) rej(ev.error); });
+  });
+  if (!alive()) return;
+
+  map.addSource("bxm-dem", MapPerf.dem());
+  map.setTerrain({ source: "bxm-dem", exaggeration: BXM_EXAG });
+  if (engine === "mapbox") map.getStyle().layers.forEach(l => {              // only the portal's official boundaries are drawn
+    if (/^admin-|boundary/.test(l.id) || /shield|road-number|poi-label|road-label|transit|state-label/.test(l.id)) map.setLayoutProperty(l.id, "visibility", "none");
+  });
+  try { map.setFog({ range: [0.8, 9], color: "#0b1a33", "high-color": "#1e3a8a", "space-color": "#02060d", "horizon-blend": 0.12 }); } catch { /* no fog */ }
+
+  // official boundaries (same layers and styling rules as the home map)
+  const isL = v => ["==", ["get", "layer"], v];
+  map.addSource("bxm-bnd", { type: "geojson", data: bnd });
+  map.addSource("bxm-study", { type: "geojson", data: study });
+  map.addLayer({ id: "bxm-mask", type: "fill", source: "bxm-study", filter: isL("mask"), paint: { "fill-color": "#020617", "fill-opacity": 0.45 } });
+  map.addLayer({ id: "bxm-disp", type: "fill", source: "bxm-bnd", filter: isL("disputed"), paint: { "fill-color": "#f59e0b", "fill-opacity": 0.08 } });
+  map.addLayer({ id: "bxm-prov", type: "line", source: "bxm-bnd", filter: isL("province"), paint: { "line-color": "#ffffff", "line-opacity": 0.55, "line-width": 1.1, "line-dasharray": [3, 2] } });
+  const kind = k => ["all", isL("border"), ["==", ["get", "kind"], k]];
+  map.addLayer({ id: "bxm-pak-glow", type: "line", source: "bxm-study", filter: kind("international"), paint: { "line-color": "#16a34a", "line-width": 8, "line-blur": 5, "line-opacity": 0.75 } });
+  map.addLayer({ id: "bxm-pak", type: "line", source: "bxm-study", filter: kind("international"), paint: { "line-color": "#ffffff", "line-width": 2.2, "line-opacity": 0.95 } });
+  map.addLayer({ id: "bxm-claim", type: "line", source: "bxm-study", filter: kind("claim"), paint: { "line-color": "#e2e8f0", "line-width": 1.8, "line-opacity": 0.85, "line-dasharray": [2, 2] } });
+  map.addLayer({ id: "bxm-loc", type: "line", source: "bxm-bnd", filter: ["all", isL("line"), ["==", ["get", "name"], "Line of Control"]], paint: { "line-color": "#f87171", "line-width": 2.6, "line-dasharray": [3, 2] } });
+  map.addLayer({ id: "bxm-oth", type: "line", source: "bxm-bnd", filter: ["all", isL("line"), ["!=", ["get", "name"], "Line of Control"]], paint: { "line-color": "#fbbf24", "line-width": 2, "line-dasharray": [1, 1.5] } });
+
+  // the model tile: its own shaded DEM draped at its exact extent, plus a glowing outline
+  map.addSource("bxm-tile", { type: "image", url: e.dir + "map/" + tile.image, coordinates: rect.slice(0, 4) });
+  map.addLayer({ id: "bxm-tile", type: "raster", source: "bxm-tile", paint: { "raster-opacity": 0.82, "raster-fade-duration": 0, "raster-opacity-transition": { duration: 600 } } });
+  map.addSource("bxm-rect", { type: "geojson", data: { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: rect } } });
+  map.addLayer({ id: "bxm-rect-glow", type: "line", source: "bxm-rect", paint: { "line-color": "#22d3ee", "line-width": 10, "line-blur": 7, "line-opacity": 0.6 } });
+  map.addLayer({ id: "bxm-rect", type: "line", source: "bxm-rect", paint: { "line-color": "#a5f3fc", "line-width": 2 } });
+  if (era5) {
+    map.addSource("bxm-era5", { type: "geojson", data: era5 });
+    map.addLayer({ id: "bxm-era5", type: "line", source: "bxm-era5", paint: { "line-color": "#fbbf24", "line-width": 1.6, "line-dasharray": [3, 2], "line-opacity": 0.9 } });
+  }
+  map.addSource("bxm-zone", { type: "geojson", data: zone });
+  map.addLayer({ id: "bxm-zone", type: "fill", source: "bxm-zone", paint: { "fill-color": "#f97316", "fill-opacity": 0.75 } });
+  const line = c => ({ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: c } });
+  map.addSource("bxm-path", { type: "geojson", lineMetrics: true, data: line(P.map(p => [p.lon, p.lat])) });
+  map.addLayer({ id: "bxm-path-glow", type: "line", source: "bxm-path", layout: { "line-cap": "round" }, paint: { "line-color": "#ef4444", "line-width": 12, "line-blur": 8, "line-opacity": 0.5 } });
+  map.addLayer({ id: "bxm-path", type: "line", source: "bxm-path", layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-gradient": grad, "line-width": 5 } });
+  map.addSource("bxm-trail", { type: "geojson", lineMetrics: true, data: line([[first.lon, first.lat], [first.lon, first.lat]]) });
+  map.addLayer({ id: "bxm-trail", type: "line", source: "bxm-trail", layout: { "line-cap": "round" }, paint: { "line-color": "#ffffff", "line-width": 3, "line-opacity": 0 } });
+  map.addSource("bxm-head", { type: "geojson", data: { type: "Point", coordinates: [first.lon, first.lat] } });
+  map.addLayer({ id: "bxm-head-glow", type: "circle", source: "bxm-head", paint: { "circle-radius": 18, "circle-color": "#ffffff", "circle-blur": 1, "circle-opacity": 0 } });
+  map.addLayer({ id: "bxm-head", type: "circle", source: "bxm-head", paint: { "circle-radius": 6, "circle-color": "#ffffff", "circle-stroke-color": "#ef4444", "circle-stroke-width": 2, "circle-opacity": 0, "circle-stroke-opacity": 0 } });
+
+  // labels (DOM markers: the open MapLibre style has no glyphs)
+  const mk = (ll, html, c, near, dot) => {
+    const el = document.createElement("div"); el.className = dot ? "bxm-pin" : ""; el.style.setProperty("--c", c);
+    el.innerHTML = `<div class="bxm-lbl ${near ? "bxm-near" : ""}">${html}</div>` + (dot ? '<div class="bxm-dot"></div>' : "");
+    return new gl.Marker({ element: el, anchor: dot ? "bottom" : "center" }).setLngLat(ll).addTo(map);
+  };
+  [mk([first.lon, first.lat], `Release point (model)<small>${fmtN(first.elevation_m)} m · SW 232° · 38°</small>`, "#f97316", true, true),
+   mk([last.lon, last.lat], `Run-out (model)<small>${fmtN(last.elevation_m)} m · ${fmtN(len / 1000, 2)} km</small>`, "#22d3ee", true, true)]
+    .forEach(m => m.getElement().classList.add("bxm-close"));            // 1.6 km apart: their labels only separate when zoomed in
+  if (ref) mk(ref.geometry.coordinates, "Batura Glacier reference point<small>as supplied</small>", "#e2e8f0", true, true);
+  mk([(W + E) / 2, N], `Model DEM tile · Copernicus 120 m<small>${tile.cols} × ${tile.rows} cells</small>`, "#67e8f9", false, false);
+  if (era5) mk([74.715, 36.735], "ERA5 tile N36.625 E74.625<small>weather used (~28 km)</small>", "#fbbf24", true, false);   // inside its NE corner
+  const ava = mk([first.lon, first.lat], "Avalanche (model)<small>release → run-out, 1974</small>", "#ef4444", false, false);
+  ava.getElement().classList.add("bxm-mid");
+  const zfar = () => { const z = map.getZoom(), c = map.getContainer().classList;
+    c.toggle("zfar", z < 9.5); c.toggle("zmid", z < 12); };
+  map.on("zoom", zfar); zfar();
+
+  // cursor read-out: coordinates and terrain elevation
+  const read = document.getElementById("bxm-read");
+  map.on("mousemove", ev => {
+    let z = null;
+    try { z = engine === "mapbox" ? map.queryTerrainElevation(ev.lngLat, { exaggerated: false })
+      : map.terrain && map.terrain.getElevationForLngLatZoom(ev.lngLat, map.transform.tileZoom) / (map.terrain.exaggeration || 1); } catch { /* tiles not ready */ }
+    read.textContent = `${ev.lngLat.lat.toFixed(5)}°N ${ev.lngLat.lng.toFixed(5)}°E` + (z != null && !isNaN(z) ? ` · ${fmtN(z)} m (SRTM terrain)` : "");
+  });
+
+  // camera: Pakistan -> the model tile -> the avalanche slope (camera to the SW, looking NE at the SW-facing release slope)
+  const card = st.querySelector(".bxm-card");
+  const cams = {
+    pak: () => map.flyTo({ ...map.cameraForBounds([[60.8, 23.6], [77.9, 37.2]], { padding: 40 }), pitch: 0, bearing: 0, duration: 2600, essential: true }),
+    tile: () => { const c = map.cameraForBounds([[W, S], [E, N]], { padding: { top: 60, bottom: 60, left: Math.min(380, innerWidth / 3), right: 60 } });
+      map.flyTo({ center: c.center, zoom: c.zoom - 0.25, pitch: 52, bearing: 0, duration: 3800, curve: 1.5, essential: true }); },
+    ava: () => map.flyTo({ center: [(first.lon + last.lon) / 2, (first.lat + last.lat) / 2], zoom: 13.7, pitch: 70, bearing: 50, duration: 3600, essential: true }),
+  };
+  const setCam = k => { card.querySelectorAll("[data-cam]").forEach(b => b.classList.toggle("on", b.dataset.cam === k)); cams[k](); };
+  card.querySelectorAll("[data-cam]").forEach(b => b.onclick = () => { clearTimeout(me.tour); setCam(b.dataset.cam); });
+  const tileBtn = card.querySelector("#bxm-tile");
+  tileBtn.onclick = () => { const on = !tileBtn.classList.contains("on"); tileBtn.classList.toggle("on", on);
+    tileBtn.textContent = `Model tile shading: ${on ? "on" : "off"}`; map.setPaintProperty("bxm-tile", "raster-opacity", on ? 0.82 : 0); };
+  let exag = BXM_EXAG;
+  const exBtn = card.querySelector("#bxm-exag");
+  exBtn.onclick = () => { exag = exag === 1 ? BXM_EXAG : 1; map.setTerrain({ source: "bxm-dem", exaggeration: exag });
+    exBtn.textContent = exag === 1 ? "Heights ×1 (true)" : `Heights ×${exag}`; };
+
+  // replay: the model's path points on their own time axis, 5x faster (as section D); positions between points are linear, display only
+  const runRead = card.querySelector("#bxm-runread"), SPEEDUP = 5;
+  const op = v => { map.setPaintProperty("bxm-trail", "line-opacity", v); map.setPaintProperty("bxm-head", "circle-opacity", v);
+    map.setPaintProperty("bxm-head", "circle-stroke-opacity", v); map.setPaintProperty("bxm-head-glow", "circle-opacity", v * 0.7); };
+  const run = () => {
+    cancelAnimationFrame(me.raf);
+    const t0 = performance.now(); op(1);
+    const step = now => {
+      if (!alive()) return;
+      const t = Math.min((now - t0) / 1000 * SPEEDUP, last.time_s);
+      let i = P.findIndex(p => p.time_s > t); if (i < 0) i = P.length - 1;
+      const a = P[Math.max(0, i - 1)], b = P[i], k = b.time_s > a.time_s ? Math.min(1, (t - a.time_s) / (b.time_s - a.time_s)) : 1;
+      const lon = a.lon + (b.lon - a.lon) * k, lat = a.lat + (b.lat - a.lat) * k, v = a.speed_ms + (b.speed_ms - a.speed_ms) * k;
+      const dist = a.distance_m + (b.distance_m - a.distance_m) * k, z = a.elevation_m + (b.elevation_m - a.elevation_m) * k;
+      map.getSource("bxm-head").setData({ type: "Point", coordinates: [lon, lat] });
+      map.getSource("bxm-trail").setData(line([...P.slice(0, i).map(p => [p.lon, p.lat]), [lon, lat]]));
+      map.setPaintProperty("bxm-head", "circle-stroke-color", spCol(v));
+      runRead.textContent = `t = ${fmtN(t, 1)} s · ${fmtN(dist)} m along · ${fmtN(z)} m · ${fmtN(v)} m/s (${fmtN(v * 3.6)} km/h) · model`;
+      if (t < last.time_s) me.raf = requestAnimationFrame(step);
+      else runRead.textContent += " · stopped";
+    };
+    me.raf = requestAnimationFrame(step);
+  };
+  card.querySelector("#bxm-run").onclick = () => { clearTimeout(me.tour);
+    if (map.getZoom() < 12) { setCam("ava"); map.once("moveend", run); } else run(); };
+
+  done();
+  // automatic tour: Pakistan -> tile -> avalanche -> replay; any interaction with the map stops it
+  if (!reduceMotion()) {
+    const stop = () => clearTimeout(me.tour);
+    ["mousedown", "wheel", "touchstart"].forEach(t => map.getCanvas().addEventListener(t, stop, { once: true, passive: true }));
+    setCam("pak");
+    me.tour = setTimeout(() => { setCam("tile");
+      me.tour = setTimeout(() => { setCam("ava");
+        me.tour = setTimeout(run, 4200); }, 6500); }, 3000);
+  } else { card.querySelector("[data-cam='tile']").classList.add("on"); map.jumpTo({ ...map.cameraForBounds([[W, S], [E, N]], { padding: 60 }) }); }
+}
+
 function closeExperience() {
   if (!bxOpen()) return;
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   bxEl.classList.remove("on");
+  bxMapClose();
   const st = bxEl.querySelector(".bx-stage");
   st.querySelectorAll("video").forEach(v => { v.pause(); v.removeAttribute("src"); v.load(); });
   st.innerHTML = "";                                    // drops the story's WebGL context, so its GPU memory is released
@@ -2014,9 +2255,11 @@ tick(); setInterval(tick, 1000);
 /* Token: MAPBOX_TOKEN in .env (served by /api/config). Without it, open imagery and terrain are used. */
 const GLACIER_ORDER = ["Hindu Kush", "Karakoram", "West Himalaya"];
 const DEFAULT_EXAG = 2;   // vertical exaggeration shown at start (1 = true elevation)
-const GLACIER_COLORS = { "Hindu Kush": "#3b82f6", "Karakoram": "#ef4444", "West Himalaya": "#22c55e" };
-// The opening animation's palette for the three systems (the rest of the page keeps GLACIER_COLORS).
-const INTRO_COLORS = { "Hindu Kush": "#f59e0b", "Karakoram": "#38bdf8", "West Himalaya": "#22c55e" };
+// One palette for the whole page: the glacier systems take their colours from the season tabs' fluorescent set (SLOT_COL: laser cyan,
+// blood red, toxic green), and so do the module tabs (SYS_COL is defined next to SLOT_COL). The intro uses the same colours.
+const GLACIER_COLORS = SYS_COL;
+const INTRO_COLORS = SYS_COL;
+const GLACIER_LIGHT = { "Hindu Kush": "#b3ffff", "Karakoram": "#ff9a9a", "West Himalaya": "#c2ffa8" };   // bright outline tints of the same colours
 const GLACIERS = { data: null, stats: {}, centers: {} };
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // Cinematic intro: once per browser session (always with /#intro); never with reduced motion or another deep link.
@@ -2670,7 +2913,7 @@ const bgMap = (() => {
     map.addLayer({ id: "ext-glow", type: "line", source: "ext",
       paint: { "line-color": regColor, "line-width": 9, "line-blur": 6, "line-opacity": 0.55 } });
     map.addLayer({ id: "ext-line", type: "line", source: "ext",
-      paint: { "line-color": ["match", ["get", "name"], "Hindu Kush", "#93c5fd", "Karakoram", "#fca5a5", "West Himalaya", "#86efac", "#ffffff"],
+      paint: { "line-color": ["match", ["get", "name"], "Hindu Kush", GLACIER_LIGHT["Hindu Kush"], "Karakoram", GLACIER_LIGHT["Karakoram"], "West Himalaya", GLACIER_LIGHT["West Himalaya"], "#ffffff"],
                "line-width": ["interpolate", ["linear"], ["zoom"], 4, 1.8, 8, 3], "line-opacity": 1 } });
     map.addLayer({ id: "loc-line", type: "line", source: "bnd", filter: ["all", isL("line"), ["==", ["get", "name"], "Line of Control"]],
       paint: { "line-color": "#f87171", "line-width": 2.6, "line-dasharray": [3, 2] } });
@@ -3834,7 +4077,8 @@ const bgMap = (() => {
     return true;
   }
 
-  return { init, focus, fitPadding, setGroup, setExaggeration, setView, terrainInfo, layerState, pick, clickAt, intro, orient, jump };
+  const lib = () => GL ? { gl: GL, engine } : null;    // reused by the Historical Overview's "On the map" view
+  return { init, focus, fitPadding, setGroup, setExaggeration, setView, terrainInfo, layerState, pick, clickAt, intro, orient, jump, lib };
 })();
 
 (async function startBackground() {
