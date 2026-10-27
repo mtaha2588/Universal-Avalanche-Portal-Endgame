@@ -27,13 +27,14 @@ if errorlevel 1 (
 rem First run from a GitHub ZIP: .env (Mapbox key) and the local terrain tiles are not in the download.
 if not exist .env (
   copy /y .env.example .env >nul
+  echo  .env created from .env.example.
+)
+findstr /b /c:"MAPBOX_TOKEN=pk." .env >nul 2>&1
+if errorlevel 1 (
   echo.
-  echo  .env created. Without a Mapbox key the portal uses the basic map and the intro has NO globe.
-  echo  Open .env in Notepad, set MAPBOX_TOKEN=pk... then run this file again.
+  echo  No Mapbox key in .env: the portal uses the basic map and the intro has NO globe.
+  echo  For the full 3D globe, put your key in .env as MAPBOX_TOKEN=pk... and run this file again.
   echo.
-  notepad .env
-  pause
-  exit /b 0
 )
 if not exist data\dem\terrarium (
   echo.
