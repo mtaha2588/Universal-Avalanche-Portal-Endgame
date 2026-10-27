@@ -2269,12 +2269,13 @@ const GLACIER_LIGHT = { "Hindu Kush": "#b3ffff", "Karakoram": "#ff9a9a", "West H
 const GLACIERS = { data: null, stats: {}, centers: {} };
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // Cinematic intro: once per browser session (always with /#intro); never with reduced motion or another deep link.
+// Plays every time the home page is opened or reloaded (the storm, the globe and the chapters), and with /#intro. It does not play
+// with another deep link, with /#home (the portal's Home button, so coming back from the portal goes straight to the map) or with
+// reduced motion.
 const PLAY_INTRO = (() => {
   if (reducedMotion) return false;
   if (location.hash === "#intro") return true;
-  if (location.hash) return false;
-  try { if (sessionStorage.getItem("homeIntro")) return false; sessionStorage.setItem("homeIntro", "1"); } catch { /* storage unavailable */ }
-  return true;
+  return !location.hash;
 })();
 
 // Storm prelude (~5 s) in front of the intro, also on every "▶ Intro" replay: dense wind-driven snow under an aurora, then a scan that

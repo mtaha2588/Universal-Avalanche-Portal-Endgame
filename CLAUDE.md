@@ -233,8 +233,8 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
 
 - `bgMap.intro()` in home.html (styles `.cine-*`, overlay `#cine`): Mapbox globe from orbit -> Pakistan (study-area mask dims to 0.8, official border
   glow pulses) -> Hindu Kush / Karakoram / West Himalaya (fly-in, radar ping, system glow pulse, count-up figures, dive to the largest named glacier with
-  its outline highlighted) -> overview of all three. About 75 s. Plays once per browser session (`sessionStorage.homeIntro`), always with `/#intro`,
-  never with reduced motion or another deep link. "▶ Intro" chip replays it; any click, wheel, Esc or Space skips.
+  its outline highlighted) -> overview of all three. Plays EVERY time `/` is opened or reloaded (the user wants the storm and globe always seen;
+  the old once-per-session rule hid it), and with `/#intro`; not with `/#home` (the portal's Home button), another deep link or reduced motion. "▶ Intro" chip replays it; any click, wheel, Esc or Space skips.
 - Only camera moves and highlight styling: boundary geometry is untouched, every figure comes from `/api/glaciers/pakistan`. MapLibre (no token) has no
   globe and starts from a flat world view. Libraries stay Mapbox/MapLibre + CSS keyframes; Three.js/GSAP were considered and not needed.
 - Idle orbit steps at ~30 fps and stops while a module window is open (GPU load).
