@@ -265,7 +265,10 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
 - Storm -> globe integration (Mapbox): at intro start the map goes to a small globe low on the screen (`stormPadding()`, zoom 0.45) and starts
   turning (`spin()`, one jumpTo per frame, 14°/s slowing near 40°E so it never passes Pakistan). After the storm's terrain scan (`GLOBE_AT` 3 s)
   the storm opens a feathered window onto it (`Storm.globe` returns the globe's screen circle; cyan rim + orbiting ticks; relief fades to 40 %),
-  snow still falling over it. When the storm clears, chapter 1 eases the SAME globe up and larger (padding -> `introPadding()`) and on to
+  snow still falling over it, plus two dashed orbit rings with running nodes. Blue "tech mapping" net ON the globe (`techNet()`, Mapbox
+  layers `tnet-glow|line|node`: 15° graticule, nodes every 30°; decorative geometry, not data) from the start until the camera comes down
+  to Pakistan. Heavy snow first: the storm opens as a blizzard (up to 2,600 streaks, longer and brighter) and settles to ~60 % as the
+  globe window opens. `Storm.globe` is cleared only in `finish()`, after the storm has fully faded. When the storm clears, chapter 1 eases the SAME globe up and larger (padding -> `introPadding()`) and on to
   Pakistan, starting at the spin's speed (ease-out), so there is no cut. A skip stops the spin and restores fog / labels.
 - Chapter order: 1 Pakistan (with the globe) -> 2 Northern Pakistan -> 3-5 the systems. Chapter 1 (Mapbox): the storm clears onto the turning Earth
   (globe, `GLOBE_FOG` atmosphere + stars, world mask and Mapbox place labels off), which turns west to east for 4 s until Pakistan faces

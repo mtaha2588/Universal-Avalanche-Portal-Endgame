@@ -2298,7 +2298,7 @@ const Storm = (() => {
     dpr = Math.min(1.5, window.devicePixelRatio || 1);
     W = innerWidth; H = innerHeight;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    const n = Math.min(1500, Math.round(W * H / 1000));
+    const n = Math.min(2600, Math.round(W * H / 600));          // the opening blizzard uses all of them; the storm settles to ~60 %
     flakes = Array.from({ length: n }, () => {
       const d = Math.floor(Math.random() * DEPTHS);
       return { x: Math.random() * W, y: Math.random() * H, d, z: 0.25 + (d + Math.random()) / DEPTHS * 0.75, p: Math.random() * 6.28, g: Math.random() < 0.05 };
@@ -2531,7 +2531,7 @@ const Storm = (() => {
     }
     // Window onto the live globe: the real Mapbox Earth, already turning under the storm, shows through a feathered circle with a
     // cyan rim; the snow keeps falling over it. When the storm clears, chapter 1 carries on with this same globe.
-    const gw = gOpen > 0 ? api.globe() : null;
+    const gw = gOpen > 0 && api.globe ? api.globe() : null;
     if (gw && gw.r > 4) {
       if (!r0.open) { r0.open = true; el.style.background = "transparent"; }
       const R = gw.r * (0.6 + 0.4 * gOpen);
@@ -2546,7 +2546,18 @@ const Storm = (() => {
       ctx.globalAlpha = gOpen * (1 - c) * (0.55 + 0.15 * Math.sin(t * 2.4));
       ctx.strokeStyle = "#67e8f9"; ctx.lineWidth = 1.3; ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 22;
       ctx.beginPath(); ctx.arc(gw.x, gw.y, R * 1.03, 0, 6.29); ctx.stroke();
-      ctx.globalAlpha *= 0.6; ctx.lineWidth = 1; ctx.shadowBlur = 0;      // a slow orbit of tick marks round the rim
+      // two tilted orbit rings round the globe, each with a node running along it (decorative "tech mapping")
+      [[-0.38, 1.32, 0.3, 0.5], [0.52, 1.22, 0.24, -0.7]].forEach(([tilt, rx, ry, sp]) => {
+        ctx.save();
+        ctx.translate(gw.x, gw.y); ctx.rotate(tilt);
+        ctx.globalAlpha = gOpen * (1 - c) * 0.5; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1; ctx.shadowColor = "#0ea5e9"; ctx.shadowBlur = 10;
+        ctx.setLineDash([6, 5]); ctx.beginPath(); ctx.ellipse(0, 0, R * rx, R * ry, 0, 0, 6.29); ctx.stroke(); ctx.setLineDash([]);
+        const a = t * sp;
+        ctx.globalAlpha = gOpen * (1 - c); ctx.fillStyle = "#e0f7ff"; ctx.shadowBlur = 16;
+        ctx.beginPath(); ctx.arc(Math.cos(a) * R * rx, Math.sin(a) * R * ry, 2.6, 0, 6.29); ctx.fill();
+        ctx.restore();
+      });
+      ctx.globalAlpha = gOpen * (1 - c) * 0.33; ctx.lineWidth = 1; ctx.shadowBlur = 0;   // a slow orbit of tick marks round the rim
       for (let k = 0; k < 72; k++) {
         const a = k / 72 * 6.283 + t * 0.15, l = k % 6 ? 4 : 10;
         ctx.beginPath(); ctx.moveTo(gw.x + Math.cos(a) * R * 1.07, gw.y + Math.sin(a) * R * 1.07);
@@ -2560,9 +2571,12 @@ const Storm = (() => {
     const wind = 1 + 5 * c * c, gust = 0.75 + 0.25 * Math.sin(t * 1.6) + 0.12 * Math.sin(t * 4.1);
     ctx.globalAlpha = 1;
     ctx.lineCap = "round";
-    const fade = ease(t / 0.6) * (1 - c * 0.6), len = 0.018 * wind;
+    // Heavy snow first: a full blizzard until the globe window opens, then it settles to the normal storm (60 % of the streaks).
+    const heavy = 1 - ease((t - GLOBE_AT + 0.4) / 1.4);
+    const fade = ease(t / 0.6) * (1 - c * 0.6), len = (0.018 + 0.008 * heavy) * wind;
+    const lim = Math.round(flakes.length * (0.6 + 0.4 * heavy));
     // fine far specks: one path for all of them
-    ctx.fillStyle = `rgba(214,234,255,${0.45 * fade})`;
+    ctx.fillStyle = `rgba(214,234,255,${(0.45 + 0.25 * heavy) * fade})`;
     ctx.beginPath();
     for (const s of specks) {
       s.x += 160 * s.v * gust * wind * dt; s.y += 60 * s.v * dt;
@@ -2573,17 +2587,19 @@ const Storm = (() => {
     ctx.fill();
     // streaks, one path per depth layer (far layers thin and faint, near layers long and bright)
     const paths = Array.from({ length: DEPTHS }, () => new Path2D()), glints = [];
-    for (const f of flakes) {
+    for (let i = 0; i < flakes.length; i++) {
+      const f = flakes[i];
       const vx = (220 + 420 * f.z) * gust * wind, vy = (80 + 160 * f.z) + 45 * Math.sin(t * 1.5 + f.p);
       f.x += vx * dt; f.y += vy * dt;
       if (f.x > W + 40) { f.x -= W + 80; f.y = Math.random() * H; }
       if (f.y > H + 20) { f.y -= H + 40; f.x = Math.random() * W; }
+      if (i >= lim) continue;
       paths[f.d].moveTo(f.x, f.y); paths[f.d].lineTo(f.x - vx * len, f.y - vy * len);
       if (f.g) glints.push(f);
     }
     paths.forEach((p, d) => {
       const z = (d + 0.5) / DEPTHS;
-      ctx.strokeStyle = `rgba(226,240,255,${(0.16 + 0.6 * z) * fade})`; ctx.lineWidth = 0.5 + 1.7 * z; ctx.stroke(p);
+      ctx.strokeStyle = `rgba(226,240,255,${Math.min(1, (0.16 + 0.6 * z) * (1 + 0.35 * heavy)) * fade})`; ctx.lineWidth = 0.5 + 1.7 * z; ctx.stroke(p);
     });
     for (const f of glints) {                              // a few flakes catch the light and glint
       const tw = Math.pow(Math.max(0, Math.sin(t * 3 + f.p * 3)), 8) * fade;
@@ -2691,6 +2707,7 @@ const Storm = (() => {
   }
   function finish(r) {
     r.done = true; r.resolve();
+    api.globe = null;                                       // the window stays open until the storm has fully faded
     el.hidden = true;
     removeEventListener("keydown", onKey); removeEventListener("resize", size);
   }
@@ -3902,6 +3919,7 @@ const bgMap = (() => {
         run.labels = map.getStyle().layers.filter(l => l.type === "symbol" && l.source === "composite" && map.getLayoutProperty(l.id, "visibility") !== "none").map(l => l.id);
         run.labels.forEach(id => map.setLayoutProperty(id, "visibility", "none"));
         spin(run, true);
+        techNet(true);
         Storm.globe = () => {
           const c = map.getCenter(), p = map.project(c), q = map.project([c.lng, c.lat - 85]);
           return { x: p.x, y: p.y, r: Math.hypot(q.x - p.x, q.y - p.y) };
@@ -3925,7 +3943,6 @@ const bgMap = (() => {
       }
       // The storm prelude clears onto this camera; skipping the storm skips the intro too.
       await step(Storm.clear());
-      Storm.globe = null;
       if (Storm.skipped) { Storm.skipped = false; endIntro(true); return; }
       if (!globe) await wait(document.getElementById("splash").classList.contains("done") ? 200 : 1300);
       const pkCaption = () => caption({ color: "#4ade80", eyebrow: "Chapter 1 · Study area", title: "Pakistan",
@@ -3941,7 +3958,7 @@ const bgMap = (() => {
         const dur = Math.max(2200, Math.min(4500, 2 * d / v * 1000));
         spin(run, false);
         await move("easeTo", { center: [lng + d, 29], zoom: 1.6, padding: introPadding(), duration: dur, easing: t => 1 - (1 - t) * (1 - t) });
-        later(1600, () => { try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ } spotlight(true); showLabels(run); });   // atmosphere and labels back once below orbit
+        later(1600, () => { try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ } spotlight(true); showLabels(run); techNet(false); });   // atmosphere and labels back, net off, once below orbit
         later(1800, pkCaption);
         await move("flyTo", { ...pkCam, duration: 3800, curve: 1.5 });
       } else pkCaption();
@@ -4045,6 +4062,37 @@ const bgMap = (() => {
     };
     run.spinRaf = requestAnimationFrame(f);
   }
+  // Blue "tech mapping" net on the globe (Mapbox): a 15° graticule with glowing nodes every 30°, drawn on the Earth itself, so the same
+  // net shows in the storm's window and turns with the globe into chapter 1; it fades as the camera comes down to Pakistan.
+  // Decorative geometry (lines of latitude / longitude), not data.
+  function techNet(on) {
+    if (on && !map.getSource("tnet")) {
+      const lines = [];
+      for (let lng = -180; lng < 180; lng += 15) lines.push(Array.from({ length: 81 }, (_, k) => [lng, -80 + k * 2]));
+      for (let lat = -75; lat <= 75; lat += 15) lines.push(Array.from({ length: 181 }, (_, k) => [-180 + k * 2, lat]));
+      const pts = [];
+      for (let lng = -180; lng < 180; lng += 30) for (let lat = -60; lat <= 60; lat += 30) pts.push([lng, lat]);
+      const tr = { duration: 900, delay: 0 };
+      map.addSource("tnet", { type: "geojson", data: { type: "Feature", properties: {}, geometry: { type: "MultiLineString", coordinates: lines } } });
+      map.addSource("tnet-pts", { type: "geojson", data: { type: "Feature", properties: {}, geometry: { type: "MultiPoint", coordinates: pts } } });
+      map.addLayer({ id: "tnet-glow", type: "line", source: "tnet", layout: { visibility: "none" },
+        paint: { "line-color": "#0ea5e9", "line-width": 5, "line-blur": 4, "line-opacity": 0, "line-opacity-transition": tr } });
+      map.addLayer({ id: "tnet-line", type: "line", source: "tnet", layout: { visibility: "none" },
+        paint: { "line-color": "#7dd3fc", "line-width": 0.9, "line-opacity": 0, "line-opacity-transition": tr } });
+      map.addLayer({ id: "tnet-node", type: "circle", source: "tnet-pts", layout: { visibility: "none" },
+        paint: { "circle-radius": 2.4, "circle-color": "#e0f7ff", "circle-stroke-color": "#22d3ee", "circle-stroke-width": 4,
+                 "circle-pitch-alignment": "map", "circle-opacity": 0, "circle-stroke-opacity": 0, "circle-opacity-transition": tr, "circle-stroke-opacity-transition": tr } });
+    }
+    if (!map.getLayer("tnet-line")) return;
+    const ids = ["tnet-glow", "tnet-line", "tnet-node"];
+    clearTimeout(techNet.off);
+    if (on) ids.forEach(id => map.setLayoutProperty(id, "visibility", "visible"));
+    map.setPaintProperty("tnet-glow", "line-opacity", on ? 0.4 : 0);
+    map.setPaintProperty("tnet-line", "line-opacity", on ? 0.85 : 0);
+    map.setPaintProperty("tnet-node", "circle-opacity", on ? 1 : 0);
+    map.setPaintProperty("tnet-node", "circle-stroke-opacity", on ? 0.35 : 0);
+    if (!on) techNet.off = setTimeout(() => ids.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none"); }), 1000);
+  }
   // The globe turns without place labels (run.labels = the ones it hid); they come back once, below orbit or on a skip.
   function showLabels(run) {
     (run.labels || []).forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "visible"); });
@@ -4059,7 +4107,7 @@ const bgMap = (() => {
     if (stopCamera) map.stop();
     unping(run);
     spotlight(false);
-    spin(run, false); Storm.globe = null;
+    spin(run, false); Storm.globe = null; techNet(false);
     if (engine === "mapbox") try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ }   // a skip during the globe
     showLabels(run);
     if (stopCamera && map.getZoom() < 3) map.jumpTo({ center: GLACIERS.centers.ALL || [74, 35.5], zoom: 5.4, pitch: 50, bearing: 0 });   // not left in orbit
