@@ -224,7 +224,7 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
 - Terrain elevation for EVERY 3D map (home Mapbox + MapLibre, map.js, hindukush.js) is `MapPerf.dem()`: open AWS Terrain Tiles (terrarium,
   SRTM-based, z12 = ~30 m) served by the portal at `/api/dem/{z}/{x}/{y}.png` from `data/dem/terrarium` (one-year immutable cache + the
   worker's `map-open` cache). Build with `python scripts/fetch_dem.py` (6,658 tiles, ~400 MB: glacier systems to z12, Pakistan to z9); missing tiles
-  302 to the public copy. `data/dem/` IS committed to git (so a GitHub ZIP runs offline-terrain out of the box; largest tile 141 KB) but docker-ignored; the Dockerfile downloads it in its own layer. Mapbox's DEM is no longer used, and
+  302 to the public copy. `data/dem/` IS committed to git (so a GitHub ZIP runs offline-terrain out of the box; largest tile 141 KB) but docker-ignored; the Dockerfile downloads it in its own layer. Zoom 10-12 over the glacier systems (70-78 E, 33-38 N; 5,841 tiles, 340 MB) are rebuilt from Copernicus DEM GLO-30 by `scripts/build_dem_copernicus.py` (scratch venv: rasterio, numpy, Pillow, scipy; heights rounded to whole metres; z0-9 stay SRTM-based AWS tiles). Attribution: Produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. Mapbox's DEM is no longer used, and
   Mapbox tiles must never be bulk-downloaded or stored beyond their headers (their terms) — the user asked for that and was told no.
 - Bump `VER` in sw.js to drop old caches. Headless Chrome inside the Bash sandbox cannot open CacheStorage ("Unexpected internal error");
   test the cache with a profile outside the sandbox.

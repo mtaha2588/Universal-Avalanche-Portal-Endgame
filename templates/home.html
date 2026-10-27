@@ -844,6 +844,38 @@
   body.storming #cine .cine-skip, body.stormfade #cine .cine-skip { top: calc(7.5vh + 112px); }
   /* Holo overlay (globe rim, orbit rings, Pakistan lock): above the storm while it plays, below the intro captions afterwards */
   #holo { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 39; }
+  /* Information cards and floating imagery panels around the globe (Holo.ui): real figures only; hidden below 1360 x 780 */
+  #holo-ui { position: fixed; inset: 0; z-index: 39; pointer-events: none; color: #cfe6ff; font-family: var(--font); }
+  #holo-ui .hh { position: absolute; opacity: 0; transform: translateY(12px); transition: opacity .9s ease, transform .9s cubic-bezier(.16,.84,.24,1);
+    background: rgba(3,12,34,.68); border: 1px solid rgba(86,170,255,.4); box-shadow: 0 0 24px rgba(30,110,255,.2), inset 0 0 20px rgba(30,110,255,.08); padding: 12px 14px 13px; }
+  #holo-ui.on .hh { opacity: 1; transform: none; }
+  #holo-ui .hh::before, #holo-ui .hh::after { content: ""; position: absolute; width: 9px; height: 9px; border: 0 solid #7dd3fc; }
+  #holo-ui .hh::before { left: -1px; top: -1px; border-width: 2px 0 0 2px; } #holo-ui .hh::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
+  #holo-ui h6 { margin: 0 0 9px; font: 700 10.5px var(--font); letter-spacing: .16em; text-transform: uppercase; color: #7dd3fc; }
+  #holo-ui small { display: block; font: 500 10px/1.4 var(--font); color: #8fb4e0; }
+  #holo-ui .hh-tag { left: 44px; top: calc(7.5vh + 82px); width: 250px; padding: 15px 18px; border-width: 0 1px; text-align: center; font: 600 13.5px/1.35 var(--font); letter-spacing: .12em; color: #e6f3ff; }
+  #holo-ui .hh-tag i { display: block; margin: 3px 0; font-style: normal; color: #4ade80; font-weight: 400; }
+  #holo-ui .hh-src { left: 44px; top: calc(7.5vh + 218px); width: 250px; }
+  #holo-ui .hh-src p { display: grid; grid-template-columns: 12px 1fr; column-gap: 7px; margin: 0 0 7px; font: 600 12px var(--font); color: #e6f3ff; }
+  #holo-ui .hh-src p i { width: 7px; height: 7px; margin-top: 4px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #22c55e; }
+  #holo-ui .hh-src p small { grid-column: 2; }
+  #holo-ui .hh-chart { right: 44px; top: calc(7.5vh + 82px); width: 304px; }
+  #holo-ui .hh-bar { display: grid; grid-template-columns: 92px 1fr 66px; gap: 8px; align-items: center; margin-bottom: 8px; font: 600 11px var(--font); color: #e6f3ff; }
+  #holo-ui .hh-bar i { height: 7px; background: rgba(120,170,255,.16); overflow: hidden; } #holo-ui .hh-bar b { display: block; height: 100%; box-shadow: 0 0 10px currentColor; }
+  #holo-ui .hh-bar em { font: 600 11px ui-monospace, Consolas, monospace; font-style: normal; text-align: right; color: #cfe6ff; }
+  #holo-ui .hh-systems { right: 44px; top: calc(7.5vh + 252px); width: 304px; }
+  #holo-ui .hh-sys { display: grid; grid-template-columns: 10px 1fr auto; column-gap: 9px; align-items: center; margin-bottom: 8px; font: 700 12.5px var(--font); color: #fff; }
+  #holo-ui .hh-sys i { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 10px currentColor; } #holo-ui .hh-sys b { font: 700 13px ui-monospace, Consolas, monospace; color: #fff; }
+  #holo-ui .hh-obs { right: 44px; bottom: calc(7.5vh + 150px); width: 168px; border-width: 0 1px; padding: 14px 18px; }
+  #holo-ui .hh-obs span { display: block; margin: 4px 0; font: 600 13px var(--font); letter-spacing: .2em; color: #e6f3ff; }
+  #holo-ui .hp { position: absolute; left: 0; top: 0; width: 120px; opacity: 0; transition: opacity .8s ease; will-change: transform; }
+  #holo-ui .hp.on { opacity: 1; }
+  #holo-ui .hp-img { position: relative; width: 120px; height: 120px; border: 1px solid rgba(130,205,255,.85); box-shadow: 0 0 20px rgba(56,150,255,.5);
+    background: #04122e center / cover no-repeat; }
+  #holo-ui .hp-x { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border: 1.5px solid #4ade80; border-radius: 50%; box-shadow: 0 0 8px #22c55e; }
+  #holo-ui .hp-c { padding: 5px 7px 6px; background: rgba(3,12,34,.88); border: 1px solid rgba(130,205,255,.5); border-top: 0; }
+  #holo-ui .hp-c b { display: block; font: 700 11px var(--font); letter-spacing: .05em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #holo-ui .hp-c span { display: block; font: 500 9.5px var(--font); color: #8fc2f5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   body.storming #holo, body.stormfade #holo { z-index: 61; }
   #cine .cine-skip { transition: top .6s ease, opacity .4s ease, background .2s, border-color .2s; }
   .storm canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -3913,7 +3945,6 @@ const bgMap = (() => {
         run.labels = map.getStyle().layers.filter(l => l.type === "symbol" && l.source === "composite" && map.getLayoutProperty(l.id, "visibility") !== "none").map(l => l.id);
         run.labels.forEach(id => map.setLayoutProperty(id, "visibility", "none"));
         spin(run, true);
-        techNet(true);
         holoMap(true);
         Holo.start(null);
         Storm.globe = () => {
@@ -3952,9 +3983,11 @@ const bgMap = (() => {
         // camera. Ease-out from the spin's own speed, so there is no jolt at the hand-over.
         const lng = map.getCenter().lng, v = run.spinV || SPIN_DPS;
         let d = ((69 - lng) % 360 + 360) % 360; if (d < 20) d += 360;
-        const dur = Math.max(2200, Math.min(4500, 2 * d / v * 1000));
+        const dur = Math.max(GLOBE_TURN_MS, Math.min(GLOBE_TURN_MS + 1500, 2 * d / v * 1000));
         spin(run, false);
+        Holo.ui(true, { S, majors: BND.majors.features });
         await move("easeTo", { center: [lng + d, 29], zoom: 1.6, padding: introPadding(), duration: dur, easing: t => 1 - (1 - t) * (1 - t) });
+        Holo.ui(false);                                                    // cards and imagery panels fade as the dive starts
         later(1600, () => { try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ } spotlight(true); showLabels(run); techNet(false); holoMap(false); Holo.out(); });   // satellite, atmosphere and labels back once below orbit
         later(1800, pkCaption);
         await move("flyTo", { ...pkCam, duration: 3800, curve: 1.5 });
@@ -4046,6 +4079,7 @@ const bgMap = (() => {
   // Turns the globe west to east while the storm plays (one jumpTo per frame). It slows down as it nears 40°E, so however long the
   // storm lasts it never passes Pakistan before chapter 1 takes over; run.spinV is its speed at the hand-over.
   const SPIN_DPS = 14;
+  const GLOBE_TURN_MS = 6200;   // chapter 1's turn to Pakistan (it was 4 s before the information cards and imagery panels were added)
   function spin(run, on) {
     cancelAnimationFrame(run.spinRaf); run.spinRaf = 0;
     if (!on) return;
@@ -4059,67 +4093,111 @@ const bgMap = (() => {
     };
     run.spinRaf = requestAnimationFrame(f);
   }
-  // ---------- holographic globe (intro storm + chapter 1, Mapbox) ----------
-  // Map side (holoMap): the satellite imagery fades out and the Earth is drawn as a hologram: navy oceans (Mapbox Streets water polygons)
-  // over dotted blue land (a dot pattern), with the blue atmosphere (GLOBE_FOG) and the tech net. It fades back to satellite imagery as
-  // the camera comes down to Pakistan. Overlay side (Holo): a canvas tied to the globe's screen circle draws the rim glow, light spikes,
-  // tilted orbit rings with running particles (they pass behind the globe), and the lock on Pakistan (hexagon reticle, label, study-area
-  // figure). Decorative styling; the only data shown are Pakistan's official outline (map layer) and its study-area figure.
+  // ---------- the connected Earth (intro storm + chapter 1, Mapbox) ----------
+  // Map side (holoMap): the real satellite Earth, tinted deep blue, with the oceans laid over in dark navy (so the DEM's sea-floor relief
+  // does not show), soft "city lights" at the world's main places (Mapbox Streets place labels), and the blue atmosphere (GLOBE_FOG).
+  // Overlay side (Holo, canvas + DOM): sphere shading and atmosphere, a network of glowing arcs between world cities that converges on
+  // Islamabad, orbit rings with running particles and satellites, a satellite with scan beams onto Pakistan, the lock on Pakistan, and four
+  // floating satellite-imagery panels of Pakistan's largest named glaciers with leader lines, plus information cards that use only the
+  // portal's real figures (RGI v7.0 counts and areas, data sources). The network, rings and satellites are decorative; nothing in them is data.
   function holoMap(on) {
-    const sat = (map.getStyle().layers.find(l => l.type === "raster" && /satellite/.test(l.id)) || {}).id;
-    if (on && !map.getLayer("holo-tint") && map.getSource("composite")) {
-      const n = 12, d = new Uint8Array(n * n * 4);                   // one soft cyan dot per 12 px cell (pixelRatio 2 = 6 px on screen)
-      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
-        const r = Math.hypot(x - 5.5, y - 5.5), a = Math.max(0, Math.min(1, 2.6 - r)), i = (y * n + x) * 4;
-        d[i] = 120; d[i + 1] = 214; d[i + 2] = 255; d[i + 3] = Math.round(a * 255);
-      }
-      if (!map.hasImage("holo-dots")) map.addImage("holo-dots", { width: n, height: n, data: d }, { pixelRatio: 2 });
-      const ls = map.getStyle().layers, i = ls.findIndex(l => l.id === sat), before = i >= 0 && ls[i + 1] ? ls[i + 1].id : undefined;
-      const tr = { duration: 1400, delay: 0 };
-      map.addLayer({ id: "holo-tint", type: "background", layout: { visibility: "none" }, paint: { "background-color": "#0b3d91", "background-opacity": 0, "background-opacity-transition": tr } }, before);
-      map.addLayer({ id: "holo-dots", type: "background", layout: { visibility: "none" }, paint: { "background-pattern": "holo-dots", "background-opacity": 0, "background-opacity-transition": tr } }, before);
-      map.addLayer({ id: "holo-water", type: "fill", source: "composite", "source-layer": "water", layout: { visibility: "none" },
-        paint: { "fill-color": "#020c2b", "fill-opacity": 0, "fill-opacity-transition": tr } }, before);
+    const ls0 = map.getStyle().layers, sat = (ls0.find(l => l.type === "raster" && /satellite/.test(l.id)) || {}).id;
+    if (on && !map.getLayer("earth-tint") && map.getSource("composite")) {
+      const first = (ls0.find(l => l.type === "symbol") || {}).id, tr = { duration: 1400, delay: 0 };
+      const i = ls0.findIndex(l => l.id === sat), after = i >= 0 && ls0[i + 1] ? ls0[i + 1].id : undefined;
+      map.addLayer({ id: "earth-tint", type: "background", layout: { visibility: "none" },
+        paint: { "background-color": "#031a55", "background-opacity": 0, "background-opacity-transition": tr } }, after);
+      map.addLayer({ id: "earth-water", type: "fill", source: "composite", "source-layer": "water", layout: { visibility: "none" },
+        paint: { "fill-color": "#04184a", "fill-opacity": 0, "fill-opacity-transition": tr } }, first);
+      map.addLayer({ id: "earth-lights", type: "circle", source: "composite", "source-layer": "place_label", layout: { visibility: "none" },
+        filter: ["==", ["get", "class"], "settlement"],
+        paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 1.5, 4, 3.2], "circle-color": "#ffd88a", "circle-blur": 0.75,
+                 "circle-opacity": 0, "circle-opacity-transition": tr } }, first);
     }
-    if (!map.getLayer("holo-tint")) return;
-    const ids = ["holo-tint", "holo-dots", "holo-water"];
+    if (!map.getLayer("earth-tint")) return;
+    const ids = ["earth-tint", "earth-water", "earth-lights"];
     clearTimeout(holoMap.off);
     if (on) ids.forEach(id => map.setLayoutProperty(id, "visibility", "visible"));
-    map.setPaintProperty("holo-tint", "background-opacity", on ? 0.95 : 0);
-    map.setPaintProperty("holo-dots", "background-opacity", on ? 1 : 0);
-    map.setPaintProperty("holo-water", "fill-opacity", on ? 1 : 0);
-    if (sat) { map.setPaintProperty(sat, "raster-opacity-transition", { duration: 1400, delay: 0 }); map.setPaintProperty(sat, "raster-opacity", on ? 0 : 1); }
-    if (map.getLayer("hillshade")) {                                 // relief as faint blue light, not white cloud-like streaks
-      map.setPaintProperty("hillshade", "hillshade-highlight-color", on ? "#3b82f6" : HILLSHADE["hillshade-highlight-color"]);
-      map.setPaintProperty("hillshade", "hillshade-exaggeration", on ? 0.35 : (cine ? 0.9 : HILLSHADE["hillshade-exaggeration"]));
-    }
+    map.setPaintProperty("earth-tint", "background-opacity", on ? 0.3 : 0);
+    map.setPaintProperty("earth-water", "fill-opacity", on ? 0.9 : 0);
+    map.setPaintProperty("earth-lights", "circle-opacity", on ? 0.9 : 0);
+    if (map.getLayer("hillshade")) map.setPaintProperty("hillshade", "hillshade-exaggeration", on ? 0.5 : (cine ? 0.9 : HILLSHADE["hillshade-exaggeration"]));
     if (!on) holoMap.off = setTimeout(() => ids.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none"); }), 1500);
   }
   const Holo = (() => {
-    let cv = null, g = null, raf = 0, st = null;
-    const RINGS = [[-0.42, 1.30, 0.30, 0.42, 3], [0.36, 1.22, 0.24, -0.6, 2], [-0.08, 1.42, 0.16, 0.3, 2]];   // tilt, rx, ry, speed, lines
-    const SPIKES = Array.from({ length: 64 }, (_, k) => ({ a: k / 64 * 6.283 + (k % 3) * 0.031, l: 0.05 + ((k * 37) % 23) / 23 * 0.22, p: (k * 1.7) % 6.28 }));
+    let cv = null, g = null, raf = 0, st = null, uiEl = null, NET = null;
+    const RAD = Math.PI / 180;
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    // real city locations (lng, lat) for the decorative network; Islamabad is the hub everything converges on
+    const CITIES = [["New York", -74, 40.7], ["Washington", -77, 38.9], ["Toronto", -79.4, 43.7], ["Mexico City", -99.1, 19.4], ["Los Angeles", -118.2, 34],
+      ["Vancouver", -123.1, 49.3], ["Sao Paulo", -46.6, -23.5], ["Buenos Aires", -58.4, -34.6], ["Bogota", -74.1, 4.7], ["Lima", -77, -12], ["London", -0.1, 51.5],
+      ["Paris", 2.3, 48.9], ["Madrid", -3.7, 40.4], ["Berlin", 13.4, 52.5], ["Rome", 12.5, 41.9], ["Moscow", 37.6, 55.8], ["Istanbul", 29, 41], ["Cairo", 31.2, 30],
+      ["Lagos", 3.4, 6.5], ["Nairobi", 36.8, -1.3], ["Johannesburg", 28, -26.2], ["Cape Town", 18.4, -33.9], ["Riyadh", 46.7, 24.7], ["Dubai", 55.3, 25.2],
+      ["Tehran", 51.4, 35.7], ["Tashkent", 69.2, 41.3], ["Kabul", 69.2, 34.5], ["Islamabad", 73.05, 33.7], ["Lahore", 74.3, 31.5], ["Karachi", 67, 24.9],
+      ["Gilgit", 74.3, 35.9], ["Skardu", 75.6, 35.3], ["Delhi", 77.2, 28.6], ["Mumbai", 72.9, 19.1], ["Dhaka", 90.4, 23.8], ["Kathmandu", 85.3, 27.7],
+      ["Beijing", 116.4, 39.9], ["Shanghai", 121.5, 31.2], ["Hong Kong", 114.2, 22.3], ["Singapore", 103.8, 1.4], ["Jakarta", 106.8, -6.2], ["Bangkok", 100.5, 13.8],
+      ["Tokyo", 139.7, 35.7], ["Seoul", 127, 37.6], ["Sydney", 151.2, -33.9], ["Perth", 115.9, -32], ["Urumqi", 87.6, 43.8], ["Almaty", 76.9, 43.2], ["Colombo", 79.9, 6.9]];
+    const RINGS = [[-0.42, 1.30, 0.30, 0.42, 3, 1], [0.36, 1.22, 0.24, -0.6, 2, 1], [-0.08, 1.42, 0.16, 0.3, 2, 0]];   // tilt, rx, ry, speed, lines, satellite
+    const SLOTS = [[-215, -135], [20, -235], [225, -95], [170, 125]];                                                      // panel centres, relative to the glacier cluster
+    const vec = (lng, lat) => [Math.cos(lat * RAD) * Math.cos(lng * RAD), Math.cos(lat * RAD) * Math.sin(lng * RAD), Math.sin(lat * RAD)];
+    const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+
+    function build() {
+      if (NET) return NET;
+      const nodes = CITIES.map(([n, lng, lat]) => ({ n, lng, lat, v: vec(lng, lat) })), edges = [], seen = new Set();
+      const pk = nodes.findIndex(n => n.n === "Islamabad");
+      function mk(i, j, bright) {
+        const a = nodes[i], b = nodes[j], om = Math.acos(clamp(dot(a.v, b.v), -1, 1)), so = Math.sin(om) || 1, N = Math.max(8, Math.round(om / 0.045)), s = [];
+        for (let q = 0; q <= N; q++) {
+          const t = q / N, k1 = Math.sin((1 - t) * om) / so, k2 = Math.sin(t * om) / so;
+          const v = [k1 * a.v[0] + k2 * b.v[0], k1 * a.v[1] + k2 * b.v[1], k1 * a.v[2] + k2 * b.v[2]];
+          s.push({ lng: Math.atan2(v[1], v[0]) / RAD, lat: Math.asin(clamp(v[2], -1, 1)) / RAD, v, h: (0.02 + 0.13 * om / Math.PI) * Math.sin(Math.PI * t) });
+        }
+        return { s, bright, px: new Float32Array(N + 1), py: new Float32Array(N + 1), on: new Uint8Array(N + 1) };
+      }
+      const add = (i, j, bright) => { if (i === j || i < 0 || j < 0) return; const k = i < j ? i + "-" + j : j + "-" + i; if (seen.has(k)) return; seen.add(k); edges.push(mk(i, j, bright)); };
+      const at = n => nodes.findIndex(x => x.n === n);
+      ["London", "New York", "Moscow", "Dubai", "Beijing", "Tokyo", "Singapore", "Nairobi", "Cairo", "Sydney", "Sao Paulo", "Delhi", "Tashkent", "Tehran", "Johannesburg", "Los Angeles",
+        "Lahore", "Gilgit", "Skardu", "Karachi", "Kabul"].forEach(n => add(pk, at(n), true));
+      nodes.forEach((a, i) => nodes.map((b, j) => [j, dot(a.v, b.v)]).filter(([j]) => j !== i).sort((p, q) => q[1] - p[1]).slice(0, 3).forEach(([j]) => add(i, j, false)));
+      const pulses = Array.from({ length: 22 }, (_, k) => ({ e: (k * 7) % edges.length, t: (k * 0.37) % 1, v: 0.1 + (k % 5) * 0.035 }));
+      return (NET = { nodes, edges, pulses, pk });
+    }
+
     function size() { const dpr = Math.min(1.5, devicePixelRatio || 1); cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); }
     function ensure() {
       if (cv) return;
       cv = document.createElement("canvas"); cv.id = "holo"; cv.setAttribute("aria-hidden", "true");
       document.body.appendChild(cv); g = cv.getContext("2d"); size(); addEventListener("resize", () => cv && size());
     }
-    // the globe's circle on screen, and how far (degrees) a lng/lat is from the point facing the camera
     function circle() {
-      const c = map.getCenter(), p = map.project(c), q = map.project([c.lng, c.lat - 85]);
-      return { x: p.x, y: p.y, r: Math.hypot(q.x - p.x, q.y - p.y), c };
-    }
-    function facing(c, ll) {
-      const r = Math.PI / 180, a = Math.sin(c.lat * r) * Math.sin(ll[1] * r) + Math.cos(c.lat * r) * Math.cos(ll[1] * r) * Math.cos((ll[0] - c.lng) * r);
-      return Math.acos(Math.max(-1, Math.min(1, a))) / r;
+      const c = map.getCenter(), p = map.project(c), q = map.project([c.lng, c.lat - 85]), q2 = map.project([c.lng, c.lat - 50]);
+      return { x: p.x, y: p.y, r: Math.hypot(q.x - p.x, q.y - p.y), r2: Math.hypot(q2.x - p.x, q2.y - p.y), c };
     }
     const hex = (x, y, r, rot) => {
       g.beginPath();
       for (let k = 0; k <= 6; k++) { const a = rot + k * Math.PI / 3; if (k) g.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); else g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); }
     };
+    // a small satellite: body, gold band, dish, two solar wings with cell lines
+    function drawSat(x, y, rot, s, A) {
+      g.save(); g.globalCompositeOperation = "source-over"; g.translate(x, y); g.rotate(rot); g.scale(s, s); g.globalAlpha = A;
+      g.shadowColor = "#38bdf8"; g.shadowBlur = 10;
+      [-1, 1].forEach(sd => {
+        const x0 = sd < 0 ? -38 : 10, gr = g.createLinearGradient(x0, -7, x0, 7);
+        gr.addColorStop(0, "#3b86ff"); gr.addColorStop(1, "#0b2f86");
+        g.fillStyle = gr; g.fillRect(x0, -7, 28, 14); g.shadowBlur = 0;
+        g.strokeStyle = "rgba(190,225,255,.8)"; g.lineWidth = 0.6; g.beginPath();
+        for (let q = 1; q < 4; q++) { g.moveTo(x0 + q * 7, -7); g.lineTo(x0 + q * 7, 7); }
+        g.moveTo(x0, 0); g.lineTo(x0 + 28, 0); g.stroke(); g.strokeRect(x0, -7, 28, 14); g.shadowBlur = 10;
+      });
+      g.shadowBlur = 0; g.fillStyle = "#cfd8e4"; g.fillRect(-10, -8, 20, 16); g.fillStyle = "#e9c46a"; g.fillRect(-10, -3, 20, 6);
+      g.fillStyle = "#eef6ff"; g.beginPath(); g.arc(0, -10, 4.5, Math.PI, 0); g.fill(); g.fillRect(-1, -10, 2, 4);
+      g.restore();
+    }
+
     function frame(now) {
       raf = requestAnimationFrame(frame);
+      if (!st) return;
       const W = innerWidth, H = innerHeight, t = (now - st.t0) / 1000;
       g.clearRect(0, 0, W, H);
       const k = Storm.active ? Storm.gOpen : 1;                      // inside the storm it opens with the storm's window
@@ -4131,58 +4209,104 @@ const bgMap = (() => {
       if (!(o.r > 6)) return;
       const R = o.r * (Storm.active ? 0.6 + 0.4 * k : 1);
       if (R > Math.max(W, H) * 1.4) return;                          // zoomed in past the globe view: nothing to frame
-      const { x, y } = o;
+      const { x, y, c } = o, cvec = vec(c.lng, c.lat), net = build();
+      // Own projection of the globe (map.project is slow with terrain on, and the network needs thousands of points a frame): a pinhole
+      // camera looking at the view centre, calibrated from two measured points (85 and 50 degrees from the centre): s = f sin(a) / (D - cos(a)).
+      const A1 = 85 * RAD, A2 = 50 * RAD, sA1 = Math.sin(A1), cA1 = Math.cos(A1), sA2 = Math.sin(A2), cA2 = Math.cos(A2);
+      let D = (o.r * sA2 * cA1 - o.r2 * sA1 * cA2) / (o.r * sA2 - o.r2 * sA1);
+      if (!(D > 1.02 && D < 400)) D = 400;
+      const f = o.r2 * (D - cA2) / sA2;
+      const lt = c.lat * RAD, ln = c.lng * RAD, ex = [-Math.sin(ln), Math.cos(ln)], ey = [-Math.sin(lt) * Math.cos(ln), -Math.sin(lt) * Math.sin(ln), Math.cos(lt)];
+      const P = (v, h) => {
+        const k = 1 + h, zv = (v[0] * cvec[0] + v[1] * cvec[1] + v[2] * cvec[2]) * k, den = D - zv;
+        return [x + f * (v[0] * ex[0] + v[1] * ex[1]) * k / den, y - f * (v[0] * ey[0] + v[1] * ey[1] + v[2] * ey[2]) * k / den];
+      };
+
+      // sphere shading: light from the upper right, the lower left falls into night
+      g.save(); g.globalAlpha = A; g.beginPath(); g.arc(x, y, o.r * 0.998, 0, 6.29); g.clip();
+      const sh = g.createRadialGradient(x + R * 0.5, y - R * 0.45, R * 0.1, x, y, R * 1.15);
+      sh.addColorStop(0, "rgba(0,12,48,0)"); sh.addColorStop(0.6, "rgba(0,10,40,.16)"); sh.addColorStop(1, "rgba(0,4,24,.66)");
+      g.fillStyle = sh; g.fillRect(x - R * 1.2, y - R * 1.2, R * 2.4, R * 2.4); g.restore();
+
       g.save(); g.globalCompositeOperation = "lighter";
-      // halo and rim
-      const halo = g.createRadialGradient(x, y, R * 0.96, x, y, R * 1.3);
-      halo.addColorStop(0, `rgba(56,149,255,${0.32 * A})`); halo.addColorStop(1, "rgba(56,149,255,0)");
-      g.fillStyle = halo; g.beginPath(); g.arc(x, y, R * 1.3, 0, 6.29); g.fill();
-      g.globalAlpha = A * (0.8 + 0.2 * Math.sin(t * 2.2)); g.strokeStyle = "#8fd3ff"; g.lineWidth = 1.6; g.shadowColor = "#38bdf8"; g.shadowBlur = 20;
-      g.beginPath(); g.arc(x, y, R * 1.004, 0, 6.29); g.stroke(); g.shadowBlur = 0;
-      // light spikes off the rim
-      g.lineWidth = 1; g.strokeStyle = "#7cc8ff";
-      SPIKES.forEach(s => {
-        const l = R * s.l * (0.55 + 0.45 * Math.sin(t * 1.7 + s.p)), a = s.a + t * 0.04;
-        g.globalAlpha = A * 0.45;
-        g.beginPath(); g.moveTo(x + Math.cos(a) * R * 1.01, y + Math.sin(a) * R * 1.01); g.lineTo(x + Math.cos(a) * (R * 1.01 + l), y + Math.sin(a) * (R * 1.01 + l)); g.stroke();
+      // atmosphere: an inner limb glow, an outer halo and a bright rim
+      const limb = g.createRadialGradient(x, y, R * 0.8, x, y, R);
+      limb.addColorStop(0, "rgba(70,150,255,0)"); limb.addColorStop(1, `rgba(90,185,255,${0.34 * A})`);
+      g.fillStyle = limb; g.beginPath(); g.arc(x, y, R, 0, 6.29); g.fill();
+      const halo = g.createRadialGradient(x, y, R * 0.97, x, y, R * 1.32);
+      halo.addColorStop(0, `rgba(56,149,255,${0.34 * A})`); halo.addColorStop(1, "rgba(56,149,255,0)");
+      g.fillStyle = halo; g.beginPath(); g.arc(x, y, R * 1.32, 0, 6.29); g.fill();
+      g.globalAlpha = A * (0.8 + 0.2 * Math.sin(t * 2.2)); g.strokeStyle = "#9bd8ff"; g.lineWidth = 1.5; g.shadowColor = "#38bdf8"; g.shadowBlur = 18;
+      g.beginPath(); g.arc(x, y, R * 1.003, 0, 6.29); g.stroke(); g.shadowBlur = 0;
+
+      // the network: arcs that rise off the surface, brighter ones converging on Islamabad, with pulses running along them
+      for (const e of net.edges) for (let q = 0; q < e.s.length; q++) {
+        const s = e.s[q];
+        if (dot(s.v, cvec) < 0.04) { e.on[q] = 0; continue; }
+        const p = P(s.v, s.h); e.px[q] = p[0]; e.py[q] = p[1]; e.on[q] = 1;
+      }
+      const strokeNet = bright => {
+        g.beginPath();
+        for (const e of net.edges) {
+          if (e.bright !== bright) continue;
+          let pen = false;
+          for (let q = 0; q < e.s.length; q++) { if (!e.on[q]) { pen = false; continue; } if (pen) g.lineTo(e.px[q], e.py[q]); else { g.moveTo(e.px[q], e.py[q]); pen = true; } }
+        }
+        g.stroke();
+      };
+      g.lineWidth = 0.8; g.strokeStyle = "#5aa9ff"; g.globalAlpha = A * 0.42; strokeNet(false);
+      g.lineWidth = 1.1; g.strokeStyle = "#8fe0ff"; g.globalAlpha = A * 0.62; g.shadowColor = "#38bdf8"; g.shadowBlur = 6; strokeNet(true); g.shadowBlur = 0;
+      g.fillStyle = "#e6f6ff"; g.shadowColor = "#38bdf8"; g.shadowBlur = 9; g.globalAlpha = A * 0.95; g.beginPath();
+      net.nodes.forEach(n => { if (dot(n.v, cvec) < 0.04) return; const p = P(n.v, 0); g.moveTo(p[0] + 1.7, p[1]); g.arc(p[0], p[1], 1.7, 0, 6.29); });
+      g.fill();
+      net.pulses.forEach(p => {
+        const e = net.edges[p.e], f = ((p.t + t * p.v) % 1) * (e.s.length - 1), i0 = Math.floor(f), fr = f - i0;
+        if (!e.on[i0] || !e.on[i0 + 1]) return;
+        const px = e.px[i0] + (e.px[i0 + 1] - e.px[i0]) * fr, py = e.py[i0] + (e.py[i0 + 1] - e.py[i0]) * fr;
+        g.globalAlpha = A; g.beginPath(); g.arc(px, py, e.bright ? 2.6 : 2, 0, 6.29); g.fill();
+        if (i0 > 1 && e.on[i0 - 2]) { g.globalAlpha = A * 0.45; g.strokeStyle = "#bfeaff"; g.lineWidth = 1.2; g.beginPath(); g.moveTo(e.px[i0 - 2], e.py[i0 - 2]); g.lineTo(px, py); g.stroke(); }
       });
-      // orbit rings: the far half is hidden behind the globe, the near half crosses in front of it
-      RINGS.forEach(([tilt, rx, ry, sp, lines], ri) => {
+      g.shadowBlur = 0;
+
+      // orbit rings (far half behind the globe), running particles, and a satellite on two of them
+      RINGS.forEach(([tilt, rx, ry, sp, lines, hasSat], ri) => {
         g.save(); g.translate(x, y); g.rotate(tilt);
         for (let j = 0; j < lines; j++) {
           const s = 1 + j * 0.035;
-          g.strokeStyle = "#5fb8ff"; g.lineWidth = j ? 0.8 : 1.4; g.globalAlpha = A * (j ? 0.35 : 0.7);
+          g.strokeStyle = "#5fb8ff"; g.lineWidth = j ? 0.8 : 1.3; g.globalAlpha = A * (j ? 0.32 : 0.62);
           g.save(); g.beginPath(); g.rect(-W * 2, -H * 2, W * 4, H * 4); g.arc(0, 0, R * 0.995, 0, 6.29, true); g.clip("evenodd");
-          g.beginPath(); g.ellipse(0, 0, R * rx * s, R * ry * s, 0, Math.PI, 2 * Math.PI); g.stroke(); g.restore();   // far half, outside the disc only
-          g.beginPath(); g.ellipse(0, 0, R * rx * s, R * ry * s, 0, 0, Math.PI); g.stroke();                          // near half
+          g.beginPath(); g.ellipse(0, 0, R * rx * s, R * ry * s, 0, Math.PI, 2 * Math.PI); g.stroke(); g.restore();
+          g.beginPath(); g.ellipse(0, 0, R * rx * s, R * ry * s, 0, 0, Math.PI); g.stroke();
         }
-        for (let q = 0; q < 9; q++) {                                // particles with short trails
-          const a = t * sp + q / 9 * 6.283 + ri, px = Math.cos(a) * R * rx, py = Math.sin(a) * R * ry;
-          if (Math.sin(a) < 0 && Math.hypot(px, py) < R) continue;  // behind the globe
-          g.globalAlpha = A * 0.9; g.fillStyle = "#e6f6ff"; g.shadowColor = "#38bdf8"; g.shadowBlur = 12;
-          g.beginPath(); g.arc(px, py, q % 3 ? 1.6 : 2.8, 0, 6.29); g.fill(); g.shadowBlur = 0;
-          g.globalAlpha = A * 0.35; g.strokeStyle = "#9bd9ff"; g.lineWidth = 1;
-          g.beginPath(); g.ellipse(0, 0, R * rx, R * ry, 0, sp > 0 ? a - 0.22 : a, sp > 0 ? a : a + 0.22); g.stroke();
+        for (let q = 0; q < 8; q++) {
+          const a = t * sp + q / 8 * 6.283 + ri, px = Math.cos(a) * R * rx, py = Math.sin(a) * R * ry;
+          if (Math.sin(a) < 0 && Math.hypot(px, py) < R) continue;
+          g.globalAlpha = A * 0.85; g.fillStyle = "#e6f6ff"; g.shadowColor = "#38bdf8"; g.shadowBlur = 10;
+          g.beginPath(); g.arc(px, py, q % 3 ? 1.4 : 2.4, 0, 6.29); g.fill(); g.shadowBlur = 0;
+        }
+        if (hasSat) {
+          const a = t * sp + 1.1 + ri, px = Math.cos(a) * R * rx, py = Math.sin(a) * R * ry;
+          if (!(Math.sin(a) < 0 && Math.hypot(px, py) < R)) drawSat(px, py, Math.atan2(Math.cos(a) * ry, -Math.sin(a) * rx) * (sp > 0 ? 1 : -1), 0.5 + 0.1 * Math.sin(a), A);
         }
         g.restore();
       });
-      // lock on Pakistan as it turns to face the camera
+
+      // lock on Pakistan, and the main satellite's scan beams onto it
+      let lk = 0, pkp = null;
       if (st.target) {
-        const ang = facing(o.c, st.target.ll), lk = Math.max(0, Math.min(1, (70 - ang) / 30));
+        const ang = Math.acos(clamp(dot(cvec, vec(st.target.ll[0], st.target.ll[1])), -1, 1)) / RAD;
+        lk = clamp((70 - ang) / 30, 0, 1);
+        pkp = map.project(st.target.ll);
         if (lk > 0) {
           if (!st.lockAt && ang < 45) st.lockAt = now;
-          const p = map.project(st.target.ll), sp = st.lockAt ? Math.min(1, (now - st.lockAt) / 900) : 0, rr = 34 - 14 * sp;
+          const sp = st.lockAt ? Math.min(1, (now - st.lockAt) / 900) : 0, rr = 34 - 14 * sp;
           g.globalAlpha = A * lk; g.strokeStyle = "#4ade80"; g.shadowColor = "#22c55e"; g.shadowBlur = 16; g.lineWidth = 1.6;
-          hex(p.x, p.y, rr, t * 0.6); g.stroke();
-          g.globalAlpha = A * lk * 0.55; g.setLineDash([4, 4]); hex(p.x, p.y, rr + 12, -t * 0.4); g.stroke(); g.setLineDash([]);
-          for (let q = 0; q < 3; q++) {                              // radar ping
-            const ph = (t * 0.7 + q / 3) % 1;
-            g.globalAlpha = A * lk * (1 - ph) * 0.6; g.beginPath(); g.arc(p.x, p.y, 10 + ph * 70, 0, 6.29); g.stroke();
-          }
-          if (sp > 0) {                                              // leader line and label
-            const lx = p.x + 120, ly = p.y - 70;
-            g.globalAlpha = A * sp; g.shadowBlur = 8;
-            g.beginPath(); g.moveTo(p.x + rr * 0.8, p.y - rr * 0.6); g.lineTo(lx - 10, ly + 8); g.lineTo(lx + 210, ly + 8); g.stroke();
+          hex(pkp.x, pkp.y, rr, t * 0.6); g.stroke();
+          g.globalAlpha = A * lk * 0.55; g.setLineDash([4, 4]); hex(pkp.x, pkp.y, rr + 12, -t * 0.4); g.stroke(); g.setLineDash([]);
+          for (let q = 0; q < 3; q++) { const ph = (t * 0.7 + q / 3) % 1; g.globalAlpha = A * lk * (1 - ph) * 0.6; g.beginPath(); g.arc(pkp.x, pkp.y, 10 + ph * 70, 0, 6.29); g.stroke(); }
+          if (sp > 0) {
+            const lx = pkp.x + 120, ly = pkp.y - 70;
+            g.globalAlpha = A * sp; g.shadowBlur = 8; g.beginPath(); g.moveTo(pkp.x + rr * 0.8, pkp.y - rr * 0.6); g.lineTo(lx - 10, ly + 8); g.lineTo(lx + 210, ly + 8); g.stroke();
             g.shadowBlur = 0; g.globalCompositeOperation = "source-over"; g.textAlign = "left";
             g.fillStyle = "#eafff1"; g.font = "800 15px Inter, system-ui, sans-serif"; g.fillText("PAKISTAN", lx, ly);
             g.fillStyle = "#a7f3d0"; g.font = "600 11px ui-monospace, Consolas, monospace"; g.fillText(st.target.sub, lx, ly + 24);
@@ -4190,16 +4314,87 @@ const bgMap = (() => {
           }
         }
       }
+      g.shadowBlur = 0;
+      const bs = [x - R * 1.4, y - R * 0.55];                          // the main satellite, upper left of the globe
+      const aim = lk > 0.1 && pkp ? [pkp.x, pkp.y] : [x - R * 0.25, y - R * 0.15];
+      for (let q = -3; q <= 3; q++) {
+        const ex = aim[0] + q * 13, ey = aim[1] + (q % 2 ? -1 : 1) * 9 + q * 3, gr = g.createLinearGradient(bs[0] + 14, bs[1] + 16, ex, ey);
+        gr.addColorStop(0, `rgba(140,215,255,${0.7 * A})`); gr.addColorStop(1, `rgba(90,175,255,${(0.1 + 0.3 * lk) * A})`);
+        g.strokeStyle = gr; g.lineWidth = 0.8; g.beginPath(); g.moveTo(bs[0] + 14, bs[1] + 16); g.lineTo(ex, ey); g.stroke();
+      }
       g.restore();
+      drawSat(bs[0], bs[1], -0.5, 1.15, A);
+
+      // floating imagery panels with leader lines (chapter 1 only: they exist only while the cards are up)
+      if (st.panels && st.panels.length) {
+        const P = st.panels, pts = P.map(p => map.project(p.ll));
+        const bx = pts.reduce((s, p) => s + p.x, 0) / P.length, by = pts.reduce((s, p) => s + p.y, 0) / P.length, sc = clamp(R / 280, 0.72, 1.15);
+        if (lk > 0.6 && !st.pAt) st.pAt = now;
+        g.save(); g.globalCompositeOperation = "lighter";
+        P.forEach((p, i) => {
+          if (p.dead) return;
+          const on = !!st.pAt && now - st.pAt > i * 260 && p.ready && !st.outAt;
+          p.el.classList.toggle("on", on);
+          const cx = clamp(bx + SLOTS[i % SLOTS.length][0] * sc, 70, W - 70), cy = clamp(by + SLOTS[i % SLOTS.length][1] * sc, 82 + 77, H - 200);
+          p.el.style.transform = `translate(${cx - 60}px, ${cy - 77}px)`;
+          p.la = clamp((p.la || 0) + (on ? 0.04 : -0.06), 0, 1);
+          if (p.la <= 0) return;
+          const ax = pts[i].x, ay = pts[i].y, nx = clamp(ax, cx - 60, cx + 60), ny = clamp(ay, cy - 77, cy + 77);
+          g.globalAlpha = A * p.la * 0.75; g.strokeStyle = "#8fe0ff"; g.lineWidth = 1; g.setLineDash([5, 4]);
+          g.beginPath(); g.moveTo(ax, ay); g.lineTo(nx, ny); g.stroke(); g.setLineDash([]);
+          g.strokeStyle = "#4ade80"; g.shadowColor = "#22c55e"; g.shadowBlur = 8; g.beginPath(); g.arc(ax, ay, 3 + 2 * Math.sin(t * 3 + i), 0, 6.29); g.stroke(); g.shadowBlur = 0;
+        });
+        g.restore();
+      }
+    }
+
+    // information cards and imagery panels: real figures only (RGI v7.0 counts and areas from /api/glaciers/pakistan, the portal's data sources)
+    function ui(on, data) {
+      if (!on) {
+        if (uiEl) { const el = uiEl; uiEl = null; el.classList.remove("on"); el.querySelectorAll(".hp").forEach(p => p.classList.remove("on")); setTimeout(() => el.remove(), 1500); }
+        if (st) st.panels = null;
+        return;
+      }
+      if (uiEl || !st || !data || !data.S || innerWidth < 1360 || innerHeight < 780) return;
+      const { S, majors } = data, sys = S.systems || {}, order = ["Hindu Kush", "Karakoram", "West Himalaya"];
+      const maxA = Math.max(...order.map(n => (sys[n] || {}).km2 || 0), 1);
+      const bars = order.map(n => `<div class="hh-bar"><span>${n}</span><i><b style="width:${Math.round(((sys[n] || {}).km2 || 0) / maxA * 100)}%;background:${SYS_COL[n]}"></b></i><em>${fmtN((sys[n] || {}).km2)} km²</em></div>`).join("");
+      const rows = order.map(n => `<div class="hh-sys"><i style="background:${SYS_COL[n]}"></i><span>${n}<small>RGI region ${hesc((sys[n] || {}).o2region || "")}</small></span><b>${fmtN((sys[n] || {}).n)}</b></div>`).join("");
+      uiEl = document.createElement("div"); uiEl.id = "holo-ui";
+      uiEl.innerHTML = `
+        <div class="hh hh-tag" style="transition-delay:.1s"><span>SATELLITE DATA</span><i>+</i><span>TERRAIN ANALYSIS</span><i>+</i><span>EARLY-WARNING SUPPORT</span></div>
+        <div class="hh hh-src" style="transition-delay:.35s"><h6>Data in this view</h6>
+          <p><i></i>Satellite imagery<small>Esri · Maxar</small></p><p><i></i>Glacier inventory<small>RGI v7.0 · NSIDC</small></p>
+          <p><i></i>Terrain<small>SRTM · AWS Terrain Tiles</small></p><p><i></i>Snow outlook 2026-27<small>seasonal statistical</small></p></div>
+        <div class="hh hh-chart" style="transition-delay:.25s"><h6>Glacier ice inside the study area</h6>${bars}<small>RGI v7.0 whole-glacier areas · ${fmtN(S.total.n)} glaciers · ${fmtN(S.total.km2)} km²</small></div>
+        <div class="hh hh-systems" style="transition-delay:.5s"><h6>Mountain systems</h6>${rows}</div>
+        <div class="hh hh-obs" style="transition-delay:.75s"><span>OBSERVE</span><span>ANALYZE</span><span>UNDERSTAND</span><span>PREPARE</span></div>`;
+      document.body.appendChild(uiEl);
+      requestAnimationFrame(() => requestAnimationFrame(() => uiEl && uiEl.classList.add("on")));
+      // imagery panels: one Esri World Imagery tile (zoom 9, ~78 km wide) per glacier, a green ring marks its centroid in the tile
+      const by = n => (majors || []).filter(f => f.properties.system === n).sort((a, b) => b.properties.area_km2 - a.properties.area_km2);
+      const picks = [by("Karakoram")[0], by("Hindu Kush")[0], by("West Himalaya")[0], by("Karakoram")[1]].filter(Boolean);
+      st.panels = picks.map(f => {
+        const [lng, lat] = f.geometry.coordinates, z = 9, n = 2 ** z, fx = (lng + 180) / 360 * n, lr = lat * RAD, fy = (1 - Math.log(Math.tan(lr) + 1 / Math.cos(lr)) / Math.PI) / 2 * n;
+        const url = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${Math.floor(fy)}/${Math.floor(fx)}`, a = f.properties.area_km2;
+        const el = document.createElement("div"); el.className = "hp";
+        el.innerHTML = `<div class="hp-img" style="background-image:url('${url}')"><i class="hp-x" style="left:${((fx % 1) * 100).toFixed(1)}%;top:${((fy % 1) * 100).toFixed(1)}%"></i></div>
+          <div class="hp-c"><b>${hesc(f.properties.name)}</b><span>${hesc(f.properties.system)} · ${fmtN(a, a < 10 ? 1 : 0)} km² (RGI)</span></div>`;
+        uiEl.appendChild(el);
+        const p = { ll: [lng, lat], el, ready: false, dead: false }, im = new Image();
+        im.onload = () => { p.ready = true; }; im.onerror = () => { p.dead = true; }; im.src = url;
+        return p;
+      });
     }
     function start(target) {
       ensure(); cancelAnimationFrame(raf);
-      st = { t0: st && !st.outAt ? st.t0 : performance.now(), target, outAt: 0, lockAt: 0 };   // a second start (adding the target) keeps the motion
+      const keep = st && !st.outAt ? st : null;                       // a second start (adding the target) keeps the motion and the panels
+      st = { t0: keep ? keep.t0 : performance.now(), target, outAt: 0, lockAt: keep ? keep.lockAt : 0, panels: keep ? keep.panels : null, pAt: keep ? keep.pAt : 0 };
       cv.hidden = false; raf = requestAnimationFrame(frame);
     }
     function out() { if (st && !st.outAt) st.outAt = performance.now(); }
-    function stop() { cancelAnimationFrame(raf); raf = 0; if (cv) { g.clearRect(0, 0, innerWidth, innerHeight); cv.hidden = true; } }
-    return { start, out, stop };
+    function stop() { cancelAnimationFrame(raf); raf = 0; ui(false); if (cv) { g.clearRect(0, 0, innerWidth, innerHeight); cv.hidden = true; } }
+    return { start, out, stop, ui };
   })();
   // Blue "tech mapping" net on the globe (Mapbox): a 15° graticule with glowing nodes every 30°, drawn on the Earth itself, so the same
   // net shows in the storm's window and turns with the globe into chapter 1; it fades as the camera comes down to Pakistan.

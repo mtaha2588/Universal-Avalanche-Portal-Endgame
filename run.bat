@@ -25,6 +25,7 @@ if errorlevel 1 (
 )
 
 rem First run from a GitHub ZIP: .env (Mapbox key) and the local terrain tiles are not in the download.
+if exist .env for %%F in (.env) do if %%~zF==0 del /q .env
 if not exist .env (
   copy /y .env.example .env >nul
   echo  .env created from .env.example.
