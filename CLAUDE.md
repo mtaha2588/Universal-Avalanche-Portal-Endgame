@@ -224,7 +224,7 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
 - Terrain elevation for EVERY 3D map (home Mapbox + MapLibre, map.js, hindukush.js) is `MapPerf.dem()`: open AWS Terrain Tiles (terrarium,
   SRTM-based, z12 = ~30 m) served by the portal at `/api/dem/{z}/{x}/{y}.png` from `data/dem/terrarium` (one-year immutable cache + the
   worker's `map-open` cache). Build with `python scripts/fetch_dem.py` (6,658 tiles, ~400 MB: glacier systems to z12, Pakistan to z9); missing tiles
-  302 to the public copy. `data/dem/` is git/docker-ignored; the Dockerfile downloads it in its own layer. Mapbox's DEM is no longer used, and
+  302 to the public copy. `data/dem/` IS committed to git (so a GitHub ZIP runs offline-terrain out of the box; largest tile 141 KB) but docker-ignored; the Dockerfile downloads it in its own layer. Mapbox's DEM is no longer used, and
   Mapbox tiles must never be bulk-downloaded or stored beyond their headers (their terms) — the user asked for that and was told no.
 - Bump `VER` in sw.js to drop old caches. Headless Chrome inside the Bash sandbox cannot open CacheStorage ("Unexpected internal error");
   test the cache with a profile outside the sandbox.

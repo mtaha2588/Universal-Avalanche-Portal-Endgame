@@ -5,5 +5,3 @@ __pycache__/
 .venv/
 data/*.bak-*.geojson
 dist/
-# Terrain tiles: ~400 MB, rebuilt by scripts/fetch_dem.py
-data/dem/
