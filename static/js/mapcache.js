@@ -40,8 +40,8 @@ const MapPerf = (() => {
   // Terrain elevation for every 3D map: open AWS Terrain Tiles (terrarium), served by the portal itself from data/dem
   // (scripts/fetch_dem.py) with a one-year browser cache; tiles not on disk are redirected to the public copy (app.py).
   // Not Mapbox's DEM: Mapbox's terms forbid storing their tiles, these may be kept.
-  const dem = () => ({ type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: 14,
-    tiles: [location.origin + "/api/dem/{z}/{x}/{y}.png"], attribution: "Elevation: Terrain Tiles (AWS Open Data, Mapzen; SRTM)" });
+  const dem = () => ({ type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: 12,   // z12 is the last local level; deeper zooms overzoom it, so the ground never switches data source (that made it jump)
+    tiles: [location.origin + "/api/dem/{z}/{x}/{y}.png?v=cop1"], attribution: "Elevation: Copernicus DEM GLO-30 (c) DLR e.V. / Airbus, provided under COPERNICUS by the EU and ESA; Terrain Tiles (AWS Open Data; SRTM) for the country view" });
 
   // Cache statistics / clearing, answered by the service worker.
   async function ask(msg) {

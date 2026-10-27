@@ -8,7 +8,7 @@
    - The portal's own pages, JS, CSS and /api data (except /api/dem terrain tiles) are NOT cached here, so edits and data rebuilds always show. */
 "use strict";
 
-const VER = "v1";
+const VER = "v2";
 const TILES = `map-tiles-${VER}`;       // provider tiles, expiry from their headers
 const OPEN = `map-open-${VER}`;         // open-data tiles, 30 days
 const LIB = `map-lib-${VER}`;           // versioned libraries and static vendor files
