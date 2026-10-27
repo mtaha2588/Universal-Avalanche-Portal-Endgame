@@ -838,6 +838,11 @@
   .storm.clear { opacity: 0; pointer-events: none; }
   /* The home panels stay out of sight under the storm, so they never show through the clearing snow (the intro then keeps them hidden). */
   body.storming .shell, body.storming .readout, body.storming .explore-bar { opacity: 0 !important; visibility: hidden; transition: none; }
+  /* The storm has its own title and HUD: the chapter bar and badge wait until it has fully faded (body.stormfade lasts until then), and
+     the Skip button sits below the storm's read-out meanwhile. */
+  body.storming #cine .cine-steps, body.storming #cine .cine-brand, body.stormfade #cine .cine-steps, body.stormfade #cine .cine-brand { opacity: 0 !important; }
+  body.storming #cine .cine-skip, body.stormfade #cine .cine-skip { top: calc(7.5vh + 112px); }
+  #cine .cine-skip { transition: top .6s ease, opacity .4s ease, background .2s, border-color .2s; }
   .storm canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .storm-tx { position: absolute; left: 0; right: 0; top: 13vh; padding: 0 24px; text-align: center; transition: opacity .7s ease, filter .7s ease, transform 1s ease; }
   .storm-tx::before { content: ""; position: absolute; left: 50%; top: 50%; width: min(1100px, 96vw); height: 150%; transform: translate(-50%, -50%); z-index: -1;
@@ -2284,7 +2289,7 @@ const Storm = (() => {
   // globe: set by bgMap.intro() (Mapbox) to a function returning the live globe's screen circle {x, y, r}; null = no window.
   const api = { skipped: false, clear, play, globe: null, get active() { return !!run && !run.done; } };
   const SCAN_AT = 1.0, SCAN_S = 1.9;                         // the relief scan runs from SCAN_AT for SCAN_S seconds
-  const GLOBE_AT = 3.0, GLOBE_OPEN_S = 1.6;                   // then a window opens onto the live globe under the storm (Storm.globe)
+  const GLOBE_AT = 3.0, GLOBE_OPEN_S = 1.6, GLOBE_HOLD_S = 2.5;                   // then a window opens onto the live globe under the storm (Storm.globe)
 
   // ----- snow: four depth layers of wind-driven streaks (one path each), fine far specks, and large out-of-focus flakes near the lens -----
   const DEPTHS = 4;
@@ -2298,7 +2303,7 @@ const Storm = (() => {
     dpr = Math.min(1.5, window.devicePixelRatio || 1);
     W = innerWidth; H = innerHeight;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    const n = Math.min(2600, Math.round(W * H / 600));          // the opening blizzard uses all of them; the storm settles to ~60 %
+    const n = Math.min(2600, Math.round(W * H / 600));          // a heavy blizzard: about 1.7x the earlier storm
     flakes = Array.from({ length: n }, () => {
       const d = Math.floor(Math.random() * DEPTHS);
       return { x: Math.random() * W, y: Math.random() * H, d, z: 0.25 + (d + Math.random()) / DEPTHS * 0.75, p: Math.random() * 6.28, g: Math.random() < 0.05 };
@@ -2507,16 +2512,16 @@ const Storm = (() => {
         const [x, y] = p.xy, age = (sx - x) / W * 1.6;
         if (age <= 0) return;
         const r = 2 + 16 * Math.min(1, age * 2.2);
-        ctx.globalAlpha = (1 - c) * Math.max(0, 1 - age * 2.2) * 0.8;
+        ctx.globalAlpha = (1 - c) * (1 - gOpen) * Math.max(0, 1 - age * 2.2) * 0.8;
         ctx.strokeStyle = "#67e8f9"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.29); ctx.stroke();
-        ctx.globalAlpha = (1 - c) * 0.95; ctx.fillStyle = "#e0f7ff";
+        ctx.globalAlpha = (1 - c) * (1 - 0.7 * gOpen) * 0.95; ctx.fillStyle = "#e0f7ff";
         ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 10; ctx.beginPath(); ctx.arc(x, y, 1.9, 0, 6.29); ctx.fill(); ctx.shadowBlur = 0;
       });
       // target lock on the highest DEM cell once the scan has passed it: rotating brackets and its coordinates
       const top = peaks[0];
       if (top && sx > top.xy[0]) {
         const k = ease((sx - top.xy[0]) / (W * 0.18)), [x, y] = top.xy, rr = 34 - 12 * k, rot = t * 0.9;
-        ctx.globalAlpha = (1 - c) * k; ctx.strokeStyle = "#a5f3fc"; ctx.lineWidth = 1.6; ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 12;
+        ctx.globalAlpha = (1 - c) * (1 - gOpen) * k; ctx.strokeStyle = "#a5f3fc"; ctx.lineWidth = 1.6; ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 12;
         for (let q = 0; q < 4; q++) { ctx.beginPath(); ctx.arc(x, y, rr, rot + q * Math.PI / 2, rot + q * Math.PI / 2 + 0.7); ctx.stroke(); }
         ctx.beginPath(); ctx.moveTo(x - rr - 10, y); ctx.lineTo(x - rr + 4, y); ctx.moveTo(x + rr - 4, y); ctx.lineTo(x + rr + 10, y);
         ctx.moveTo(x, y - rr - 10); ctx.lineTo(x, y - rr + 4); ctx.stroke();
@@ -2543,21 +2548,21 @@ const Storm = (() => {
       ctx.fillStyle = hole; ctx.beginPath(); ctx.arc(gw.x, gw.y, R * 1.18, 0, 6.29); ctx.fill();
       ctx.fillStyle = `rgba(0,0,0,${gOpen})`; ctx.beginPath(); ctx.arc(gw.x, gw.y, R * 0.92, 0, 6.29); ctx.fill();
       ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = gOpen * (1 - c) * (0.55 + 0.15 * Math.sin(t * 2.4));
-      ctx.strokeStyle = "#67e8f9"; ctx.lineWidth = 1.3; ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 22;
+      ctx.globalAlpha = gOpen * (1 - 0.5 * c) * (0.85 + 0.15 * Math.sin(t * 2.4));
+      ctx.strokeStyle = "#67e8f9"; ctx.lineWidth = 2; ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 22;
       ctx.beginPath(); ctx.arc(gw.x, gw.y, R * 1.03, 0, 6.29); ctx.stroke();
       // two tilted orbit rings round the globe, each with a node running along it (decorative "tech mapping")
       [[-0.38, 1.32, 0.3, 0.5], [0.52, 1.22, 0.24, -0.7]].forEach(([tilt, rx, ry, sp]) => {
         ctx.save();
         ctx.translate(gw.x, gw.y); ctx.rotate(tilt);
-        ctx.globalAlpha = gOpen * (1 - c) * 0.5; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1; ctx.shadowColor = "#0ea5e9"; ctx.shadowBlur = 10;
+        ctx.globalAlpha = gOpen * (1 - 0.5 * c) * 0.9; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1.5; ctx.shadowColor = "#0ea5e9"; ctx.shadowBlur = 12;
         ctx.setLineDash([6, 5]); ctx.beginPath(); ctx.ellipse(0, 0, R * rx, R * ry, 0, 0, 6.29); ctx.stroke(); ctx.setLineDash([]);
         const a = t * sp;
-        ctx.globalAlpha = gOpen * (1 - c); ctx.fillStyle = "#e0f7ff"; ctx.shadowBlur = 16;
-        ctx.beginPath(); ctx.arc(Math.cos(a) * R * rx, Math.sin(a) * R * ry, 2.6, 0, 6.29); ctx.fill();
+        ctx.globalAlpha = gOpen * (1 - 0.5 * c); ctx.fillStyle = "#e0f7ff"; ctx.shadowBlur = 18;
+        ctx.beginPath(); ctx.arc(Math.cos(a) * R * rx, Math.sin(a) * R * ry, 3.2, 0, 6.29); ctx.fill();
         ctx.restore();
       });
-      ctx.globalAlpha = gOpen * (1 - c) * 0.33; ctx.lineWidth = 1; ctx.shadowBlur = 0;   // a slow orbit of tick marks round the rim
+      ctx.globalAlpha = gOpen * (1 - 0.5 * c) * 0.5; ctx.lineWidth = 1; ctx.shadowBlur = 0;   // a slow orbit of tick marks round the rim
       for (let k = 0; k < 72; k++) {
         const a = k / 72 * 6.283 + t * 0.15, l = k % 6 ? 4 : 10;
         ctx.beginPath(); ctx.moveTo(gw.x + Math.cos(a) * R * 1.07, gw.y + Math.sin(a) * R * 1.07);
@@ -2571,10 +2576,10 @@ const Storm = (() => {
     const wind = 1 + 5 * c * c, gust = 0.75 + 0.25 * Math.sin(t * 1.6) + 0.12 * Math.sin(t * 4.1);
     ctx.globalAlpha = 1;
     ctx.lineCap = "round";
-    // Heavy snow first: a full blizzard until the globe window opens, then it settles to the normal storm (60 % of the streaks).
-    const heavy = 1 - ease((t - GLOBE_AT + 0.4) / 1.4);
-    const fade = ease(t / 0.6) * (1 - c * 0.6), len = (0.018 + 0.008 * heavy) * wind;
-    const lim = Math.round(flakes.length * (0.6 + 0.4 * heavy));
+    // Heavy snow: a full blizzard for the whole storm (every streak, longer and brighter), also over the globe window.
+    const heavy = 1;
+    const fade = ease(t / 0.6) * (1 - c * 0.6), len = (0.018 + 0.012 * heavy) * wind;
+    const lim = flakes.length;
     // fine far specks: one path for all of them
     ctx.fillStyle = `rgba(214,234,255,${(0.45 + 0.25 * heavy) * fade})`;
     ctx.beginPath();
@@ -2693,10 +2698,13 @@ const Storm = (() => {
       r.asked = true;
       const go = () => {
         if (r.clearAt || r.done || run !== r) return;
+        const el2 = performance.now() - r.t0;                  // with a globe, clear only after it has been on screen GLOBE_HOLD_S
+        if (now !== true && api.globe && el2 < MAX_WAIT_MS - 300 && (!r.gAt || el2 < (r.gAt + GLOBE_HOLD_S) * 1000)) { setTimeout(go, 150); return; }
         r.clearAt = performance.now();
         el.style.background = "transparent";               // from here the canvas draws the fading dark ground itself
         el.classList.add("clear");
         document.body.classList.remove("storming");        // the intro (body.cinema) keeps the panels hidden; after a skip they fade in
+        document.body.classList.add("stormfade");
         setTimeout(r.resolve, CLEAR_MS * 0.55);           // the intro's first caption arrives as the view opens
       };
       setTimeout(go, now === true ? 0 : Math.max(0, MIN_MS - (performance.now() - r.t0)));
@@ -2708,6 +2716,7 @@ const Storm = (() => {
   function finish(r) {
     r.done = true; r.resolve();
     api.globe = null;                                       // the window stays open until the storm has fully faded
+    document.body.classList.remove("stormfade");
     el.hidden = true;
     removeEventListener("keydown", onKey); removeEventListener("resize", size);
   }
