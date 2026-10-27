@@ -1,5 +1,5 @@
 @echo off
-title Pakistan Avalanche Intelligence Portal
+title Snow Avalanche Prediction Using AI
 cd /d "%~dp0"
 
 where python >nul 2>&1
@@ -22,6 +22,24 @@ fc /b requirements.txt .venv\requirements.installed >nul 2>&1
 if errorlevel 1 (
   echo Installing dependencies...
   pip install -q -r requirements.txt && copy /y requirements.txt .venv\requirements.installed >nul
+)
+
+rem First run from a GitHub ZIP: .env (Mapbox key) and the local terrain tiles are not in the download.
+if not exist .env (
+  copy /y .env.example .env >nul
+  echo.
+  echo  .env created. Without a Mapbox key the portal uses the basic map and the intro has NO globe.
+  echo  Open .env in Notepad, set MAPBOX_TOKEN=pk... then run this file again.
+  echo.
+  notepad .env
+  pause
+  exit /b 0
+)
+if not exist data\dem\terrarium (
+  echo.
+  echo  The local terrain tiles are missing ^(about 400 MB^). Without them the 3D terrain loads slowly from the internet.
+  choice /c YN /t 15 /d Y /m " Download them now in the background"
+  if not errorlevel 2 start "Terrain download" /min python scripts\fetch_dem.py
 )
 
 echo Starting portal server...
