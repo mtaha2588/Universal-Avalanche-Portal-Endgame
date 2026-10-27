@@ -262,8 +262,13 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   Canvas rule: every `ctx.save()` in `Storm.frame` needs its `restore()`; a missing one once shifted all the snow half a screen to the right.
   `body.storming` hides the home panels meanwhile. Esc / Space / click skips storm and intro.
 - Header badges flip to the same official logo file on the back (no generated stand-in faces).
-- Chapter order: 1 Pakistan (with the globe) -> 2 Northern Pakistan -> 3-5 the systems. Chapter 1 (Mapbox): the storm clears onto the Earth
-  (globe zoom 1.3, `GLOBE_FOG` atmosphere + stars, world mask and Mapbox place labels off), which turns west to east for 4 s until Pakistan faces
+- Storm -> globe integration (Mapbox): at intro start the map goes to a small globe low on the screen (`stormPadding()`, zoom 0.45) and starts
+  turning (`spin()`, one jumpTo per frame, 14°/s slowing near 40°E so it never passes Pakistan). After the storm's terrain scan (`GLOBE_AT` 3 s)
+  the storm opens a feathered window onto it (`Storm.globe` returns the globe's screen circle; cyan rim + orbiting ticks; relief fades to 40 %),
+  snow still falling over it. When the storm clears, chapter 1 eases the SAME globe up and larger (padding -> `introPadding()`) and on to
+  Pakistan, starting at the spin's speed (ease-out), so there is no cut. A skip stops the spin and restores fog / labels.
+- Chapter order: 1 Pakistan (with the globe) -> 2 Northern Pakistan -> 3-5 the systems. Chapter 1 (Mapbox): the storm clears onto the turning Earth
+  (globe, `GLOBE_FOG` atmosphere + stars, world mask and Mapbox place labels off), which turns west to east for 4 s until Pakistan faces
   the camera (caption "Chapter 1 · Pakistan / Snow Avalanche Prediction Using AI", `long` two-line title), then zooms 3.8 s to Pakistan: `PAGE_FOG`,
   labels (`showLabels`) and the spotlight come back on the way down, the "Pakistan" study-area caption with figures, border glow, short orbit.
   MapLibre (no globe) starts on Pakistan. Chapters 1+2 now take about 19 s (they were about 30 s with the separate globe prologue).
