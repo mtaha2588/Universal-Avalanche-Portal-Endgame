@@ -272,6 +272,13 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   fade as the window opens. `Storm.globe` is cleared only in `finish()`; `body.stormfade` (clear -> finish) keeps the chapter bar and badge
   hidden until the storm has fully faded, and the Skip button sits below the storm's read-out meanwhile. When the storm clears, chapter 1 eases the SAME globe up and larger (padding -> `introPadding()`) and on to
   Pakistan, starting at the spin's speed (ease-out), so there is no cut. A skip stops the spin and restores fog / labels.
+- Holographic globe (user's reference: a blue "tech" Earth with dotted continents and orbit rings; built by the page, nothing copied):
+  `holoMap(on)` fades the satellite raster out and draws navy oceans (Mapbox Streets `water`) over dotted blue land (`holo-tint` +
+  `holo-dots` background pattern), blue `GLOBE_FOG`, blue-tinted soft hillshade; `Holo` is a canvas overlay (`#holo`, above the storm
+  while it plays, below the captions after) drawing halo + rim, light spikes, three tilted orbit rings whose far half hides behind the
+  globe, running particles, and the lock on Pakistan (green hexagon reticle, radar ping, label "PAKISTAN · STUDY AREA · <km²>" from
+  `/api/glaciers/pakistan`). Inside the storm it opens with the window (`Storm.gOpen`). At the zoom-in (`later(1600)`) the hologram
+  dissolves back to satellite and `Holo.out()` fades the overlay; a skip calls `holoMap(false)` + `Holo.stop()`.
 - Chapter order: 1 Pakistan (with the globe) -> 2 Northern Pakistan -> 3-5 the systems. Chapter 1 (Mapbox): the storm clears onto the turning Earth
   (globe, `GLOBE_FOG` atmosphere + stars, world mask and Mapbox place labels off), which turns west to east for 4 s until Pakistan faces
   the camera (caption "Chapter 1 · Pakistan / Snow Avalanche Prediction Using AI", `long` two-line title), then zooms 3.8 s to Pakistan: `PAGE_FOG`,

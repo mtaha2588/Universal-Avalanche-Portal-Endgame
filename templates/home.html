@@ -842,6 +842,9 @@
      the Skip button sits below the storm's read-out meanwhile. */
   body.storming #cine .cine-steps, body.storming #cine .cine-brand, body.stormfade #cine .cine-steps, body.stormfade #cine .cine-brand { opacity: 0 !important; }
   body.storming #cine .cine-skip, body.stormfade #cine .cine-skip { top: calc(7.5vh + 112px); }
+  /* Holo overlay (globe rim, orbit rings, Pakistan lock): above the storm while it plays, below the intro captions afterwards */
+  #holo { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 39; }
+  body.storming #holo, body.stormfade #holo { z-index: 61; }
   #cine .cine-skip { transition: top .6s ease, opacity .4s ease, background .2s, border-color .2s; }
   .storm canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .storm-tx { position: absolute; left: 0; right: 0; top: 13vh; padding: 0 24px; text-align: center; transition: opacity .7s ease, filter .7s ease, transform 1s ease; }
@@ -2288,7 +2291,7 @@ const Storm = (() => {
   const MIN_MS = 5000, CLEAR_MS = 1100, MAX_WAIT_MS = 12000;  // the storm clears after MIN_MS once asked, and never later than MAX_WAIT_MS
   let W = 0, H = 0, dpr = 1, relief = null, demGrid = null, peaks = [], dots = [], run = null;
   // globe: set by bgMap.intro() (Mapbox) to a function returning the live globe's screen circle {x, y, r}; null = no window.
-  const api = { skipped: false, clear, play, globe: null, get active() { return !!run && !run.done; } };
+  const api = { skipped: false, clear, play, globe: null, gOpen: 0, get active() { return !!run && !run.done; } };
   const SCAN_AT = 1.0, SCAN_S = 1.9;                         // the relief scan runs from SCAN_AT for SCAN_S seconds
   const GLOBE_AT = 3.0, GLOBE_OPEN_S = 1.6, GLOBE_HOLD_S = 2.5;                   // then a window opens onto the live globe under the storm (Storm.globe)
 
@@ -2535,8 +2538,10 @@ const Storm = (() => {
       }
       ctx.restore();
     }
-    // Window onto the live globe: the real Mapbox Earth, already turning under the storm, shows through a feathered circle with a
-    // cyan rim; the snow keeps falling over it. When the storm clears, chapter 1 carries on with this same globe.
+    // Window onto the live globe: the real Mapbox Earth (holographic look), already turning under the storm, shows through a feathered
+    // circle; the snow keeps falling over it. Its rim, orbit rings and the Pakistan lock are drawn by the Holo overlay (api.gOpen),
+    // so they carry on unchanged when the storm clears and chapter 1 continues with this same globe.
+    api.gOpen = gOpen;
     const gw = gOpen > 0 && api.globe ? api.globe() : null;
     if (gw && gw.r > 4) {
       if (!r0.open) { r0.open = true; el.style.background = "transparent"; }
@@ -2548,27 +2553,6 @@ const Storm = (() => {
       hole.addColorStop(0, `rgba(0,0,0,${gOpen})`); hole.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = hole; ctx.beginPath(); ctx.arc(gw.x, gw.y, R * 1.18, 0, 6.29); ctx.fill();
       ctx.fillStyle = `rgba(0,0,0,${gOpen})`; ctx.beginPath(); ctx.arc(gw.x, gw.y, R * 0.92, 0, 6.29); ctx.fill();
-      ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = gOpen * (1 - 0.5 * c) * (0.85 + 0.15 * Math.sin(t * 2.4));
-      ctx.strokeStyle = "#67e8f9"; ctx.lineWidth = 2; ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 22;
-      ctx.beginPath(); ctx.arc(gw.x, gw.y, R * 1.03, 0, 6.29); ctx.stroke();
-      // two tilted orbit rings round the globe, each with a node running along it (decorative "tech mapping")
-      [[-0.38, 1.32, 0.3, 0.5], [0.52, 1.22, 0.24, -0.7]].forEach(([tilt, rx, ry, sp]) => {
-        ctx.save();
-        ctx.translate(gw.x, gw.y); ctx.rotate(tilt);
-        ctx.globalAlpha = gOpen * (1 - 0.5 * c) * 0.9; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1.5; ctx.shadowColor = "#0ea5e9"; ctx.shadowBlur = 12;
-        ctx.setLineDash([6, 5]); ctx.beginPath(); ctx.ellipse(0, 0, R * rx, R * ry, 0, 0, 6.29); ctx.stroke(); ctx.setLineDash([]);
-        const a = t * sp;
-        ctx.globalAlpha = gOpen * (1 - 0.5 * c); ctx.fillStyle = "#e0f7ff"; ctx.shadowBlur = 18;
-        ctx.beginPath(); ctx.arc(Math.cos(a) * R * rx, Math.sin(a) * R * ry, 3.2, 0, 6.29); ctx.fill();
-        ctx.restore();
-      });
-      ctx.globalAlpha = gOpen * (1 - 0.5 * c) * 0.5; ctx.lineWidth = 1; ctx.shadowBlur = 0;   // a slow orbit of tick marks round the rim
-      for (let k = 0; k < 72; k++) {
-        const a = k / 72 * 6.283 + t * 0.15, l = k % 6 ? 4 : 10;
-        ctx.beginPath(); ctx.moveTo(gw.x + Math.cos(a) * R * 1.07, gw.y + Math.sin(a) * R * 1.07);
-        ctx.lineTo(gw.x + Math.cos(a) * (R * 1.07 + l), gw.y + Math.sin(a) * (R * 1.07 + l)); ctx.stroke();
-      }
       ctx.restore();
     }
     atmosphere();
@@ -3426,7 +3410,7 @@ const bgMap = (() => {
   // so a region or glacier is seen from several sides in 3D.
   // Page atmosphere, and the intro's globe atmosphere (Mapbox: thin bright limb, deep blue sky, dense stars) for chapter 1's revolving Earth.
   const PAGE_FOG = { range: [0.8, 9], color: "#0b1a33", "high-color": "#1e3a8a", "space-color": "#02060d", "horizon-blend": 0.12, "star-intensity": 0.35 };
-  const GLOBE_FOG = { range: [0.8, 9], color: "#bad2eb", "high-color": "#245bde", "space-color": "#01030b", "horizon-blend": 0.03, "star-intensity": 0.8 };
+  const GLOBE_FOG = { range: [0.8, 9], color: "#5fb4ff", "high-color": "#1d5cff", "space-color": "#010616", "horizon-blend": 0.07, "star-intensity": 0.55 };
   const orbitShot = (deg, ms, pitch) => ({ bearing: map.getBearing() + deg, ...(pitch ? { pitch } : {}), duration: ms, easing: glide });
   const fmt0 = n => Math.round(n).toLocaleString("en-GB");
   // room for the caption (left), the layer legend (right) and the DEM / weather cards (bottom right)
@@ -3930,6 +3914,8 @@ const bgMap = (() => {
         run.labels.forEach(id => map.setLayoutProperty(id, "visibility", "none"));
         spin(run, true);
         techNet(true);
+        holoMap(true);
+        Holo.start(null);
         Storm.globe = () => {
           const c = map.getCenter(), p = map.project(c), q = map.project([c.lng, c.lat - 85]);
           return { x: p.x, y: p.y, r: Math.hypot(q.x - p.x, q.y - p.y) };
@@ -3946,6 +3932,7 @@ const bgMap = (() => {
       const pkCam = { center: pk.center, zoom: pk.zoom, pitch: 40, bearing: -6 };
       if (globe) {
         if (map.getLayer("mask-fill")) { map.setPaintProperty("mask-fill", "fill-opacity-transition", { duration: 0, delay: 0 }); map.setPaintProperty("mask-fill", "fill-opacity", 0); }
+        Holo.start({ ll: GL.LngLat.convert(pk.center).toArray(), sub: S ? `STUDY AREA · ${Math.round(S.study_area_km2).toLocaleString("en-GB")} km²` : "STUDY AREA" });
         warm([pkCam, wide && wide.start]);
       } else {
         spotlight(true);
@@ -3968,7 +3955,7 @@ const bgMap = (() => {
         const dur = Math.max(2200, Math.min(4500, 2 * d / v * 1000));
         spin(run, false);
         await move("easeTo", { center: [lng + d, 29], zoom: 1.6, padding: introPadding(), duration: dur, easing: t => 1 - (1 - t) * (1 - t) });
-        later(1600, () => { try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ } spotlight(true); showLabels(run); techNet(false); });   // atmosphere and labels back, net off, once below orbit
+        later(1600, () => { try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ } spotlight(true); showLabels(run); techNet(false); holoMap(false); Holo.out(); });   // satellite, atmosphere and labels back once below orbit
         later(1800, pkCaption);
         await move("flyTo", { ...pkCam, duration: 3800, curve: 1.5 });
       } else pkCaption();
@@ -4072,6 +4059,148 @@ const bgMap = (() => {
     };
     run.spinRaf = requestAnimationFrame(f);
   }
+  // ---------- holographic globe (intro storm + chapter 1, Mapbox) ----------
+  // Map side (holoMap): the satellite imagery fades out and the Earth is drawn as a hologram: navy oceans (Mapbox Streets water polygons)
+  // over dotted blue land (a dot pattern), with the blue atmosphere (GLOBE_FOG) and the tech net. It fades back to satellite imagery as
+  // the camera comes down to Pakistan. Overlay side (Holo): a canvas tied to the globe's screen circle draws the rim glow, light spikes,
+  // tilted orbit rings with running particles (they pass behind the globe), and the lock on Pakistan (hexagon reticle, label, study-area
+  // figure). Decorative styling; the only data shown are Pakistan's official outline (map layer) and its study-area figure.
+  function holoMap(on) {
+    const sat = (map.getStyle().layers.find(l => l.type === "raster" && /satellite/.test(l.id)) || {}).id;
+    if (on && !map.getLayer("holo-tint") && map.getSource("composite")) {
+      const n = 12, d = new Uint8Array(n * n * 4);                   // one soft cyan dot per 12 px cell (pixelRatio 2 = 6 px on screen)
+      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+        const r = Math.hypot(x - 5.5, y - 5.5), a = Math.max(0, Math.min(1, 2.6 - r)), i = (y * n + x) * 4;
+        d[i] = 120; d[i + 1] = 214; d[i + 2] = 255; d[i + 3] = Math.round(a * 255);
+      }
+      if (!map.hasImage("holo-dots")) map.addImage("holo-dots", { width: n, height: n, data: d }, { pixelRatio: 2 });
+      const ls = map.getStyle().layers, i = ls.findIndex(l => l.id === sat), before = i >= 0 && ls[i + 1] ? ls[i + 1].id : undefined;
+      const tr = { duration: 1400, delay: 0 };
+      map.addLayer({ id: "holo-tint", type: "background", layout: { visibility: "none" }, paint: { "background-color": "#0b3d91", "background-opacity": 0, "background-opacity-transition": tr } }, before);
+      map.addLayer({ id: "holo-dots", type: "background", layout: { visibility: "none" }, paint: { "background-pattern": "holo-dots", "background-opacity": 0, "background-opacity-transition": tr } }, before);
+      map.addLayer({ id: "holo-water", type: "fill", source: "composite", "source-layer": "water", layout: { visibility: "none" },
+        paint: { "fill-color": "#020c2b", "fill-opacity": 0, "fill-opacity-transition": tr } }, before);
+    }
+    if (!map.getLayer("holo-tint")) return;
+    const ids = ["holo-tint", "holo-dots", "holo-water"];
+    clearTimeout(holoMap.off);
+    if (on) ids.forEach(id => map.setLayoutProperty(id, "visibility", "visible"));
+    map.setPaintProperty("holo-tint", "background-opacity", on ? 0.95 : 0);
+    map.setPaintProperty("holo-dots", "background-opacity", on ? 1 : 0);
+    map.setPaintProperty("holo-water", "fill-opacity", on ? 1 : 0);
+    if (sat) { map.setPaintProperty(sat, "raster-opacity-transition", { duration: 1400, delay: 0 }); map.setPaintProperty(sat, "raster-opacity", on ? 0 : 1); }
+    if (map.getLayer("hillshade")) {                                 // relief as faint blue light, not white cloud-like streaks
+      map.setPaintProperty("hillshade", "hillshade-highlight-color", on ? "#3b82f6" : HILLSHADE["hillshade-highlight-color"]);
+      map.setPaintProperty("hillshade", "hillshade-exaggeration", on ? 0.35 : (cine ? 0.9 : HILLSHADE["hillshade-exaggeration"]));
+    }
+    if (!on) holoMap.off = setTimeout(() => ids.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none"); }), 1500);
+  }
+  const Holo = (() => {
+    let cv = null, g = null, raf = 0, st = null;
+    const RINGS = [[-0.42, 1.30, 0.30, 0.42, 3], [0.36, 1.22, 0.24, -0.6, 2], [-0.08, 1.42, 0.16, 0.3, 2]];   // tilt, rx, ry, speed, lines
+    const SPIKES = Array.from({ length: 64 }, (_, k) => ({ a: k / 64 * 6.283 + (k % 3) * 0.031, l: 0.05 + ((k * 37) % 23) / 23 * 0.22, p: (k * 1.7) % 6.28 }));
+    function size() { const dpr = Math.min(1.5, devicePixelRatio || 1); cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    function ensure() {
+      if (cv) return;
+      cv = document.createElement("canvas"); cv.id = "holo"; cv.setAttribute("aria-hidden", "true");
+      document.body.appendChild(cv); g = cv.getContext("2d"); size(); addEventListener("resize", () => cv && size());
+    }
+    // the globe's circle on screen, and how far (degrees) a lng/lat is from the point facing the camera
+    function circle() {
+      const c = map.getCenter(), p = map.project(c), q = map.project([c.lng, c.lat - 85]);
+      return { x: p.x, y: p.y, r: Math.hypot(q.x - p.x, q.y - p.y), c };
+    }
+    function facing(c, ll) {
+      const r = Math.PI / 180, a = Math.sin(c.lat * r) * Math.sin(ll[1] * r) + Math.cos(c.lat * r) * Math.cos(ll[1] * r) * Math.cos((ll[0] - c.lng) * r);
+      return Math.acos(Math.max(-1, Math.min(1, a))) / r;
+    }
+    const hex = (x, y, r, rot) => {
+      g.beginPath();
+      for (let k = 0; k <= 6; k++) { const a = rot + k * Math.PI / 3; if (k) g.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); else g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); }
+    };
+    function frame(now) {
+      raf = requestAnimationFrame(frame);
+      const W = innerWidth, H = innerHeight, t = (now - st.t0) / 1000;
+      g.clearRect(0, 0, W, H);
+      const k = Storm.active ? Storm.gOpen : 1;                      // inside the storm it opens with the storm's window
+      const fade = st.outAt ? Math.max(0, 1 - (now - st.outAt) / 1200) : 1;
+      if (fade <= 0) { stop(); return; }
+      const A = k * fade;
+      if (A <= 0.01) return;
+      const o = circle();
+      if (!(o.r > 6)) return;
+      const R = o.r * (Storm.active ? 0.6 + 0.4 * k : 1);
+      if (R > Math.max(W, H) * 1.4) return;                          // zoomed in past the globe view: nothing to frame
+      const { x, y } = o;
+      g.save(); g.globalCompositeOperation = "lighter";
+      // halo and rim
+      const halo = g.createRadialGradient(x, y, R * 0.96, x, y, R * 1.3);
+      halo.addColorStop(0, `rgba(56,149,255,${0.32 * A})`); halo.addColorStop(1, "rgba(56,149,255,0)");
+      g.fillStyle = halo; g.beginPath(); g.arc(x, y, R * 1.3, 0, 6.29); g.fill();
+      g.globalAlpha = A * (0.8 + 0.2 * Math.sin(t * 2.2)); g.strokeStyle = "#8fd3ff"; g.lineWidth = 1.6; g.shadowColor = "#38bdf8"; g.shadowBlur = 20;
+      g.beginPath(); g.arc(x, y, R * 1.004, 0, 6.29); g.stroke(); g.shadowBlur = 0;
+      // light spikes off the rim
+      g.lineWidth = 1; g.strokeStyle = "#7cc8ff";
+      SPIKES.forEach(s => {
+        const l = R * s.l * (0.55 + 0.45 * Math.sin(t * 1.7 + s.p)), a = s.a + t * 0.04;
+        g.globalAlpha = A * 0.45;
+        g.beginPath(); g.moveTo(x + Math.cos(a) * R * 1.01, y + Math.sin(a) * R * 1.01); g.lineTo(x + Math.cos(a) * (R * 1.01 + l), y + Math.sin(a) * (R * 1.01 + l)); g.stroke();
+      });
+      // orbit rings: the far half is hidden behind the globe, the near half crosses in front of it
+      RINGS.forEach(([tilt, rx, ry, sp, lines], ri) => {
+        g.save(); g.translate(x, y); g.rotate(tilt);
+        for (let j = 0; j < lines; j++) {
+          const s = 1 + j * 0.035;
+          g.strokeStyle = "#5fb8ff"; g.lineWidth = j ? 0.8 : 1.4; g.globalAlpha = A * (j ? 0.35 : 0.7);
+          g.save(); g.beginPath(); g.rect(-W * 2, -H * 2, W * 4, H * 4); g.arc(0, 0, R * 0.995, 0, 6.29, true); g.clip("evenodd");
+          g.beginPath(); g.ellipse(0, 0, R * rx * s, R * ry * s, 0, Math.PI, 2 * Math.PI); g.stroke(); g.restore();   // far half, outside the disc only
+          g.beginPath(); g.ellipse(0, 0, R * rx * s, R * ry * s, 0, 0, Math.PI); g.stroke();                          // near half
+        }
+        for (let q = 0; q < 9; q++) {                                // particles with short trails
+          const a = t * sp + q / 9 * 6.283 + ri, px = Math.cos(a) * R * rx, py = Math.sin(a) * R * ry;
+          if (Math.sin(a) < 0 && Math.hypot(px, py) < R) continue;  // behind the globe
+          g.globalAlpha = A * 0.9; g.fillStyle = "#e6f6ff"; g.shadowColor = "#38bdf8"; g.shadowBlur = 12;
+          g.beginPath(); g.arc(px, py, q % 3 ? 1.6 : 2.8, 0, 6.29); g.fill(); g.shadowBlur = 0;
+          g.globalAlpha = A * 0.35; g.strokeStyle = "#9bd9ff"; g.lineWidth = 1;
+          g.beginPath(); g.ellipse(0, 0, R * rx, R * ry, 0, sp > 0 ? a - 0.22 : a, sp > 0 ? a : a + 0.22); g.stroke();
+        }
+        g.restore();
+      });
+      // lock on Pakistan as it turns to face the camera
+      if (st.target) {
+        const ang = facing(o.c, st.target.ll), lk = Math.max(0, Math.min(1, (70 - ang) / 30));
+        if (lk > 0) {
+          if (!st.lockAt && ang < 45) st.lockAt = now;
+          const p = map.project(st.target.ll), sp = st.lockAt ? Math.min(1, (now - st.lockAt) / 900) : 0, rr = 34 - 14 * sp;
+          g.globalAlpha = A * lk; g.strokeStyle = "#4ade80"; g.shadowColor = "#22c55e"; g.shadowBlur = 16; g.lineWidth = 1.6;
+          hex(p.x, p.y, rr, t * 0.6); g.stroke();
+          g.globalAlpha = A * lk * 0.55; g.setLineDash([4, 4]); hex(p.x, p.y, rr + 12, -t * 0.4); g.stroke(); g.setLineDash([]);
+          for (let q = 0; q < 3; q++) {                              // radar ping
+            const ph = (t * 0.7 + q / 3) % 1;
+            g.globalAlpha = A * lk * (1 - ph) * 0.6; g.beginPath(); g.arc(p.x, p.y, 10 + ph * 70, 0, 6.29); g.stroke();
+          }
+          if (sp > 0) {                                              // leader line and label
+            const lx = p.x + 120, ly = p.y - 70;
+            g.globalAlpha = A * sp; g.shadowBlur = 8;
+            g.beginPath(); g.moveTo(p.x + rr * 0.8, p.y - rr * 0.6); g.lineTo(lx - 10, ly + 8); g.lineTo(lx + 210, ly + 8); g.stroke();
+            g.shadowBlur = 0; g.globalCompositeOperation = "source-over"; g.textAlign = "left";
+            g.fillStyle = "#eafff1"; g.font = "800 15px Inter, system-ui, sans-serif"; g.fillText("PAKISTAN", lx, ly);
+            g.fillStyle = "#a7f3d0"; g.font = "600 11px ui-monospace, Consolas, monospace"; g.fillText(st.target.sub, lx, ly + 24);
+            g.globalCompositeOperation = "lighter";
+          }
+        }
+      }
+      g.restore();
+    }
+    function start(target) {
+      ensure(); cancelAnimationFrame(raf);
+      st = { t0: st && !st.outAt ? st.t0 : performance.now(), target, outAt: 0, lockAt: 0 };   // a second start (adding the target) keeps the motion
+      cv.hidden = false; raf = requestAnimationFrame(frame);
+    }
+    function out() { if (st && !st.outAt) st.outAt = performance.now(); }
+    function stop() { cancelAnimationFrame(raf); raf = 0; if (cv) { g.clearRect(0, 0, innerWidth, innerHeight); cv.hidden = true; } }
+    return { start, out, stop };
+  })();
   // Blue "tech mapping" net on the globe (Mapbox): a 15° graticule with glowing nodes every 30°, drawn on the Earth itself, so the same
   // net shows in the storm's window and turns with the globe into chapter 1; it fades as the camera comes down to Pakistan.
   // Decorative geometry (lines of latitude / longitude), not data.
@@ -4117,7 +4246,7 @@ const bgMap = (() => {
     if (stopCamera) map.stop();
     unping(run);
     spotlight(false);
-    spin(run, false); Storm.globe = null; techNet(false);
+    spin(run, false); Storm.globe = null; techNet(false); holoMap(false); Holo.stop();
     if (engine === "mapbox") try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ }   // a skip during the globe
     showLabels(run);
     if (stopCamera && map.getZoom() < 3) map.jumpTo({ center: GLACIERS.centers.ALL || [74, 35.5], zoom: 5.4, pitch: 50, bearing: 0 });   // not left in orbit
