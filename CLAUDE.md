@@ -1,4 +1,7 @@
-# Pakistan Avalanche Intelligence & Early-Warning Portal
+# Snow Avalanche Prediction Using AI
+
+Portal title on every page (home header, intro, portal top bar, report, exports: `config.PORTAL_TITLE`). Formerly
+"Pakistan Avalanche Intelligence & Early-Warning Portal".
 
 Decision-support web portal for NDMA, Next Generation Technologies (NGT). It is shown to senior and
 foreign officials, so visual polish matters. Data honesty matters more.
@@ -259,11 +262,13 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   Canvas rule: every `ctx.save()` in `Storm.frame` needs its `restore()`; a missing one once shifted all the snow half a screen to the right.
   `body.storming` hides the home panels meanwhile. Esc / Space / click skips storm and intro.
 - Header badges flip to the same official logo file on the back (no generated stand-in faces).
-- Globe prologue (Mapbox only; MapLibre v4 has no globe): the storm clears onto the Earth (globe at zoom 1.25), which turns west to east for 7 s
-  until Pakistan faces the camera (caption "NDMA · NGT / Snow Avalanche Prediction Using AI"), then flies 5.2 s into chapter 1's wide view, whose
-  tiles are warmed meanwhile. Chapter 1's progress bar covers it (27 s instead of 15 s). Everything after it is unchanged.
-- Intro chapter 1 "Northern Pakistan" (follows the globe prologue): the storm clears onto a wide oblique 3D view of all three systems,
-  the camera pulls back, the systems light up one by one, then the DEM / mapping layers and the HUD come on and stay for the whole intro.
+- Chapter order: 1 Pakistan (with the globe) -> 2 Northern Pakistan -> 3-5 the systems. Chapter 1 (Mapbox): the storm clears onto the Earth
+  (globe zoom 1.3, `GLOBE_FOG` atmosphere + stars, world mask and Mapbox place labels off), which turns west to east for 4 s until Pakistan faces
+  the camera (caption "Chapter 1 · Pakistan / Snow Avalanche Prediction Using AI", `long` two-line title), then zooms 3.8 s to Pakistan: `PAGE_FOG`,
+  labels (`showLabels`) and the spotlight come back on the way down, the "Pakistan" study-area caption with figures, border glow, short orbit.
+  MapLibre (no globe) starts on Pakistan. Chapters 1+2 now take about 19 s (they were about 30 s with the separate globe prologue).
+- Intro chapter 2 "Northern Pakistan": the camera tilts onto a wide oblique 3D view of all three systems,
+  then pulls back (7 s), the systems light up one by one, then the DEM / mapping layers and the HUD come on and stay for the whole intro.
   `Intel` in home.html (layers `ci-*`, HUD `#ci-legend` / `#ci-hud`, styles `.ci-*`), loaded only when an intro plays (`Intel.load()`):
   system colours `INTRO_COLORS` (= `SYS_COL`, see "One palette") on the RGI v7.0 extents (`ext` source); DEM elevation tint + 1,000 m contours (marching squares, ~2 km) from the z7 DEM mosaic x 89-91, y 49-51; mapping
   network = highest DEM point per 0.12° cell inside a system, linked to neighbours, draped on terrain (a VISUALIZATION, not glacier-flow data);
@@ -272,9 +277,9 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   snowfall bars of the nearest outlook station), weather card = nearest snow-outlook station; live temperature / wind / precipitation show
   "No live weather feed connected" (none exists). Glacier flow paths and snow cover are listed as no data. Layers are added once at opacity 0
   under the storm and only fade afterwards (no re-tiling); `ci-tint` is also set to visibility none when off (draped rasters can linger).
-- Chapter 1 "tech mapping" look (division view only): `Intel.grade(true)` recolours the DEM hillshade blue/cyan (same relief), contours every
+- Chapter 2 "tech mapping" look (division view only): `Intel.grade(true)` recolours the DEM hillshade blue/cyan (same relief), contours every
   500 m (1,000 m lines brighter + glow) and a fine 0.045° mesh, node halos, `Intel.wake()` glow beats (paint transitions), and a screen-space
-  scan sweep + faint grid (`.ci-scan`, class `scan` on `#cine`; decorative, not data). Grade and scan end at chapter 2.
+  scan sweep + faint grid (`.ci-scan`, class `scan` on `#cine`; decorative, not data). Grade and scan end with chapter 2.
 - Memory / lag rule for the intro: contours and the fine mesh are PRE-DRAWN into one 1536 px canvas (`ci-lines`, image source, blob URL) draped on
   the terrain, never GeoJSON. As vector GeoJSON they were ~136,000 segments and crashed Chrome ("Out of Memory") on a laptop. The build runs in
   steps (`await idle()`) with typed arrays and a rasterised system mask, so the storm keeps animating; HK screening comes pre-filtered from

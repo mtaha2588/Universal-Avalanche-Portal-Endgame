@@ -1,4 +1,4 @@
-# Pakistan Avalanche Intelligence & Early-Warning Portal
+# Snow Avalanche Prediction Using AI
 
 NDMA — Next Generation Technologies (NGT). A decision-support portal for avalanche
 situational awareness in northern Pakistan (Hindu Kush, Karakoram, Western Himalaya).

@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 
 class Config:
-    PORTAL_TITLE = "PAKISTAN AVALANCHE INTELLIGENCE & EARLY-WARNING PORTAL"
+    PORTAL_TITLE = "SNOW AVALANCHE PREDICTION USING AI"
     PORTAL_VERSION = "1.0.0"
 
     # Public Mapbox browser token (pk.*). Restrict it to your domains in the Mapbox account.

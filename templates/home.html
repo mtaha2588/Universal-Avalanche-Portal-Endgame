@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Avalanche Intelligence Portal</title>
-<meta name="description" content="Pakistan Avalanche Intelligence & Early-Warning Portal — NDMA · Next Generation Technologies.">
+<title>Snow Avalanche Prediction Using AI</title>
+<meta name="description" content="Snow Avalanche Prediction Using AI — NDMA · Next Generation Technologies.">
 <link rel="icon" href="static/img/ndma-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -764,6 +764,7 @@
   .cine-cap h2 { margin: 8px 0 6px; font: 800 clamp(40px, 5.4vw, 76px)/1.05 var(--font); letter-spacing: -.015em; white-space: nowrap;
     background: linear-gradient(100deg, #ffffff 30%, var(--cc)); -webkit-background-clip: text; background-clip: text; color: transparent;
     filter: drop-shadow(0 4px 24px rgba(0,0,0,.65)); }
+  .cine-cap h2.long { white-space: normal; font-size: clamp(34px, 3.9vw, 58px); line-height: 1.04; }
   .cine-cap p { margin: 0; max-width: 480px; font: 500 14.5px/1.55 var(--font); color: #dbe4f0; text-shadow: 0 2px 10px #000, 0 0 2px #000; }
   .cine-stats { display: flex; margin-top: 18px; border-radius: 14px; overflow: hidden; width: max-content; max-width: 100%;
     background: linear-gradient(180deg, rgba(8,18,34,.88), rgba(4,10,20,.94)); border: 1px solid rgba(255,255,255,.1);
@@ -994,7 +995,7 @@
 <div class="cine" id="cine" hidden aria-live="polite">
   <div class="cine-vig"></div>
   <div class="cine-bar t"></div><div class="cine-bar b"></div>
-  <div class="cine-brand"><img src="static/img/ndma-logo.png" alt=""><img src="static/img/ngt-logo.jpg" alt=""><span><b>Areas of concern</b>NDMA · Avalanche Intelligence</span></div>
+  <div class="cine-brand"><img src="static/img/ndma-logo.png" alt=""><img src="static/img/ngt-logo.jpg" alt=""><span><b>Areas of concern</b>NDMA · Snow Avalanche Prediction Using AI</span></div>
   <button type="button" class="cine-skip" id="cine-skip">Skip intro <kbd>Esc</kbd></button>
   <div class="cine-cap"></div>
   <div class="ci-scan"><i></i></div>
@@ -1072,7 +1073,7 @@
     <div class="badge ndma" title="National Disaster Management Authority"><div class="coin">
       <span class="face"><img src="static/img/ndma-logo.png" alt="NDMA"></span><span class="face back" aria-hidden="true"><img src="static/img/ndma-logo.png" alt=""></span></div></div>
     <div class="org"><b>NDMA · NGT</b><span>Command Portal</span></div>
-    <div class="title"><h1>Pakistan Avalanche Intelligence <em>&amp; Early-Warning Portal</em></h1><span>National Disaster Management Authority · Next Generation Technologies</span></div>
+    <div class="title"><h1>Snow Avalanche Prediction <em>Using AI</em></h1><span>National Disaster Management Authority · Next Generation Technologies</span></div>
     <div class="right">
       <span class="pill" id="srv-pill"><span class="dot"></span><span>Checking server…</span></span>
       <div class="clock" id="clock">--:--:--<small>Pakistan Standard Time</small></div>
@@ -2595,7 +2596,7 @@ const Storm = (() => {
   // HUD: a boot log of what this intro really loads and draws, and read-outs computed from the DEM grid (updated ~12 times a second).
   const $ = id => document.getElementById(id);
   const LOG = [
-    [0.25, () => ["Avalanche intelligence portal · NDMA", "ready"]],
+    [0.25, () => ["Snow avalanche prediction using AI · NDMA", "ready"]],
     [0.6, () => ["SRTM DEM · AWS Terrain Tiles · z7 x89–91 y50", relief ? "3/3 ok" : null]],
     [1.0, () => [`Elevation grid · ${GW} × ${GH} cells · ≈3.4 km`, relief ? "ok" : null]],
     [1.5, () => ["Contours 3,000–7,000 m · marching squares", relief ? "ok" : null]],
@@ -3333,7 +3334,7 @@ const bgMap = (() => {
         } catch { /* sky not supported by this MapLibre build */ }
       }
       try {
-        map.setFog({ range: [0.8, 9], color: "#0b1a33", "high-color": "#1e3a8a", "space-color": "#02060d", "horizon-blend": 0.12, "star-intensity": 0.35 });
+        map.setFog(PAGE_FOG);
       } catch { /* fog not supported by this engine version */ }
       glaciersReady.then(() => { if (GLACIERS.data) addGlacierLayers(); });
       layersReady = Promise.all([loadBoundaries(), glaciersReady]).then(addBoundaryLayers);
@@ -3361,12 +3362,15 @@ const bgMap = (() => {
   // figure comes from the RGI v7.0 summary (/api/glaciers/pakistan). Any click, wheel, key or "Skip" hands the map back.
   const ABORT = Symbol("intro skipped");
   const cineEl = document.getElementById("cine");
-  const STEPS = [["N. Pakistan", "#67e8f9"], ["Pakistan", "#4ade80"], ["Hindu Kush", INTRO_COLORS["Hindu Kush"]],
+  const STEPS = [["Pakistan", "#4ade80"], ["N. Pakistan", "#67e8f9"], ["Hindu Kush", INTRO_COLORS["Hindu Kush"]],
                  ["Karakoram", INTRO_COLORS["Karakoram"]], ["Himalaya", INTRO_COLORS["West Himalaya"]]];
   const smooth = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const glide = t => 0.5 - Math.cos(Math.PI * t) / 2;   // gentle start and stop for orbits
   // Revolves the camera around the point it is looking at (the map centre stays fixed while the bearing turns), leaning in a little,
   // so a region or glacier is seen from several sides in 3D.
+  // Page atmosphere, and the intro's globe atmosphere (Mapbox: thin bright limb, deep blue sky, dense stars) for chapter 1's revolving Earth.
+  const PAGE_FOG = { range: [0.8, 9], color: "#0b1a33", "high-color": "#1e3a8a", "space-color": "#02060d", "horizon-blend": 0.12, "star-intensity": 0.35 };
+  const GLOBE_FOG = { range: [0.8, 9], color: "#bad2eb", "high-color": "#245bde", "space-color": "#01030b", "horizon-blend": 0.03, "star-intensity": 0.8 };
   const orbitShot = (deg, ms, pitch) => ({ bearing: map.getBearing() + deg, ...(pitch ? { pitch } : {}), duration: ms, easing: glide });
   const fmt0 = n => Math.round(n).toLocaleString("en-GB");
   // room for the caption (left), the layer legend (right) and the DEM / weather cards (bottom right)
@@ -3396,7 +3400,7 @@ const bgMap = (() => {
     const cap = cineEl.querySelector(".cine-cap");
     cap.classList.remove("in", "out"); void cap.offsetWidth;
     cap.style.setProperty("--cc", c.color);
-    cap.innerHTML = `<div class="cine-eb">${c.eyebrow}</div><h2>${c.title}</h2><p>${c.sub}</p>` +
+    cap.innerHTML = `<div class="cine-eb">${c.eyebrow}</div><h2${c.long ? ' class="long"' : ""}>${c.title}</h2><p>${c.sub}</p>` +
       (c.stats ? `<div class="cine-stats">${c.stats.map(([v, u, l]) => `<div><b ${typeof v === "number" ? `data-v="${v}"` : ""}>${typeof v === "number" ? 0 : v}</b><i>${u}</i><span>${l}</span></div>`).join("")}</div>` : "");
     cap.classList.add("in");
     // the figures count up once the panel has slid in
@@ -3853,55 +3857,66 @@ const bgMap = (() => {
 
     const S = GLACIERS.summary;
     try {
-      // 1 · Northern Pakistan: the storm clears onto a wide oblique view of all three systems on the DEM terrain,
-      // then the camera pulls back while the boundaries light up and the DEM / mapping layers and the HUD come on.
+      // 1 · Pakistan: the storm clears onto the revolving Earth (Mapbox globe, intro atmosphere, world mask off), which turns
+      // west to east until Pakistan faces the camera; the camera then zooms into Pakistan, the outside dims and the official border glows.
+      // 2 · Northern Pakistan: the camera tilts onto the three glacier systems, which light up with the DEM / mapping layers and the HUD.
+      // Same overall length as the two chapters had before the globe: the globe replaces the separate prologue.
       const later = (ms, fn) => setTimeout(() => { if (!run.done) fn(); }, ms);
-      setStep(0, engine === "mapbox" && !reducedMotion ? 27000 : 15000);   // + the revolving-globe prologue (Mapbox)
+      setStep(0, 10000);
       // Under the storm: wait (at most 9 s) for the boundaries and the intro layers, then place the camera, so its tiles load unseen.
       await step(Promise.race([Promise.all([layersReady, Intel.load()]).catch(() => {}), new Promise(r => setTimeout(r, 9000))]));
+      await step(layersReady);
       Intel.ensure();
       Intel.start();
-      spotlight(true);
       relief(true);
       const wide = Intel.wideCam();
-      // Prologue (Mapbox only: MapLibre v4 has no globe): the storm clears onto the revolving Earth, which turns until
-      // Pakistan faces the camera, then the camera dives into chapter 1's wide view. Chapter 1's tiles load meanwhile.
-      const globe = engine === "mapbox" && wide && !reducedMotion;
-      if (globe) { warm([wide.start]); map.jumpTo({ center: [-25, 16], zoom: 1.25, pitch: 0, bearing: 0 }); }
-      else if (wide) map.jumpTo(wide.start);
+      const pk = camFor(BND.bbox.Pakistan, 30);
+      const pkCam = { center: pk.center, zoom: pk.zoom, pitch: 40, bearing: -6 };
+      const globe = engine === "mapbox";
+      if (globe) {
+        map.jumpTo({ center: [-28, 18], zoom: 1.3, pitch: 0, bearing: 0 });
+        try { map.setFog(GLOBE_FOG); } catch { /* fog not supported */ }
+        run.labels = map.getStyle().layers.filter(l => l.type === "symbol" && l.source === "composite" && map.getLayoutProperty(l.id, "visibility") !== "none").map(l => l.id);
+        run.labels.forEach(id => map.setLayoutProperty(id, "visibility", "none"));
+        if (map.getLayer("mask-fill")) { map.setPaintProperty("mask-fill", "fill-opacity-transition", { duration: 0, delay: 0 }); map.setPaintProperty("mask-fill", "fill-opacity", 0); }
+        warm([pkCam, wide && wide.start]);
+      } else {
+        spotlight(true);
+        map.jumpTo(pkCam);
+      }
       // The storm prelude clears onto this camera; skipping the storm skips the intro too.
       await step(Storm.clear());
       if (Storm.skipped) { Storm.skipped = false; endIntro(true); return; }
-      if (globe) {
-        caption({ color: "#67e8f9", eyebrow: "NDMA · NGT", title: "Snow Avalanche Prediction Using AI",
-          sub: "Turning to northern Pakistan: the Hindu Kush, Karakoram and West Himalaya glacier systems.", stats: null });
-        await move("easeTo", { center: [70, 30], zoom: 1.55, duration: 7000, easing: t => t });              // one steady turn, west to east
-        cineEl.querySelector(".cine-cap").classList.add("out");
-        await move("flyTo", { ...wide.start, duration: 5200, curve: 1.6 });
-      }
       await wait(document.getElementById("splash").classList.contains("done") ? 200 : 1300);
-      caption({ color: "#67e8f9", eyebrow: "Chapter 1 · Northern Pakistan", title: "Three systems",
-        sub: "Hindu Kush, Karakoram and West Himalaya on SRTM terrain. Each boundary is the RGI v7.0 sub-region extent inside the study area.",
-        stats: S ? [[S.total.n, "", "glaciers"], [S.total.km2, "km²", "glacier ice"], [3, "", "mountain systems"]] : null });
-      const pull = wide ? move("easeTo", { ...wide.end, duration: 11000, easing: glide }) : wait(11000);
-      GLACIER_ORDER.forEach((n, i) => later(700 + i * 1400, () => { Intel.light(n); pulse(run, Intel.glowId(n), "line-width", 10, 22, 1400, 1); }));
-      later(2600, () => Intel.grade(true));                                   // relief turns to the blue mapping look
-      later(4200, () => { Intel.network(true); cineEl.classList.add("scan"); });
-      later(5600, () => Intel.wake(run));
-      later(6400, () => Intel.hud(true));
-      await pull;
-
-      // 2 · Pakistan: spotlight on the official outline (the blue grade and the scan sweep belong to chapter 1 only)
-      Intel.grade(false);
-      cineEl.classList.remove("scan");
-      await step(layersReady);
-      setStep(1, 5200);
-      caption({ color: "#4ade80", eyebrow: "Chapter 2 · Study area", title: "Pakistan",
+      const pkCaption = () => caption({ color: "#4ade80", eyebrow: "Chapter 1 · Study area", title: "Pakistan",
         sub: "Pakistan-administered territory, including Gilgit-Baltistan and Azad Jammu & Kashmir. Boundaries as per Pakistan's official position; Jammu & Kashmir is disputed.",
         stats: S ? [[S.study_area_km2, "km²", "study area"], [S.total.n, "", "glaciers"], [S.total.km2, "km²", "glacier ice"]] : null });
-      spotlight(true);
-      relief(true);
-      const pk = camFor(BND.bbox.Pakistan, 30);
+      if (globe) {
+        caption({ color: "#4ade80", eyebrow: "Chapter 1 · Pakistan", title: "Snow Avalanche Prediction Using AI", long: true,
+          sub: "The globe revolving, then zooming to the Pakistan region: the Hindu Kush, Karakoram and West Himalaya glacier systems.", stats: null });
+        await move("easeTo", { center: [69, 29], zoom: 1.6, duration: 4000, easing: t => t });              // one steady turn, west to east
+        later(1600, () => { try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ } spotlight(true); showLabels(run); });   // atmosphere and labels back once below orbit
+        later(1800, pkCaption);
+        await move("flyTo", { ...pkCam, duration: 3800, curve: 1.5 });
+      } else pkCaption();
+      pulse(run, "pak-glow", "line-width", 8, 20, 1800, 2);
+      await move("easeTo", orbitShot(16, 2200, 44));
+
+      // 2 · Northern Pakistan
+      setStep(1, 9500);
+      caption({ color: "#67e8f9", eyebrow: "Chapter 2 · Northern Pakistan", title: "Three systems",
+        sub: "Hindu Kush, Karakoram and West Himalaya on SRTM terrain. Each boundary is the RGI v7.0 sub-region extent inside the study area.",
+        stats: S ? [[S.total.n, "", "glaciers"], [S.total.km2, "km²", "glacier ice"], [3, "", "mountain systems"]] : null });
+      if (wide) await move("flyTo", { ...wide.start, duration: 2200, curve: 1.3 });
+      const pull = wide ? move("easeTo", { ...wide.end, duration: 7000, easing: glide }) : wait(7000);
+      GLACIER_ORDER.forEach((n, i) => later(300 + i * 1000, () => { Intel.light(n); pulse(run, Intel.glowId(n), "line-width", 10, 22, 1400, 1); }));
+      later(1700, () => Intel.grade(true));                                   // relief turns to the blue mapping look
+      later(2800, () => { Intel.network(true); cineEl.classList.add("scan"); });
+      later(3800, () => Intel.wake(run));
+      later(4400, () => Intel.hud(true));
+      await pull;
+      Intel.grade(false);                                                     // the blue grade and the scan sweep belong to this chapter only
+      cineEl.classList.remove("scan");
       // Every stop of the tour is planned here, so each leg's tiles can be preloaded while the camera holds still.
       const legs = GLACIER_ORDER.map((name, i) => {
         const s = GLACIERS.stats[name];
@@ -3914,12 +3929,9 @@ const bgMap = (() => {
         return { name, s, big, sysCam, bigCam };
       });
       const finaleCam = { center: GLACIERS.centers.ALL, zoom: 5.6, pitch: 52, bearing: -18, duration: 5200, curve: 1.4 };
-      // Fetch every stop now, while the Pakistan chapter plays: the camera is still here, and these are its last idle moments for a while.
+      // Fetch every stop now, while the camera holds still after the pull-back.
       warm([...legs.flatMap(l => [l.sysCam, l.bigCam]), finaleCam]);
-      await move("flyTo", { center: pk.center, zoom: pk.zoom, pitch: 40, bearing: -6, duration: 2600, curve: 1.3 });
       preload(legs[0].sysCam);
-      pulse(run, "pak-glow", "line-width", 8, 20, 1800, 2);
-      await move("easeTo", orbitShot(24, 4200, 50));
 
       // 3–5 · the three glacier systems: fly in, lock on, then dive to the largest named glacier
       for (const [i, { name, s, big, sysCam, bigCam }] of legs.entries()) {
@@ -3969,6 +3981,11 @@ const bgMap = (() => {
     }
   }
 
+  // The globe turns without place labels (run.labels = the ones it hid); they come back once, below orbit or on a skip.
+  function showLabels(run) {
+    (run.labels || []).forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "visible"); });
+    run.labels = null;
+  }
   function endIntro(stopCamera) {
     const run = cine;
     if (!run || run.done) return;
@@ -3978,6 +3995,9 @@ const bgMap = (() => {
     if (stopCamera) map.stop();
     unping(run);
     spotlight(false);
+    if (engine === "mapbox") try { map.setFog(PAGE_FOG); } catch { /* fog not supported */ }   // a skip during the globe
+    showLabels(run);
+    if (stopCamera && map.getZoom() < 3) map.jumpTo({ center: GLACIERS.centers.ALL || [74, 35.5], zoom: 5.4, pitch: 50, bearing: 0 });   // not left in orbit
     ["pak-glow", "ext-glow"].forEach((id, k) => { if (map.getLayer(id)) map.setPaintProperty(id, "line-width", [8, 9][k]); });
     selOutline("");
     selSystem = null;
