@@ -44,6 +44,16 @@ if not exist data\dem\terrarium (
   if not errorlevel 2 start "Terrain download" /min python scripts\fetch_dem.py
 )
 
+rem A portal server left running from an earlier copy (e.g. an older GitHub download) would keep port 5000, and the
+rem browser would open that OLD portal. Stop any Python server listening on 5000 first.
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:":5000 .*LISTENING"') do (
+  tasklist /fi "PID eq %%P" 2>nul | findstr /i "python" >nul && (
+    echo  Stopping an earlier portal server ^(PID %%P^) so this copy is served...
+    taskkill /pid %%P /t /f >nul 2>&1
+  )
+)
+timeout /t 1 /nobreak >nul
+
 echo Starting portal server...
 start "Avalanche Portal Server" /min python app.py
 

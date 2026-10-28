@@ -455,6 +455,12 @@ def create_app(config: type[Config] = Config) -> Flask:
         resp.headers.setdefault("X-Content-Type-Options", "nosniff")
         resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        # Pages and the portal's own JS/CSS carry no version in their URLs, so the browser must revalidate them on every load
+        # (a cheap 304 when unchanged). Without this it may keep running old code after an update from GitHub.
+        p = request.path
+        if "Cache-Control" not in resp.headers and (p in ("/", "/portal", "/report") or (
+                p.startswith("/static/") and not p.startswith("/static/vendor/") and p.endswith((".js", ".css", ".html")))):
+            resp.headers["Cache-Control"] = "no-cache"
         return resp
 
     return app
