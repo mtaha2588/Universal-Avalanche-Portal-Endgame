@@ -50,9 +50,9 @@
   .tile { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
     background: linear-gradient(160deg, color-mix(in srgb, var(--g1) 12%, rgba(13, 25, 48, .6)), rgba(10, 20, 40, .58)); }
   .tile.hero { background: linear-gradient(135deg, rgba(8, 145, 178, .9), rgba(37, 99, 235, .9) 50%, rgba(124, 58, 237, .9)); }
-  .main, .slotbar, .bottom { transition: opacity .55s ease, transform .55s ease; }
+  .main, .bottom { transition: opacity .55s ease, transform .55s ease; }
   .bg-veil { transition: opacity .8s ease; }
-  body.explore .main, body.explore .slotbar, body.explore .bottom { opacity: 0; pointer-events: none; transform: scale(.985); }
+  body.explore .main, body.explore .bottom { opacity: 0; pointer-events: none; transform: scale(.985); }
   body.explore .bg-veil { opacity: .25; }
   .gchip.x3d { --gc: #22d3ee; background: linear-gradient(135deg, rgba(34, 211, 238, .25), rgba(37, 99, 235, .3)); }
   .gchip.x3d svg { width: 14px; height: 14px; }
@@ -172,7 +172,7 @@
   .shell { pointer-events: none; }
   .shell > header, .shell > section, .shell > footer, .shell .ident, .shell .deck, .shell .gchips { pointer-events: auto; }
   body.explore .ident, body.explore .deck { pointer-events: none; }
-  .shell { position: relative; z-index: 1; height: 100vh; display: grid; grid-template-rows: auto auto 1fr auto; padding: 14px 24px 12px; gap: 12px; }
+  .shell { position: relative; z-index: 1; height: 100vh; display: grid; grid-template-rows: auto 1fr auto; padding: 14px 24px 12px; gap: 12px; }
 
   .top { display: flex; align-items: center; gap: 16px; padding: 10px 16px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(14px);
     animation: slideDown .8s cubic-bezier(.2, .8, .2, 1) both; }
@@ -220,33 +220,6 @@
   @keyframes blink { 50% { opacity: .35; } }
   .clock { font: 600 13px var(--mono); color: var(--text); text-align: right; line-height: 1.2; }
   .clock small { display: block; font: 500 11px var(--font); color: var(--muted); }
-
-  .slotbar { display: flex; gap: 10px; animation: slideDown .8s .15s cubic-bezier(.2, .8, .2, 1) both; }
-  .sgroup { --pc: #22d3ee; min-width: max-content; padding: 6px 8px 8px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(12px); transition: border-color .25s, box-shadow .25s; }
-  .sgroup.active { border-color: var(--pc); box-shadow: 0 0 0 1px var(--pc) inset, 0 0 26px color-mix(in srgb, var(--pc) 30%, transparent); }
-  .sg-h { text-align: center; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; white-space: nowrap; }
-  .sg-h b { color: var(--pc); font-weight: 800; margin-right: 6px; }
-  .sg-b { display: flex; gap: 6px; }
-  /* Fluorescent solid fills (SLOT_COL); the bright 2 px rim is an inset shadow so the tab keeps its size. --ink is dark on yellow / green / cyan. */
-  .slot { --ink: #fff; flex: 1; min-width: 104px; position: relative; cursor: pointer; text-align: center; padding: 6px 10px 7px; border-radius: 9px; border: 1px solid var(--pc); border-bottom: 2px solid var(--pc);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--pc) 90%, #fff 10%), var(--pc) 55%, color-mix(in srgb, var(--pc) 82%, #000)); color: var(--ink); font: 800 13px/1.25 var(--font);
-    text-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 10%, rgba(0, 0, 0, .45));
-    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--pc) 55%, #fff 45%), inset 0 1px 0 3px rgba(255, 255, 255, .08), 0 0 12px color-mix(in srgb, var(--pc) 45%, transparent);
-    transition: transform .15s, box-shadow .2s, filter .2s; }
-  .slot[style*="--ink:#0"] { text-shadow: 0 1px 0 rgba(255, 255, 255, .35); }
-  .slot:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--pc) 35%, #fff 65%), 0 0 18px color-mix(in srgb, var(--pc) 60%, transparent); }
-  .slot small { display: block; font: 700 10px var(--mono); color: color-mix(in srgb, var(--ink) 88%, transparent); letter-spacing: .06em; }
-  .slot.sel { transform: translateY(-2px); border-color: #fff; border-bottom-color: #fff;
-    box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px color-mix(in srgb, var(--pc) 70%, transparent), 0 0 22px color-mix(in srgb, var(--pc) 75%, transparent), 0 6px 18px rgba(0, 0, 0, .45); }
-  .slot .flag { position: absolute; top: -7px; right: -5px; font: 800 8.5px var(--font); letter-spacing: .08em; padding: 1px 5px; border-radius: 4px; background: var(--amber); color: #1a1205; }
-  .splay { flex: none; display: flex; align-items: center; gap: 12px; padding: 6px 16px 6px 8px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(12px); min-width: 176px; }
-  .splay button { width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer; color: #fff; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #67e8f9, #2563eb 75%); box-shadow: 0 0 18px rgba(56, 189, 248, .5); transition: transform .2s; }
-  .splay button:hover { transform: scale(1.06); }
-  .splay button svg { width: 18px; height: 18px; }
-  .splay small { display: block; font-size: 10px; letter-spacing: .16em; color: var(--cyan); font-weight: 700; }
-  .splay b { display: block; font-size: 16px; line-height: 1.2; }
-  .splay .prog { height: 3px; width: 100px; border-radius: 2px; background: rgba(255, 255, 255, .1); margin-top: 5px; overflow: hidden; }
-  .splay .prog i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--violet)); transition: width .3s; }
 
   .main { display: grid; grid-template-columns: minmax(340px, 34%) 1fr; gap: 22px; min-height: 0; }
 
@@ -393,12 +366,6 @@
   .mcard .mlink:hover { background: rgba(189, 0, 38, .8); }
   .chips { margin-top: auto; display: flex; gap: 6px; flex-wrap: wrap; position: relative; z-index: 1; }
   .chips span { font-size: 11.5px; padding: 4px 10px; border-radius: 999px; background: rgba(0, 0, 0, .35); border: 1px solid rgba(255, 255, 255, .2); }
-  .wins { display: flex; gap: 5px; height: 110px; margin: 10px 0 16px; }
-  .wcell { border-radius: 12px; padding: 12px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; transition: transform .2s; }
-  .wcell:hover { transform: translateY(-4px); }
-  .wcell b { font: 700 12px var(--mono); } .wcell span { font-size: 11.5px; white-space: nowrap; }
-  .months { display: grid; grid-template-columns: 17fr 31fr 31fr 28fr 31fr 14fr; font-size: 12px; color: var(--muted); }
-  .months span { border-left: 1px solid var(--line); padding-left: 6px; }
   .kv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
   .kv div { padding: 14px; border-radius: 12px; background: rgba(255, 255, 255, .035); border: 1px solid var(--line); }
   .kv b { display: block; font: 700 15px var(--mono); color: var(--c); } .kv span { font-size: 12.5px; color: var(--muted); }
@@ -433,7 +400,7 @@
 
   /* ================= RESPONSIVE ================= */
   @media (max-height: 860px) { .tile .t span { display: none; } .top .title span { display: none; } }
-  @media (max-width: 1400px) { .slotbar { overflow-x: auto; } .top .org { display: none; } }
+  @media (max-width: 1400px) { .top .org { display: none; } }
   @media (max-width: 1100px) {
     body { overflow: auto; }
     .shell { height: auto; min-height: 100vh; }
@@ -443,7 +410,6 @@
     .pipe { grid-template-columns: 1fr; gap: 24px; } .pipe::before { display: none; }
     .top .pill.hide-sm { display: none; }
     .tiles { flex: none; }
-    .slotbar { overflow-x: auto; }
   }
   @media (max-width: 640px) {
     .shell { padding: 12px 16px; }
@@ -451,7 +417,6 @@
     .tile.hero { grid-column: span 2; }
     .top .org span, .clock { display: none; }
     .bottom .keys { display: none; }
-    .wins { flex-direction: column; height: auto; } .wcell { min-height: 46px; flex-direction: row; align-items: center; } .months { display: none; }
     .kv { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; transition-duration: .01s !important; } }
@@ -464,7 +429,6 @@
     .bg-veil { background:
       linear-gradient(90deg, rgba(4,10,21,.72) 0%, rgba(4,10,21,.35) 20%, rgba(4,10,21,0) 32%, rgba(4,10,21,0) 72%, rgba(4,10,21,.35) 82%, rgba(4,10,21,.7) 100%),
       linear-gradient(180deg, rgba(4,10,21,.45) 0%, rgba(4,10,21,0) 22%, rgba(4,10,21,0) 86%, rgba(4,10,21,.55) 100%); }
-    .slotbar .sgroup, .splay { background: rgba(10, 20, 38, .62); }
 
     /* left: slim window panel */
     .ident { justify-content: center; gap: 12px; }
@@ -689,6 +653,24 @@
   .hev-tx > span { font-size: 13px; color: var(--muted); }
   .hev-tx em { font-style: normal; font-size: 12px; color: var(--text-2); }
   .hev-ic { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; color: #fff; background: linear-gradient(135deg, #f472b6, #be185d); flex: none; }
+  /* guided historic tour (static/js/histtour.js) and the compiled records list */
+  .htv { position: relative; display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: center; margin: 4px 0 18px; padding: 20px 22px; border-radius: 18px; overflow: hidden;
+    border: 1px solid rgba(125, 211, 252, .35); background: linear-gradient(120deg, rgba(8, 18, 34, .92), rgba(12, 30, 56, .82)), url("/static/history/batura_1974/fig3_which_side_and_map.png") center / cover; }
+  .htv small { font: 700 10.5px var(--mono); letter-spacing: .22em; color: #7dd3fc; text-transform: uppercase; }
+  .htv h4 { margin: 6px 0 8px; font-size: 22px; line-height: 1.2; }
+  .htv p { margin: 0; color: var(--text-2); font-size: 13px; line-height: 1.5; }
+  .htv-n { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .htv-n div { padding: 10px; border-radius: 12px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); text-align: center; }
+  .htv-n b { display: block; font-size: 24px; } .htv-n span { font-size: 11px; color: var(--muted); }
+  .htv-b { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .htv-b button { padding: 10px 18px; border-radius: 999px; font: 700 13px var(--font); cursor: pointer; border: 1px solid rgba(125, 211, 252, .5); background: rgba(255, 255, 255, .05); color: #e0f2fe; }
+  .htv-b button.go { background: linear-gradient(180deg, #38bdf8, #2563eb); border-color: transparent; color: #fff; box-shadow: 0 0 24px rgba(56, 189, 248, .35); }
+  .hrecs { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; margin-top: 10px; }
+  .hrec { text-align: left; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .03); color: inherit; font: inherit; cursor: pointer; transition: border-color .2s, transform .2s; }
+  .hrec:hover { border-color: #7dd3fc; transform: translateY(-2px); }
+  .hrec small { font: 600 10.5px var(--mono); color: var(--muted); } .hrec b { display: block; font-size: 13px; line-height: 1.3; margin: 2px 0; }
+  .hrec span { font-size: 11px; color: var(--muted); } .hrec span em { font-style: normal; color: #fca5a5; } .hrec span i { font-style: normal; color: #bae6fd; }
+  @media (max-width: 800px) { .htv { grid-template-columns: 1fr; } }
   .hev-ic svg { width: 17px; height: 17px; } .hev-ic.big { width: 46px; height: 46px; border-radius: 13px; } .hev-ic.big svg { width: 26px; height: 26px; }
   .hback { background: none; border: 0; color: var(--c); font: 700 13px var(--font); cursor: pointer; padding: 0 0 12px; }
   .hhead { display: flex; gap: 14px; align-items: center; } .hhead small { font: 700 11.5px var(--mono); color: var(--c); letter-spacing: .05em; }
@@ -956,6 +938,8 @@
   .compass.open .cp-tip { opacity: 0; }
   @media (max-width: 760px) { .compass { right: 6px; bottom: 120px; transform: scale(.85); transform-origin: bottom right; } }
 </style>
+<link rel="stylesheet" href="/static/css/avalanche.css">
+<link rel="stylesheet" href="/static/css/histtour.css">
 </head>
 <body>
 
@@ -1088,8 +1072,6 @@
     </div>
   </header>
 
-  <section class="slotbar" id="slotbar" aria-label="Season reporting windows"></section>
-
   <main class="main">
     <section class="stage" aria-label="3D glacier map">
       <div class="gchips" id="gchips"></div>
@@ -1125,6 +1107,8 @@
 </div>
 
 <script src="/static/js/mapcache.js"></script>
+<script src="/static/js/avalanche.js"></script>
+<script src="/static/js/histtour.js"></script>
 <script>
 "use strict";
 const PORTAL = "";  // same origin: the home page is served by the portal server
@@ -1162,12 +1146,11 @@ const SLOT_COL = ["#FF0000", "#FF3D00", "#FFFF00", "#39FF00", "#00FFFF", "#0047F
 const SLOT_INK = ["#fff", "#fff", "#0a0a0a", "#0a0a0a", "#0a0a0a", "#fff", "#fff", "#fff", "#fff"];
 const inkOn = c => SLOT_INK[SLOT_COL.indexOf(c)] || "#fff";
 const SYS_COL = { "Hindu Kush": "#00FFFF", "Karakoram": "#FF0000", "West Himalaya": "#39FF00" };
-const SEASON_FILL = `linear-gradient(180deg, ${SLOT_COL.join(", ")})`;      // the Season Timeline tab's accent bar shows every window colour
 
 const M = [
   { id: "overview", n: "01", t: "National Overview", s: "Situation summary", c: "--cyan", ic: "overview", shot: "overview",
     d: "A consolidated national picture for the selected region and 15-day reporting window, all on one screen.",
-    f: ["Key figures: reporting window, model status, recorded incidents and settlements", "Data and model readiness checklist, with every source's status shown", "Season strip showing which windows have model output", "Printable situation brief in one click"] },
+    f: ["Key figures: reporting window, model status, recorded incidents and settlements", "Data and model readiness checklist, with every source's status shown", "Printable situation brief in one click"] },
   { id: "map", n: "02", t: "Avalanche Risk Map", s: "Interactive GIS", c: "--blue", ic: "map", shot: "map",
     d: "A full interactive map with satellite imagery, 3D terrain shading and independently switchable layers.",
     f: ["Satellite, terrain and dark basemaps with DEM hillshade", "Historical incidents drawn with location-uncertainty radii", "Settlements, roads, hazard zones and model-risk layers, each with opacity control", "Search, zoom-to-region, scale bar and click-for-provenance detail panel"] },
@@ -1183,16 +1166,14 @@ const M = [
     d: "Settlements and road segments assessed against mapped hazard zones and recorded incidents, kept in one place." },
   { id: "reports", n: "10", t: "Reports & Exports", s: "Hotspot lists by region · CSV · GeoJSON", c: "--violet", ic: "report", special: "reports",
     d: "Hotspot lists for the three mountain systems, each with its timeline, location and nearest populated area, ready to download." },
-  { id: "season", n: "11", t: "Season Timeline", s: "15 Dec → 15 Apr", c: "--amber", ic: "season", special: "season",
-    d: "How the avalanche season is divided into reporting windows." },
   { id: "launch", n: "▶", t: "Launch Live Portal", s: "Open the full interactive system", c: "--cyan", ic: "rocket", hero: true },
 ];
 
 M.filter(m => !m.hero && !m.go).forEach((m, k) => { m.n = String(k + 1).padStart(2, "0"); });
 // Module tab colours: members of SLOT_COL; the mountain-system tabs use exactly their glacier-system colour on the map.
 const TAB_COL = { overview: "#FFFF00", map: "#0047FF", outlook: "#8F00FF", hindukush: SYS_COL["Hindu Kush"], karakoram: SYS_COL["Karakoram"],
-  himalaya: SYS_COL["West Himalaya"], history: "#FF00FF", exposure: "#FF3D00", reports: "#D00020", season: "#8F00FF", launch: "#0047FF" };
-const TAB_BAR = { season: SEASON_FILL, launch: "linear-gradient(180deg, #00FFFF, #0047FF, #8F00FF)" };
+  himalaya: SYS_COL["West Himalaya"], history: "#FF00FF", exposure: "#FF3D00", reports: "#D00020", launch: "#0047FF" };
+const TAB_BAR = { launch: "linear-gradient(180deg, #00FFFF, #0047FF, #8F00FF)" };
 const tabVars = m => { const c = TAB_COL[m.id] || "#00FFFF";
   return `--pc:${c};--ink:${inkOn(c)};--g1:${c};--g2:color-mix(in srgb, ${c} 55%, #000);--bar:${TAB_BAR[m.id] || c}`; };
 
@@ -1239,40 +1220,9 @@ function seasonWindows() {
   return { label: `${start}-${String((start + 1) % 100).padStart(2, "0")}`, wins: out, inSeason: today >= s && today < e, daysTo: Math.ceil((s - today) / DAY), today };
 }
 const SEASON = seasonWindows();
-const slotVars = k => `--pc:${SLOT_COL[k % SLOT_COL.length]};--ink:${SLOT_INK[k % SLOT_INK.length]}`;
-const WCOL = ["#22d3ee", "#38bdf8", "#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#d946ef", "#ec4899", "#f59e0b"];
 const fmt = d => new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", timeZone: "UTC" });
 SEASON.wins.forEach(w => { w.id = `${SEASON.label}-W${String(w.i).padStart(2, "0")}`; });
-const PHASES = [
-  { m: 11, name: "Dec", label: "Phase 1 · Early winter", c: "#FF3D00" }, { m: 0, name: "Jan", label: "Phase 2 · Peak winter", c: "#FFFF00" },
-  { m: 1, name: "Feb", label: "Phase 3 · Late winter", c: "#00FFFF" }, { m: 2, name: "Mar", label: "Phase 4 · Spring transition", c: "#8F00FF" },
-  { m: 3, name: "Apr", label: "Phase 5 · Melt onset", c: "#FF00FF" }];
-const phaseOf = w => PHASES.find(p => p.m === new Date(w.s).getUTCMonth());
-const isoD = t => new Date(t).toISOString().slice(0, 10);
 let selW = Math.max(0, SEASON.wins.findIndex(w => SEASON.today >= w.s && SEASON.today < w.e));
-let playT = null;
-const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-const PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
-
-function renderSlots() {
-  const bar = document.getElementById("slotbar"), cur = SEASON.wins[selW];
-  bar.innerHTML = PHASES.map(ph => {
-    const ws = SEASON.wins.filter(w => phaseOf(w) === ph);
-    if (!ws.length) return "";
-    return `<div class="sgroup ${ws.includes(cur) ? "active" : ""}" style="--pc:${ph.c};flex:${ws.length}">
-      <div class="sg-h"><b>${ph.name}</b>${ph.label}</div>
-      <div class="sg-b">${ws.map(w => `<button type="button" class="slot ${w === cur ? "sel" : ""}" data-k="${SEASON.wins.indexOf(w)}" style="${slotVars(SEASON.wins.indexOf(w))}" title="${w.id}: [${isoD(w.s)}, ${isoD(w.e)})">
-        ${SEASON.today >= w.s && SEASON.today < w.e ? '<span class="flag">TODAY</span>' : ""}${fmt(w.s)} – ${fmt(w.e - 864e5)}<small>W${String(w.i).padStart(2, "0")} · ${w.d}d</small></button>`).join("")}</div></div>`;
-  }).join("") + `<div class="splay"><button type="button" id="play" aria-label="${playT ? "Pause" : "Play"}">${playT ? PAUSE : PLAY}</button>
-      <div><small>${playT ? "PLAYING" : "WINDOW"}</small><b>W${String(selW + 1).padStart(2, "0")} <span style="font:500 11px var(--mono);color:var(--muted)">${selW + 1} of ${SEASON.wins.length}</span></b>
-      <div class="prog"><i style="width:${(selW + 1) / SEASON.wins.length * 100}%"></i></div></div></div>`;
-  bar.querySelectorAll(".slot").forEach(b => b.addEventListener("click", () => { stopPlay(); selectW(+b.dataset.k); }));
-  bar.querySelector("#play").addEventListener("click", () => playT ? stopPlay() : startPlay());
-}
-function selectW(k) { selW = k; renderSlots(); }
-function startPlay() { playT = setInterval(() => selectW((selW + 1) % SEASON.wins.length), 3000); renderSlots(); }
-function stopPlay() { if (playT) { clearInterval(playT); playT = null; renderSlots(); } }
-selectW(selW);
 
 const EXPO = {
   settlements: { t: "Settlement exposure", d: "Settlements assessed against mapped hazard and runout zones, separating settlements inside a hazard area from those that are only nearby.",
@@ -1308,18 +1258,6 @@ function content(m) {
         <div class="reg3" id="reg3"><p class="desc" style="grid-column:1/-1">Loading hotspot lists…</p></div>
         <div class="rall" id="rall"></div><p class="rfoot" id="rfoot"></p>`;
     }
-    case "season": return `<p class="desc">The winter avalanche season runs from <b>15 December to 15 April</b> and is divided into consecutive 15-day reporting windows. No day belongs to two windows.</p>
-      <div class="months"><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span></span></div>
-      <div class="wins">${SEASON.wins.map((w, k) => `<div class="wcell" style="flex:${w.d};background:linear-gradient(160deg,${WCOL[k % WCOL.length]},${WCOL[k % WCOL.length]}99)" title="[${new Date(w.s).toISOString().slice(0, 10)}, ${new Date(w.e).toISOString().slice(0, 10)})"><b>W${String(w.i).padStart(2, "0")}</b><span>${fmt(w.s)} – ${fmt(w.e - 864e5)}</span></div>`).join("")}</div>
-      <div class="kv">
-        <div><b>${SEASON.label}</b><span>Current / upcoming season</span></div>
-        <div><b>[start, end)</b><span>Half-open interval convention</span></div>
-        <div><b>${SEASON.label}-W01</b><span>Window ID format</span></div>
-        <div><b>${SEASON.wins.length}</b><span>Reporting windows this season</span></div>
-        <div><b>${SEASON.wins[SEASON.wins.length - 1].d} days</b><span>Final window (shorter by design)</span></div>
-        <div><b>${SEASON.inSeason ? "In season" : SEASON.daysTo + " days"}</b><span>${SEASON.inSeason ? "Season status" : "Until season start"}</span></div>
-      </div>
-      <div class="note"><b>A reporting window is not a forecast horizon.</b> Forecast lead time is shown separately and limited to what the model has been validated for.</div>`;
     case "how": {
       const st = [["--cyan", "sat", "Earth observation", "DEM terrain, satellite snow cover and weather inputs"], ["--blue", "data", "Curated data", "Incidents, settlements and roads, each with source and date"],
         ["--violet", "brain", "AI / ML model", "Validated predictions with a documented model card"], ["--pink", "map", "GIS analysis", "Exposure, proximity and affected road length"], ["--amber", "gov", "Decision support", "Map, briefs and exports for NDMA, PDMAs and partners"]];
@@ -1430,13 +1368,37 @@ const hesc = t => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&": "&a
 const MODEL_NOTE = '<div class="note"><b>Model reconstruction, not observation.</b> Release point, path, speed and duration are model estimates and should be checked against reports or imagery. Weather factors describe a ~28 km ERA5 tile, not the slope itself.</div>';
 
 function historyHTML(m) {
-  setTimeout(() => document.querySelectorAll("#win-body .hev").forEach(b => b.addEventListener("click", () => openEvent(b.dataset.ev))));
+  setTimeout(() => {
+    document.querySelectorAll("#win-body .hev").forEach(b => b.addEventListener("click", () => openEvent(b.dataset.ev)));
+    const tv = document.getElementById("htv");
+    if (!tv) return;
+    tv.querySelector(".go").onclick = () => HistTour.open({ tour: true });
+    tv.querySelector(".ghost").onclick = () => HistTour.open({});
+    HistTour.load().then(d => {                      // the compiled records (scripts/build_history_events.py), listed as supplied
+      const n = tv.querySelectorAll(".htv-n b"), recs = d.recs.filter(r => !r.model);
+      n[0].textContent = recs.length; n[1].textContent = recs.filter(r => r.geom).length; n[2].textContent = d.recs.filter(r => r.anim).length;
+      const box = document.getElementById("hrecs"); if (!box) return;
+      const fd = r => r.date || (r.date_start ? r.date_start + (r.date_end && r.date_end !== r.date_start ? " – " + r.date_end : "") : "date unknown");
+      box.innerHTML = recs.map(r => `<button type="button" class="hrec" data-id="${hesc(r.event_id)}"><small>${hesc(r.event_id)} · ${hesc(fd(r))}</small><b>${hesc(r.location)}</b>
+        <span>${r.deaths ? `<em>${hesc(r.deaths)} deaths reported</em> · ` : ""}confidence ${hesc(r.confidence)}${r.anim ? " · <i>❄ tour stop</i>" : ""}</span></button>`).join("");
+      box.querySelectorAll(".hrec").forEach(b => b.onclick = () => HistTour.open({ focus: b.dataset.id }));
+    }).catch(() => { const box = document.getElementById("hrecs"); if (box) box.innerHTML = '<p class="desc">The compiled records need the portal server (run.bat).</p>'; });
+  });
   return `<p class="desc">${m.d}</p>
+    <section class="htv" id="htv"><div><small>Signature experience · guided tour</small><h4>Historic avalanches, replayed on the terrain where they happened</h4>
+      <p>A cinematic tour through the compiled avalanche records of northern Pakistan: each located event is approached on the 3D satellite terrain,
+      the slab breaks loose and the avalanche runs down the real slopes, then the historical record is shown. Paths are illustrative scenarios placed by terrain
+      analysis (the records contain no paths); Batura 1974 is the NGT model reconstruction.</p>
+      <div class="htv-b"><button type="button" class="go">▶ Start the guided tour</button><button type="button" class="ghost">Open the event map</button></div></div>
+      <div class="htv-n"><div><b>—</b><span>records</span></div><div><b>—</b><span>placed on the map</span></div><div><b>—</b><span>tour stops</span></div></div></section>
     <div class="hevs">${HIST.map(e => `<button type="button" class="hev" data-ev="${e.id}">
       <img src="${e.dir}fig3_which_side_and_map.png" alt="" loading="lazy">
       <span class="hev-tx"><small>${e.date}</small><b><span class="hev-ic">${ICON.avalanche}</span>${e.t}</b><span>${e.where}</span>
       <em>3D presentation · 5 figures · data · model reconstruction</em></span></button>`).join("")}</div>
-    <p class="rfoot">More past events will be added as reconstructions are supplied. Each one is a model reconstruction and is labelled as such.</p>`;
+    <h5 style="margin:22px 0 2px">Compiled historical records</h5>
+    <p class="rfoot" style="margin-top:2px">Fields as compiled (sources per record); casualty figures as reported. Click a record to open it on the event map.</p>
+    <div class="hrecs" id="hrecs"><p class="desc">Loading the compiled records…</p></div>
+    <p class="rfoot">More model reconstructions will be added as they are supplied; each is labelled as a model reconstruction.</p>`;
 }
 
 // ---------- Batura 1974: the reconstruction story (sections A-H) and the full-page 3D experience ----------
@@ -4305,7 +4267,7 @@ const bgMap = (() => {
     }
     const left = document.querySelector(".deck").getBoundingClientRect().right;
     const right = 0;
-    const top = document.getElementById("slotbar").getBoundingClientRect().bottom;
+    const top = document.querySelector(".top").getBoundingClientRect().bottom + 12;
     const bottom = innerHeight - document.querySelector(".bottom").getBoundingClientRect().top + 50;
     map.setPadding({ top, bottom, left, right });
   }

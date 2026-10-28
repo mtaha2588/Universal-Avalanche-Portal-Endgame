@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/avalanche.css') }}">
 </head>
 <body>
 
@@ -84,8 +85,6 @@
     Seed and reference datasets are labelled; absence of data does not mean absence of hazard.
   </div>
 
-  <section class="slotbar" id="slotbar" aria-label="Season reporting windows"></section>
-
   <nav class="sidenav" id="sidenav" aria-label="Portal sections">
     <a href="#overview" data-view="overview" style="--g1:#22d3ee;--g2:#0e7490"><i class="ni" data-ic="overview"></i>National Overview</a>
     <a href="#map" data-view="map" style="--g1:#60a5fa;--g2:#1d4ed8"><i class="ni" data-ic="map"></i>Avalanche Risk Map</a>
@@ -138,6 +137,7 @@
 <script src="{{ url_for('static', filename='js/avalanche.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hindukush.js') }}"></script>
 <script src="{{ url_for('static', filename='js/snowforecast.js') }}"></script>
+<script src="{{ url_for('static', filename='js/snowclimate.js') }}"></script>
 <script src="{{ url_for('static', filename='js/karakoram.js') }}"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>

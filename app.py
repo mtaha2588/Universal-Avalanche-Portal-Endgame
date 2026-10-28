@@ -306,6 +306,15 @@ def create_app(config: type[Config] = Config) -> Flask:
             return jsonify(available=False, message="No Karakoram hotspots imported. Run scripts/build_kk_hotspots.py."), 200
         return jsonify(available=True, **json.loads(p.read_text(encoding="utf-8")))
 
+    @app.get("/api/history/events")
+    def api_history_events():
+        """Compiled historical avalanche records of Pakistan with location quality and illustrative paths
+        (scripts/build_history_events.py). Every CSV field is served unchanged."""
+        p = config.DATA_DIR / "history" / "events" / "pk_events.geojson"
+        if not p.exists():
+            return jsonify(available=False, message="No historical events built. Run scripts/build_history_events.py."), 200
+        return jsonify(available=True, **json.loads(p.read_text(encoding="utf-8")))
+
     @app.get("/api/forecast/snow")
     def api_snow_forecast():
         """Run metadata for the 2026-27 snow outlook (method, skill, thresholds, coverage caveats)."""
@@ -314,6 +323,35 @@ def create_app(config: type[Config] = Config) -> Flask:
             return jsonify(available=False, message="No snow outlook imported. Run scripts/build_snow_forecast.py."), 200
         return jsonify(available=True, datasets=[store.meta(i) for i in ("snow_stations", "hk_zones", "hk_tiles_windows")],
                        **json.loads(p.read_text(encoding="utf-8")))
+
+    era5_cache = {}
+
+    @app.get("/api/climate/era5_winter")
+    def api_era5_winter():
+        """Winter (DJF) climate 1970-2010 from ERA5-Land, 305 tiles (scripts/build_era5_winter.py). Served pre-gzipped."""
+        p = config.DATA_DIR / "climate" / "era5_winter.json"
+        if not p.exists():
+            return jsonify(available=False, message="No ERA5 winter run imported. Run scripts/build_era5_winter.py."), 200
+        mt = p.stat().st_mtime_ns
+        if era5_cache.get("mt") != mt:
+            body = b'{"available":true,' + p.read_bytes()[1:]
+            era5_cache.update(mt=mt, raw=body, gz=gzip.compress(body, 6))
+        etag = f'"era5w-{mt}"'
+        if request.headers.get("If-None-Match") == etag:
+            return Response(status=304, headers={"ETag": etag})
+        use_gz = "gzip" in request.headers.get("Accept-Encoding", "")
+        resp = Response(era5_cache["gz" if use_gz else "raw"], mimetype="application/json")
+        if use_gz:
+            resp.headers["Content-Encoding"] = "gzip"
+        resp.headers.update({"ETag": etag, "Cache-Control": "no-cache", "Vary": "Accept-Encoding"})
+        return resp
+
+    @app.get("/api/climate/era5_winter/<name>.csv")
+    def api_era5_winter_csv(name):
+        """The two supplied CSVs, unchanged."""
+        if name not in ("regional_means_winter", "tile_year_values_winter"):
+            abort(404)
+        return send_from_directory(config.DATA_DIR / "climate" / "era5_winter", f"{name}.csv", as_attachment=True, mimetype="text/csv")
 
     @app.get("/api/layer/<dataset_id>")
     def api_layer(dataset_id):

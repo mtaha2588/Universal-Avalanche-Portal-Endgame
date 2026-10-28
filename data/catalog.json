@@ -253,6 +253,18 @@
    }
   },
   {
+   "id": "climate_era5_winter",
+   "title": "Winter climate 1970-2010: 305 ERA5-Land tiles",
+   "file": "climate/era5_winter.json",
+   "kind": "Per-tile and per-region winter (Dec-Feb) values for 41 winters: air and minimum temperature, snow depth, snow cover, SWE, snowfall, precipitation, snowmelt, wind",
+   "resolution": "0.25° tiles (~25 km) inside the Pakistan border; yearly DJF means / season totals",
+   "limitations": "Reanalysis (model reconstruction), not station measurements; not validated here. 1974 flagged estimated by the run and excluded from trends. Snow cover supplied as 0-10,000 under a % label, divided by 100. Glacier cells sit at ERA5-Land's fixed snow store (3,333 cm depth, 10,000 mm SWE), so Karakoram snow depth is the cap, not measured snow. Trends are least-squares slopes without significance tests.",
+   "status": "indicative",
+   "source": "NGT ERA5 winter run (ERA5_Pakistan_results_winter): ERA5-Land via Google Earth Engine, built by scripts/build_era5_winter.py",
+   "data_date": "2026-10-28",
+   "crs": "EPSG:4326"
+  },
+  {
    "id": "snow_stations",
    "title": "Snow outlook 2026-27: 36 stations",
    "file": "forecast/snow_stations.geojson",
@@ -382,6 +394,18 @@
    "crs": "EPSG:4326",
    "resolution": "ERA5 0.25° tile (~28 km); DEM 120 m grid",
    "limitations": "Release point, path, speed and duration are model estimates (steepest descent, alpha-beta run-out, PCM speed), not observations; they should be checked against reports or imagery. Weather factors describe a ~28 km ERA5 tile, not the slope."
+  },
+  {
+   "id": "history_events_pk",
+   "title": "Historical avalanche events of Pakistan (compiled records, 1974-2026)",
+   "file": "history/events/pk_events.geojson",
+   "status": "indicative",
+   "kind": "39 compiled event records (CSV fields unchanged) with location quality A-E and, for 21 located snow / ice avalanches, an illustrative path on the DEM",
+   "source": "Compiled table supplied by NGT (avalanche_events_pakistan_compiled.csv; news, HiAVAL, Alpine Journal and other sources per record); places: OpenStreetMap Nominatim (ODbL); terrain: portal DEM (Copernicus GLO-30)",
+   "data_date": "Events 1974-2026; geocoded 2026-10-28",
+   "crs": "EPSG:4326",
+   "resolution": "Point per record (place level at best); DEM ~30 m",
+   "limitations": "Casualty figures are as reported and differ between sources. Locations are the named place, the nearest named place or only the valley (quality A-E per record), not the impact site. Avalanche paths, release points and speeds are ILLUSTRATIVE (sliding block with textbook Voellmy friction, not calibrated) and are not the historical paths."
   }
  ]
 }

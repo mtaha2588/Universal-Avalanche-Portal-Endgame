@@ -8,13 +8,6 @@ const Views = (() => {
   const exportBtns = (ds, extra) =>
     `<a class="btn" href="${UI.exportUrl(ds, "csv", extra)}">⇩ CSV</a><a class="btn" href="${UI.exportUrl(ds, "geojson", extra)}">⇩ GeoJSON</a>`;
 
-  function seasonStrip(sel) {
-    const today = S.config.today;
-    return `<div class="season-bar">${S.windows.map(w =>
-      `<i class="${w.prediction_available ? "has" : ""} ${w.id === sel ? "sel" : ""}" title="${w.id}: ${w.label}${w.prediction_available ? " — model output" : " — no model output"}"></i>`).join("")}</div>
-      <div class="muted" style="font-size:11.5px;display:flex;justify-content:space-between"><span>15 Dec</span><span>${S.windows.length} reporting windows · ${S.windows.filter(w => w.prediction_available).length} with model output · today ${today}</span><span>15 Apr</span></div>`;
-  }
-
   // Mini SVG locator: projects a region bbox and real point data into the combined extent.
   function locator(bbox, points) {
     const [W, S_, E, N] = [70.8, 33.8, 77.8, 37.1];
@@ -48,7 +41,6 @@ const Views = (() => {
         <div class="card kpi"><div class="k-label">Reference settlements</div><div class="k-val">${sum.settlements_total}</div><div class="k-note">Town centres in region</div></div>
         <div class="card kpi ${sum.roads_total ? "" : "warn"}"><div class="k-label">Road segments analysed</div><div class="k-val">${sum.roads_total}</div><div class="k-note">${sum.roads_total ? "OSM centerlines" : "Road dataset not loaded"}</div></div>
       </div>
-      <div class="card" style="margin-bottom:14px"><h3>Season ${UI.esc(S.windows[0] ? S.windows[0].season : "")} — reporting windows <span class="tag info">Reporting window ≠ forecast lead time</span></h3>${seasonStrip(S.window)}</div>
       <div class="grid g2">
         <div class="card"><h3>Data &amp; model readiness</h3><ul class="ready">${ready}</ul></div>
         <div class="card"><h3>Recorded incidents in region <span class="tag warn">Seed — verify</span></h3>

@@ -170,9 +170,12 @@ const SF = (() => {
   }
 
   // ---------------------------------------------------------------- page
+  // Tab switch shared with the Winter climate page (snowclimate.js); both live under the side-nav snow icon.
+  const tabs = on => `<nav class="sc-tabs" aria-label="Snow page">${[["snowforecast", "Outlook 2026-27", "Seasonal forecast · 36 stations"], ["snowclimate", "Winter climate 1970–2010", "ERA5-Land · 305 tiles · 41 winters"]]
+    .map(([id, t, s]) => `<a href="#${id}" class="${id === on ? "on" : ""}"${id === on ? ' aria-current="page"' : ""}>${ICON}<span><b>${t}</b><em>${s}</em></span></a>`).join("")}</nav>`;
   async function render(el) {
     dispose();
-    const head = `<div class="page-h"><div><div class="eyebrow">Northern Pakistan · Winter ${st.meta ? st.meta.season : "2026-27"}</div><h2>Snow outlook, 15 December – 15 April</h2>
+    const head = tabs("snowforecast") + `<div class="page-h"><div><div class="eyebrow">Northern Pakistan · Winter ${st.meta ? st.meta.season : "2026-27"}</div><h2>Snow outlook, 15 December – 15 April</h2>
       <p>Hindu Kush, Karakoram and Himalaya: forecast winter snowfall at 36 stations and the expected number of heavy-snowfall (HIGH-danger) days in each 15-day reporting window.</p></div>
       <div class="toolbar" style="margin:0"><a class="btn primary" href="#hindukush">${ICON} Hindu Kush terrain × snow</a></div></div>`;
     el.innerHTML = head + UI.loading("Loading snow outlook…");
@@ -204,7 +207,7 @@ const SF = (() => {
   }
   function dispose() { stopPlay(); if (st.map) { try { st.map.remove(); } catch { /* detached */ } } st.map = null; st.ready = false; }
 
-  return { render, dispose, load, st, ramp, ramLeg, winBar, wireBar, markBar, stopPlay, startPlay, SLOT_MS, wlabel, hv, p2, fmt, notices, RAMP, ICON, gradient };
+  return { render, dispose, load, st, tabs, ramp, ramLeg, winBar, wireBar, markBar, stopPlay, startPlay, SLOT_MS, wlabel, hv, p2, fmt, notices, RAMP, ICON, gradient };
 })();
 window.SF = SF;
 Views.snowforecast = SF.render;
@@ -241,10 +244,9 @@ const HKF = (() => {
     ...SF.RAMP.flatMap((c, i) => [Math.max(0.01, max * (i + 1) / SF.RAMP.length), c])];
   const withKey = (e, k) => JSON.parse(JSON.stringify(e).replace('"X"', JSON.stringify(k)));
   const interact = e => { if (e.originalEvent) stopAll(); };
-  // The timeline is the portal's slot bar at the top of the page (App); stop it and any old SF animation.
-  const stopAll = () => { SF.stopPlay(); if (window.App) App.stopPlay(); };
-  const playing = () => !!(window.App && App.playing());
-  // Window number (1-9) of the slot selected in the top bar, if it belongs to the outlook season.
+  // The window comes from the portal's "Reporting window" selector (App); stop any old SF animation.
+  const stopAll = () => SF.stopPlay();
+  // Window number (1-9) of the selected reporting window, if it belongs to the outlook season.
   const topWin = () => { const i = SF.st.wins.findIndex(w => w.id === S.window); return i >= 0 ? i + 1 : null; };
 
   let on = false, win = 3, data = null, saved = null, host = null, popup = null, regEl = null, rail = null, cap = null;
@@ -355,7 +357,6 @@ const HKF = (() => {
     setWin(win); applyMode();
     register(el);
     if (!auto) el.querySelector(".hk-stage").scrollIntoView({ behavior: "smooth", block: "start" });
-    else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setTimeout(() => { if (on && !playing() && !HK.state.tour) App.startPlay(); }, 3200);
   }
 
   // ------------------------------------------------------------ tooltips
@@ -458,7 +459,7 @@ const HKF = (() => {
         <span class="hk-rk ${mode === "general" ? "top" : ""}">${mode === "general" ? "★" : p.id}</span>
         <span class="hk-rmain"><b>${fmt(p.a, 1)} ha</b> <span class="mono muted">${UI.esc(p.tile)}</span>${mode === "general" ? ` <span class="muted">· risk ${fmt(p.r, 2)}</span>` : ""}<br>
           <small>${ll}<br>near ${place(f)} · ${fmt(p.elev)} m · ${fmt(p.slope, 1)}°${mode === "general" ? ` · ${fmt(p.sh, 2)} snow days at ${UI.esc(p.st)}` : ""}</small></span></button>`;
-    }).join("") : UI.empty(mode === "general" ? "No main hotspot in this slot" : "Nothing to list", "<p>" + (mode === "general" ? "No DEM hotspot shares a heavy-snow slot here" + ((w) => w.length ? `; main hotspots appear in ${w.map(x => "W" + p2(x.w)).join(", ")}. Use the slot bar to move there.` : ".")(last.filter(x => x.stars)) + " This is not an all-clear." : "Lower the minimum area or clear the filters.") + "</p>");
+    }).join("") : UI.empty(mode === "general" ? "No main hotspot in this slot" : "Nothing to list", "<p>" + (mode === "general" ? "No DEM hotspot shares a heavy-snow slot here" + ((w) => w.length ? `; main hotspots appear in ${w.map(x => "W" + p2(x.w)).join(", ")}. Choose that reporting window at the top to move there.` : ".")(last.filter(x => x.stars)) + " This is not an all-clear." : "Lower the minimum area or clear the filters.") + "</p>");
     const n = mode === "wx" ? "tiles" : "areas";
     return { title: SIDE[mode], html, count: `<b>${fmt(all.length)}</b> ${n} in ${wl}${all.length > rows.length ? ` · showing the first ${rows.length}` : ""} · click a row to go there` };
   }
@@ -484,11 +485,10 @@ const HKF = (() => {
     m.setPaintProperty("fs-pt", "circle-color", withKey(hexStops(data.hmax), h));
     m.setPaintProperty("fs-pt", "circle-radius", ["interpolate", ["linear"], ["coalesce", ["get", h], 0], 0, 5, data.hmax, 14]);
     texts(); HK.renderList();
-    if (playing()) m.easeTo({ bearing: m.getBearing() + 9, duration: 4600 });
   }
 
   function refresh() { if (on && cur) { setWin(win); } }
-  // Called by the top slot bar: follow its window when it is one of the outlook season's windows.
+  // Called when the reporting window changes: follow it when it is one of the outlook season's windows.
   function fromTop() { const w = topWin(); if (on && w && w !== win) setWin(w); }
 
   function off(silent) {

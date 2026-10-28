@@ -193,6 +193,33 @@ def test_hk_export_filters(client):
     assert client.get("/api/export/hk_hotspots.csv?min_ha=abc").status_code == 400
 
 
+# ------------------------------------------------------------------ historical events (compiled records + illustrative paths)
+def test_history_events_keep_records_and_label_paths(client):
+    import csv
+    r = client.get("/api/history/events").get_json()
+    assert r["available"] and "Illustrative" in r["metadata"]["method"]
+    src = {row["event_id"]: row for row in csv.DictReader((ROOT / "data/history/events/avalanche_events_pakistan_compiled.csv").open(encoding="utf-8"))}
+    feats = r["features"]
+    assert len(feats) == len(src)
+    for f in feats:
+        p = f["properties"]
+        for k, v in src[p["event_id"]].items():              # every compiled field is served unchanged
+            assert p[k] == v
+        assert p["loc"]["tier"] in "ABCDE"
+        if p["loc"]["tier"] in "DE" or p["anim"] is None:
+            assert p["anim"] is None and p["anim_reason"]   # valley-only / unlocated / non-avalanche records are never animated
+        else:
+            a = p["anim"]
+            assert a["path"][0][2] > a["path"][-1][2] and a["drop_m"] > 0 and a["length_m"] > 200
+        if p["loc"]["tier"] == "E":
+            assert f["geometry"] is None
+    ids = {f["properties"]["event_id"]: f["properties"] for f in feats}
+    assert ids["PK027"]["anim"] is None and ids["PK038"]["anim"] is None    # earthquake candidate, glacier movement
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
 # ------------------------------------------------------------------ snow outlook 2026-27
 def test_snow_outlook_api_states_its_limits(client):
     r = client.get("/api/forecast/snow").get_json()
@@ -212,6 +239,18 @@ def test_snow_stations_leave_unmodelled_windows_empty(client):
         assert p["forecast_cm"] > 0 and p["range80_cm"][0] <= p["forecast_cm"] <= p["range80_cm"][1] + 1e-6
     hk = [f["properties"] for f in feats if f["properties"]["range"] == "Hindu Kush"]
     assert all(abs(p["pct_of_normal"] - 100) < 1e-6 for p in hk)
+
+
+def test_era5_winter_climate_keeps_estimated_year_out(client):
+    r = client.get("/api/climate/era5_winter").get_json()
+    m = r["meta"]
+    assert r["available"] and m["years"][0] == 1970 and m["years"][-1] == 2010 and len(r["tiles"]) == m["tiles"] == 305
+    assert [y for y, e in zip(m["years"], m["estimated"]) if e] == [1974] and "excluded" in m["estimated_note"]
+    assert "not station measurements" in m["reanalysis_note"]
+    assert all(0 <= v <= 100 for t in r["tiles"] for v in t["v"]["cover"])   # supplied 0-10,000, shown as %
+    assert all(len(t["v"]["t2m"]) == 41 for t in r["tiles"])
+    assert client.get("/api/climate/era5_winter/tile_year_values_winter.csv").status_code == 200
+    assert client.get("/api/climate/era5_winter/secret.csv").status_code == 404
 
 
 def test_hk_snow_zones_and_tiles(client):

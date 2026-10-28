@@ -27,8 +27,8 @@ foreign officials, so visual polish matters. Data honesty matters more.
 
 ## Pages and routes
 
-- `/` serves `templates/home.html`, the single-screen home: module tiles that open modal windows, the
-  season slot bar and the selected-window panel. It is sent raw with `send_from_directory`, NOT through
+- `/` serves `templates/home.html`, the single-screen home: module tiles that open modal windows over the
+  3D glacier map. It is sent raw with `send_from_directory`, NOT through
   Jinja, because its JS uses `${}` template literals. Do not put Jinja syntax in it.
 - `/portal` renders `templates/portal.html`, the live portal (SPA with hash routes such as `#map`).
   `?window=2026-27-W03&region=karakoram` preselects the context. The Home button links to `/`.
@@ -49,7 +49,7 @@ foreign officials, so visual polish matters. Data honesty matters more.
 | Distances, point-in-polygon | `portal/services/spatial.py` |
 | Data loading, exposure and road analysis | `portal/services/data_store.py` |
 | CSV/GeoJSON with metadata | `portal/services/exports.py` |
-| Portal boot, intro, slot bar, autoplay | `static/js/app.js` |
+| Portal boot, intro, router, region / window context | `static/js/app.js` |
 | Map (MapLibre, or Mapbox when a token is set) | `static/js/map.js` |
 | Page renderers | `static/js/views.js` |
 | Hindu Kush screening page | `static/js/hindukush.js` (styles: `.hk-*` at the end of `portal.css`) |
@@ -125,7 +125,9 @@ foreign officials, so visual polish matters. Data honesty matters more.
 
 The season runs 15 Dec → 15 Apr in 15-day half-open windows `[start, end)`. The last window is shorter.
 IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it in sync with
-`windows.py`. The slot-bar phase labels (Early winter … Melt onset) are descriptive only.
+`windows.py`. The season slot bars (the 15 Dec → 15 Apr window tabs on top of the home page and the portal), the
+home "Season Timeline" module and the overview's season strip were REMOVED at the user's request; do not bring them back.
+The window is chosen with the portal's "Reporting window" selector (and `?window=`); the home page passes the current window.
 
 ## Non-negotiable rules
 
@@ -164,12 +166,26 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
 - Hindu Kush zones are nearest-station areas (<= 60 km, inside Pakistan), no interpolation. Tile glow index = 100 x tile share of
   High/Very-high terrain x station HIGH-danger days / maximum: a relative ranking. 38 of 98 tiles are blank (outside Pakistan or too far).
 - Palette is blue -> magenta, kept apart from the yellow -> red terrain-screening palette.
-- Hindu Kush forecast mode (default on `#hindukush`): the portal's top slot bar IS the timeline (App.setWindow -> HKF.fromTop; its play button
-  steps 5 s per slot and skips W08/W09, which the outlook does not model). The on-map snow-outlook panel and the KPI cards were removed
+- Hindu Kush forecast mode (default on `#hindukush`): the slot follows the portal's "Reporting window" selector (App.setWindow -> HKF.fromTop;
+  W08/W09 are not modelled; there is no autoplay since the top slot bar was removed). The on-map snow-outlook panel and the KPI cards were removed
   (`.hk-stage.no-kpi`, taller map). DEM hotspots use the page's
   minimum area (default 120 ha). Main hotspot (red star) = DEM very-high area in a tile whose nearest station forecasts
   >= 0.5 HIGH-danger days in that slot. Red dot = other DEM hotspots. Dark blue = weather tiles. Green = populated (approximate).
   Icon rail: General risk / DEM hotspots / Snow & weather, plus a Populated toggle.
+
+## Winter climate 1970-2010 (ERA5-Land)
+
+- Second tab of the Snow page (side-nav snow icon): `/portal#snowclimate` (`static/js/snowclimate.js`, global `SC`, `Views.snowclimate`; styles `.sc-*` at
+  the end of `portal.css`). `SF.tabs()` draws the "Outlook 2026-27 | Winter climate 1970-2010" switch on both pages; app.js keeps the snow nav item active.
+- Imported with `python scripts/build_era5_winter.py <ERA5_Pakistan_results_winter folder>` (system Python + numpy): `data/climate/era5_winter.json`
+  (305 tiles x 41 winters x 9 variables, regional series, per-tile trends and temp-snow r), the two CSVs copied unchanged to `data/climate/era5_winter/`,
+  figures + MP4s to `static/img/era5_winter/`. API `/api/climate/era5_winter` (gzipped), CSVs at `/api/climate/era5_winter/<name>.csv` (whitelisted).
+- Honesty: reanalysis, not observations, not validated. 1974 is flagged estimated by the run: hatched, excluded from every trend / correlation.
+  Snow cover was supplied 0-10,000 under a % label: divided by 100. Glacier cells sit at ERA5-Land's fixed store (depth 3,333 cm, SWE 10,000 mm),
+  which inflates Karakoram depth / SWE; the tile inspector says so. Trends are OLS per decade, no significance test. Computed r = -0.11 (all tiles,
+  observed winters) vs the run's figure C -0.12 (its own year set).
+- Palettes: diverging blue-red (temperature), blues (snow), violets (snowfall), greens (melt), sand (wind), brown-teal (non-temperature trends):
+  separate from the forecast (blue -> magenta) and screening (yellow -> red) palettes. Colour scales are fixed over all years (1-99 % quantiles).
 
 ## Home-page glacier map: Pakistan study area
 
@@ -335,10 +351,30 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   (`static/history/batura_1974/3d/avalanche_path_with_time.csv`, release props from `avalanche_features.geojson`) at 5x. It starts from the model's
   release point (4,607 m), not from a summit. Labelled "model · not observed".
 - Playback clock advances at most 0.1 s per frame (slow machines get slow motion, not skipped phases). Test hook: `Avalanche.slowmo(6)`.
+- Engine styles live in `static/css/avalanche.css` (portal.html and home.html). Options used by the historic tour: `head` / `tag` (labels), `hudHost`,
+  `hudClass`, `keys: false` (no Esc), `ctl.pause(bool)`. Voellmy drag uses the speed ALONG the slope (v_map / cos); the old map-plane speed gave
+  100+ m/s on steep faces. `camera()` fits the vertical drop x exaggeration as well as the run (a 2,000 m face put the release above the frame).
+
+## Historic avalanche tour (Historical Overview)
+
+- Data: `data/history/events/avalanche_events_pakistan_compiled.csv` (39 records supplied by NGT, unchanged) -> `python scripts/build_history_events.py`
+  (system Python, numpy + Pillow; `--refresh-osm` re-asks OpenStreetMap) -> `pk_events.geojson` + `osm_geocode.json` (Nominatim answers, with OSM ids).
+  API `/api/history/events`; catalog id `history_events_pk`. Every CSV field is served unchanged (test checks this).
+- Location quality `loc.tier`: A coordinates in the record, B place found in OSM, C nearest named place (named in `loc.note`), D valley / district only
+  (dashed 14 km area, never animated), E not located. The per-record rules (`GEO` in the script) were checked by hand against the OSM answers.
+  PK007 Gayari: the record's coordinates are at 5,822 m on the DEM (record says ~4,000 m base), so OSM "Gyari" (3,775 m) is used and the note says why.
+- Paths (`anim`, 21 records): ILLUSTRATIVE. Release cells = 28-55 deg slopes on the local z12 DEM (the peaks / ridges / glacier walls above the place);
+  vectorised sliding block (same physics as the engine). `impact`: the run that reaches the documented place at the place's own height (+-150 m) with
+  the largest drop; `band`: release at the record's elevation (K2 Bottleneck, Broad Peak C2-C3, Shispare ~5,700 m, Shounter Pass above 4,420 m).
+  Not animated: earthquake candidate, "unclear", rain-triggered landslides, glacier movement, summer "doubtful" events, D/E locations.
+- UI: `static/js/histtour.js` (`HistTour.open({tour|focus})`, styles `static/css/histtour.css`), started only by the user from the module's banner or a
+  record card (never autoplayed). Full-screen 3D satellite map (`bgMap.lib()` engine, terrain x1.2, documentary grade, fog), records list, record panel,
+  stops: establishing flight (letterbox + lower-third) -> wind-driven snow (screen-space canvas, atmosphere only; documented weather is quoted from the
+  record) -> Avalanche engine -> conclusion card (deaths as reported, confidence) -> auto-continue after 8 s. Controls: prev, play/pause (Space), replay,
+  next (arrows), Event map, exit (Esc). Batura 1974 is a stop with the NGT model path ("model reconstruction"). Test helper: `HistTour.map()`.
 
 ## One palette (home page)
 
-- `SLOT_COL` (season tabs' fluorescent set, defined above `M` in home.html) is the only palette: module tabs take `TAB_COL[id]`, the three glacier
+- `SLOT_COL` (fluorescent set, defined above `M` in home.html; originally the season tabs' colours) is the only palette: module tabs take `TAB_COL[id]`, the three glacier
   systems take `SYS_COL` (Hindu Kush #00FFFF, Karakoram #FF0000, West Himalaya #39FF00), and the mountain-system tabs use exactly those.
-  `GLACIER_COLORS` and `INTRO_COLORS` both point at `SYS_COL`; `GLACIER_LIGHT` holds the bright outline tints. The Season Timeline tab's accent
-  bar is the full `SLOT_COL` gradient. Keep `SLOT_COL` in sync with app.js.
+  `GLACIER_COLORS` and `INTRO_COLORS` both point at `SYS_COL`; `GLACIER_LIGHT` holds the bright outline tints.

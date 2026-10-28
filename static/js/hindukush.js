@@ -366,7 +366,7 @@ const HK = (() => {
     const id = st.tour = {};
     const b = $("#hk-tour"); if (b) { b.classList.add("on"); b.innerHTML = `${UI.ICON.pause} Stop tour`; }
     for (let k = 0; st.tour === id; k = (k + 1) % list.length) {
-      if (window.HKF) HKF.stopAll();                           // the slot bar must not move on during the tour
+      if (window.HKF) HKF.stopAll();                           // no outlook animation during the tour
       if (k === 0) { const fresh = tourList(); if (fresh.length) list.splice(0, list.length, ...fresh); }
       const f = list[k % list.length], nx = list[(k + 1) % list.length];
       select(f.properties.rank, !window.Avalanche);

@@ -1,0 +1,615 @@
+{
+ "Shispare": [
+  {
+   "place_id": 213514452,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 4466545591,
+   "lat": "36.4398416",
+   "lon": "74.6806598",
+   "category": "natural",
+   "type": "peak",
+   "place_rank": 18,
+   "importance": 0.3268260957230098,
+   "addresstype": "peak",
+   "name": "Shispare",
+   "display_name": "Shispare, Upper Hunza Tehsil, Hunza District, Gilgit Division, Gilgit-Baltistan, Pakistan",
+   "boundingbox": [
+    "36.4397916",
+    "36.4398916",
+    "74.6806098",
+    "74.6807098"
+   ]
+  }
+ ],
+ "Behrain": [
+  {
+   "place_id": 213197126,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 835518355,
+   "lat": "35.2078012",
+   "lon": "72.5473968",
+   "category": "place",
+   "type": "town",
+   "place_rank": 18,
+   "importance": 0.21080589711721126,
+   "addresstype": "town",
+   "name": "Behrain",
+   "display_name": "Behrain, Behrain Tehsil, Swat District, Malakand Division, Khyber Pakhtunkhwa, 19010, Pakistan",
+   "boundingbox": [
+    "35.1678012",
+    "35.2478012",
+    "72.5073968",
+    "72.5873968"
+   ]
+  },
+  {
+   "place_id": 212971383,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "relation",
+   "osm_id": 16454771,
+   "lat": "35.2472314",
+   "lon": "72.5095393",
+   "category": "boundary",
+   "type": "administrative",
+   "place_rank": 14,
+   "importance": 0.348606766793213,
+   "addresstype": "municipality",
+   "name": "Behrain Tehsil",
+   "display_name": "Behrain Tehsil, Swat District, Malakand Division, Khyber Pakhtunkhwa, Pakistan",
+   "boundingbox": [
+    "35.0891564",
+    "35.4053437",
+    "72.2848033",
+    "72.7828788"
+   ]
+  }
+ ],
+ "Lowari Pass": [
+  {
+   "place_id": 212705737,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 299038269,
+   "lat": "35.3514319",
+   "lon": "71.8001743",
+   "category": "mountain_pass",
+   "type": "yes",
+   "place_rank": 20,
+   "importance": 0.2809844805284867,
+   "addresstype": "mountain_pass",
+   "name": "Lowari Pass",
+   "display_name": "Lowari Pass, Dir Tehsil, Upper Dir District, Malakand Division, Khyber Pakhtunkhwa, Pakistan",
+   "boundingbox": [
+    "35.3513819",
+    "35.3514819",
+    "71.8001243",
+    "71.8002243"
+   ]
+  }
+ ],
+ "Jagran": [
+  {
+   "place_id": 210787032,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "way",
+   "osm_id": 299680667,
+   "lat": "34.6215982",
+   "lon": "73.7633279",
+   "category": "waterway",
+   "type": "river",
+   "place_rank": 19,
+   "importance": 0.14670416800183103,
+   "addresstype": "river",
+   "name": "Jagran",
+   "display_name": "Jagran, Athmuqam Tehsil, Neelam Valley District, Muzaffarabad Division, Azad Kashmir, Pakistan",
+   "boundingbox": [
+    "34.5506361",
+    "34.7518166",
+    "73.7616440",
+    "73.8493278"
+   ]
+  },
+  {
+   "place_id": 213201213,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 3562320323,
+   "lat": "34.6226935",
+   "lon": "73.7580346",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14670416800183103,
+   "addresstype": "village",
+   "name": "Jagran",
+   "display_name": "Jagran, Athmuqam Tehsil, Neelam Valley District, Muzaffarabad Division, Azad Kashmir, Pakistan",
+   "boundingbox": [
+    "34.6026935",
+    "34.6426935",
+    "73.7380346",
+    "73.7780346"
+   ]
+  }
+ ],
+ "Khawaja Seri": [
+  {
+   "place_id": 211820486,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 8557711355,
+   "lat": "34.7754193",
+   "lon": "74.1463729",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14670416800183103,
+   "addresstype": "village",
+   "name": "Khawaja Seri",
+   "display_name": "Khawaja Seri, Sharda Tehsil, Neelam Valley District, Muzaffarabad Division, Azad Kashmir, Pakistan",
+   "boundingbox": [
+    "34.7554193",
+    "34.7954193",
+    "74.1263729",
+    "74.1663729"
+   ]
+  }
+ ],
+ "Neelam Valley District": [
+  {
+   "place_id": 212789352,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "relation",
+   "osm_id": 8191217,
+   "lat": "34.8821145",
+   "lon": "74.1480518",
+   "category": "boundary",
+   "type": "administrative",
+   "place_rank": 12,
+   "importance": 0.3586565232418998,
+   "addresstype": "district",
+   "name": "Neelam Valley District",
+   "display_name": "Neelam Valley District, Muzaffarabad Division, Azad Kashmir, Pakistan",
+   "boundingbox": [
+    "34.3775979",
+    "35.1328143",
+    "73.6124199",
+    "74.9356840"
+   ]
+  }
+ ],
+ "Leepa": [
+  {
+   "place_id": 212801501,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "way",
+   "osm_id": 307722849,
+   "lat": "34.3039711",
+   "lon": "73.9031195",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14670416800183103,
+   "addresstype": "village",
+   "name": "Leepa",
+   "display_name": "Leepa, Hattian Bala District, Muzaffarabad Division, Azad Kashmir, Pakistan",
+   "boundingbox": [
+    "34.2904166",
+    "34.3124321",
+    "73.8920018",
+    "73.9119359"
+   ]
+  }
+ ],
+ "Janwai": [
+  {
+   "place_id": 213250122,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 2622283616,
+   "lat": "34.7934660",
+   "lon": "74.5345003",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14670416800183103,
+   "addresstype": "village",
+   "name": "Janwai",
+   "display_name": "Janwai, Sharda Tehsil, Neelam Valley District, Muzaffarabad Division, Azad Kashmir, Pakistan",
+   "boundingbox": [
+    "34.7734660",
+    "34.8134660",
+    "74.5145003",
+    "74.5545003"
+   ]
+  }
+ ],
+ "Astore District": [
+  {
+   "place_id": 213142462,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "relation",
+   "osm_id": 15809444,
+   "lat": "35.2395277",
+   "lon": "74.8791985",
+   "category": "boundary",
+   "type": "administrative",
+   "place_rank": 12,
+   "importance": 0.35049604782988514,
+   "addresstype": "county",
+   "name": "Astore District",
+   "display_name": "Astore District, Diamer-Astore Division, Gilgit-Baltistan, 14200, Pakistan",
+   "boundingbox": [
+    "34.6289837",
+    "35.8513004",
+    "74.4034081",
+    "75.2845000"
+   ]
+  }
+ ],
+ "Upper Kohistan District": [
+  {
+   "place_id": 213157332,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "relation",
+   "osm_id": 16527367,
+   "lat": "35.4319364",
+   "lon": "73.2430308",
+   "category": "boundary",
+   "type": "administrative",
+   "place_rank": 12,
+   "importance": 0.39106112740783944,
+   "addresstype": "county",
+   "name": "Upper Kohistan District",
+   "display_name": "Upper Kohistan District, Hazara Division, Khyber Pakhtunkhwa, 20100, Pakistan",
+   "boundingbox": [
+    "34.9807111",
+    "35.8838054",
+    "72.7189349",
+    "73.9551765"
+   ]
+  }
+ ],
+ "way/448975812": [
+  {
+   "place_id": 211329483,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "way",
+   "osm_id": 448975812,
+   "lat": "35.3511292",
+   "lon": "71.8137225",
+   "category": "highway",
+   "type": "trunk",
+   "place_rank": 26,
+   "importance": 0.21337448257116948,
+   "addresstype": "trunk",
+   "name": "Lowari Tunnel",
+   "display_name": "Lowari Tunnel, دیر, تحصیل دروش, تحصیل دیر, ضلع دیر بالا, مالاکنڈ ڈویژن, خیبر پختونخوا, پاکستان",
+   "address": {
+    "road": "Lowari Tunnel",
+    "city": "دیر",
+    "town": "تحصیل دروش",
+    "municipality": "تحصیل دیر",
+    "county": "ضلع دیر بالا",
+    "state_district": "مالاکنڈ ڈویژن",
+    "state": "خیبر پختونخوا",
+    "ISO3166-2-lvl4": "PK-KP",
+    "country": "پاکستان",
+    "country_code": "pk"
+   },
+   "boundingbox": [
+    "35.3164132",
+    "35.3793900",
+    "71.7843021",
+    "71.8355671"
+   ],
+   "geojson": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      71.8355671,
+      35.3164132
+     ],
+     [
+      71.835376,
+      35.3173198
+     ],
+     [
+      71.835254,
+      35.3185215
+     ],
+     [
+      71.8350764,
+      35.3196441
+     ],
+     [
+      71.8342239,
+      35.3238194
+     ],
+     [
+      71.8310756,
+      35.3294131
+     ],
+     [
+      71.7954365,
+      35.3740128
+     ],
+     [
+      71.7932943,
+      35.3755585
+     ],
+     [
+      71.7895932,
+      35.377562
+     ],
+     [
+      71.7874805,
+      35.3784428
+     ],
+     [
+      71.7863014,
+      35.3788343
+     ],
+     [
+      71.7850224,
+      35.3791797
+     ],
+     [
+      71.7843021,
+      35.37939
+     ]
+    ]
+   }
+  }
+ ],
+ "Kandia": [
+  {
+   "place_id": 213448426,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 11275805049,
+   "lat": "35.4704725",
+   "lon": "73.1558797",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14671666819256882,
+   "addresstype": "village",
+   "name": "Kandia",
+   "display_name": "Kandia, Kandia Tehsil, Upper Kohistan District, Hazara Division, Khyber Pakhtunkhwa, Pakistan",
+   "boundingbox": [
+    "35.4504725",
+    "35.4904725",
+    "73.1358797",
+    "73.1758797"
+   ]
+  },
+  {
+   "place_id": 213459114,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "relation",
+   "osm_id": 16527363,
+   "lat": "35.5812774",
+   "lon": "73.0816924",
+   "category": "boundary",
+   "type": "administrative",
+   "place_rank": 14,
+   "importance": 0.32173239253715025,
+   "addresstype": "municipality",
+   "name": "Kandia Tehsil",
+   "display_name": "Kandia Tehsil, Upper Kohistan District, Hazara Division, Khyber Pakhtunkhwa, 20100, Pakistan",
+   "boundingbox": [
+    "35.2781788",
+    "35.8838054",
+    "72.7189349",
+    "73.4099522"
+   ]
+  }
+ ],
+ "Shershal": [
+  {
+   "place_id": 213081785,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 4009198700,
+   "lat": "36.0475766",
+   "lon": "71.7619717",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14672166857404437,
+   "addresstype": "village",
+   "name": "Shershal",
+   "display_name": "Shershal, Chitral Tehsil, Lower Chitral District, Chitrāl District, Malakand Division, Khyber Pakhtunkhwa, Pakistan",
+   "boundingbox": [
+    "36.0275766",
+    "36.0675766",
+    "71.7419717",
+    "71.7819717"
+   ]
+  }
+ ],
+ "Sur Rech": [
+  {
+   "place_id": 213317512,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 3986260105,
+   "lat": "36.6297192",
+   "lon": "72.5631208",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14672166857404437,
+   "addresstype": "village",
+   "name": "Sur Rech",
+   "display_name": "Sur Rech, Torkhow-Molkhow Tehsil, Upper Chitral District, Chitrāl District, Malakand Division, Khyber Pakhtunkhwa, Pakistan",
+   "boundingbox": [
+    "36.6097192",
+    "36.6497192",
+    "72.5431208",
+    "72.5831208"
+   ]
+  }
+ ],
+ "Swat District": [
+  {
+   "place_id": 213640211,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "relation",
+   "osm_id": 13927974,
+   "lat": "35.2324749",
+   "lon": "72.5116350",
+   "category": "boundary",
+   "type": "administrative",
+   "place_rank": 12,
+   "importance": 0.49110498436230837,
+   "addresstype": "county",
+   "name": "Swat District",
+   "display_name": "Swat District, Malakand Division, Khyber Pakhtunkhwa, Pakistan",
+   "boundingbox": [
+    "34.5677155",
+    "35.8960973",
+    "72.0993232",
+    "72.8108593"
+   ]
+  },
+  {
+   "place_id": 213571926,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 316440992,
+   "lat": "35.0000000",
+   "lon": "72.5000000",
+   "category": "place",
+   "type": "county",
+   "place_rank": 12,
+   "importance": 0.2400426863508049,
+   "addresstype": "county",
+   "name": "Swāt District",
+   "display_name": "Swāt District, Malakand Division, Khyber Pakhtunkhwa, Pakistan",
+   "boundingbox": [
+    "34.3000000",
+    "35.7000000",
+    "71.8000000",
+    "73.2000000"
+   ]
+  }
+ ],
+ "Bakwali": [
+  {
+   "place_id": 211826301,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 3123401131,
+   "lat": "34.8824457",
+   "lon": "74.1679931",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14670416800183103,
+   "addresstype": "village",
+   "name": "Bakwali",
+   "display_name": "Bakwali, Sharda Tehsil, Neelam Valley District, Muzaffarabad Division, Azad Kashmir, Pakistan",
+   "boundingbox": [
+    "34.8624457",
+    "34.9024457",
+    "74.1479931",
+    "74.1879931"
+   ]
+  }
+ ],
+ "Qamri": [
+  {
+   "place_id": 213479637,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 13534169434,
+   "lat": "34.7177728",
+   "lon": "74.9620229",
+   "category": "place",
+   "type": "village",
+   "place_rank": 19,
+   "importance": 0.14667666666666662,
+   "addresstype": "village",
+   "name": "Qamri",
+   "display_name": "Qamri, Astore Tehsil, Astore District, Diamer-Astore Division, Gilgit-Baltistan, Pakistan",
+   "boundingbox": [
+    "34.6977728",
+    "34.7377728",
+    "74.9420229",
+    "74.9820229"
+   ]
+  }
+ ],
+ "Shounter Lake": [
+  {
+   "place_id": 213915129,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "way",
+   "osm_id": 260712058,
+   "lat": "34.9733773",
+   "lon": "74.5127917",
+   "category": "water",
+   "type": "lake",
+   "place_rank": 20,
+   "importance": 0.2809844805284867,
+   "addresstype": "lake",
+   "name": "Shounter Lake",
+   "display_name": "Shounter Lake, Sharda Tehsil, Neelam Valley District, Muzaffarabad Division, Azad Kashmir, Pakistan",
+   "boundingbox": [
+    "34.9728159",
+    "34.9738748",
+    "74.5112351",
+    "74.5139985"
+   ]
+  }
+ ],
+ "Arandu, Chitral": [
+  {
+   "place_id": 212924847,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 2663035649,
+   "lat": "35.3101106",
+   "lon": "71.5510558",
+   "category": "place",
+   "type": "town",
+   "place_rank": 18,
+   "importance": 0.16005500190737773,
+   "addresstype": "town",
+   "name": "Arandu",
+   "display_name": "Arandu, Drosh Tehsil, Lower Chitral District, Chitrāl District, Malakand Division, Khyber Pakhtunkhwa, Pakistan",
+   "boundingbox": [
+    "35.2701106",
+    "35.3501106",
+    "71.5110558",
+    "71.5910558"
+   ]
+  }
+ ],
+ "Gyari": [
+  {
+   "place_id": 210798522,
+   "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+   "osm_type": "node",
+   "osm_id": 2945987893,
+   "lat": "35.2293609",
+   "lon": "76.8551138",
+   "category": "place",
+   "type": "hamlet",
+   "place_rank": 20,
+   "importance": 0.1333433333333333,
+   "addresstype": "hamlet",
+   "name": "Gyari",
+   "display_name": "Gyari, Mashabrum Tehsil, Ghanche District, Baltistan Division, Gilgit-Baltistan, Pakistan",
+   "boundingbox": [
+    "35.2093609",
+    "35.2493609",
+    "76.8351138",
+    "76.8751138"
+   ]
+  }
+ ]
+}

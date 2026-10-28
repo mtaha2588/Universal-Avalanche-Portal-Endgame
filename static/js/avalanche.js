@@ -112,7 +112,7 @@ const Avalanche = (() => {
       const v = Math.hypot(vx, vy), along = v > 0.01 ? -(gx * vx + gy * vy) / v : 0;
       out.push({ x, y, z, t, d: dist, v: v * Math.sqrt(1 + along * along) });
       let ax = -gx / m * G * sin * cos, ay = -gy / m * G * sin * cos;
-      if (v > 0.01) { const f = (MU * G * cos + G * v * v / XIH) * cos; ax -= vx / v * f; ay -= vy / v * f; }
+      if (v > 0.01) { const f = (MU * G * cos + G * v * v / (cos * cos) / XIH) * cos; ax -= vx / v * f; ay -= vy / v * f; }   // v is the map-plane speed; drag uses the speed along the slope
       const nvx = vx + ax * dt, nvy = vy + ay * dt;
       if (nvx * vx + nvy * vy <= 0 || (Math.hypot(nvx, nvy) < 0.6 && t > 4)) break;    // friction has stopped it
       vx = nvx; vy = nvy;
@@ -247,9 +247,9 @@ const Avalanche = (() => {
       const lg = x.createLinearGradient(0, n * 0.25, 0, n); lg.addColorStop(0, "rgba(255,255,255,0)"); lg.addColorStop(1, shade);
       x.fillStyle = lg; x.fillRect(0, 0, n, n);
     });
-    const flow = [0, 1, 2, 3].map(() => lump(64, 9, "rgba(255,255,255,0.96)", "rgba(140,165,200,0.8)", 0.45));
+    const flow = [0, 1, 2, 3].map(() => lump(64, 9, "rgba(255,255,255,0.97)", "rgba(112,138,178,0.9)", 0.45));
     const debris = [0, 1, 2, 3].map(() => lump(64, 12, "rgba(232,239,248,0.97)", "rgba(110,128,158,0.85)", 0.62));
-    const dust = [0, 1, 2].map(() => lump(128, 14, "rgba(250,252,255,0.55)", "rgba(165,185,215,0.55)", 0.25));
+    const dust = [0, 1, 2].map(() => lump(128, 14, "rgba(250,252,255,0.6)", "rgba(132,155,192,0.62)", 0.25));
     const shadow = mk(64, (x, n) => { const g = x.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2); g.addColorStop(0, "rgba(6,14,28,0.6)"); g.addColorStop(1, "rgba(6,14,28,0)"); x.fillStyle = g; x.fillRect(0, 0, n, n); });
     const glow = mk(128, (x, n) => { const g = x.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2); g.addColorStop(0, "rgba(255,255,255,1)"); g.addColorStop(0.25, "rgba(200,240,255,0.7)"); g.addColorStop(1, "rgba(80,200,255,0)"); x.fillStyle = g; x.fillRect(0, 0, n, n); });
     return (SPR = { flow, debris, dust, shadow, glow });
@@ -267,9 +267,9 @@ const Avalanche = (() => {
     const cv = document.createElement("canvas"); cv.className = "av-cv";
     box.insertBefore(cv, box.querySelector(".mapboxgl-control-container,.maplibregl-control-container"));
     const ctx = cv.getContext("2d"), S = sprites();
-    const hud = document.createElement("div"); hud.className = "av-hud" + (o.path ? " model" : "");
-    hud.innerHTML = `<div class="av-top"><span class="av-live"></span><b>${o.path ? "Avalanche reconstruction" : "Avalanche simulation"}</b>
-        <span class="av-tag">${o.path ? "model · not observed" : "illustrative"}</span><button type="button" class="av-x" title="Stop (Esc)" aria-label="Stop">×</button></div>
+    const hud = document.createElement("div"); hud.className = "av-hud" + (o.path ? " model" : "") + (o.hudClass ? " " + o.hudClass : "");
+    hud.innerHTML = `<div class="av-top"><span class="av-live"></span><b>${esc(o.head || (o.path ? "Avalanche reconstruction" : "Avalanche simulation"))}</b>
+        <span class="av-tag">${esc(o.tag || (o.path ? "model · not observed" : "illustrative"))}</span><button type="button" class="av-x" title="Stop (Esc)" aria-label="Stop">×</button></div>
       <div class="av-t">${esc(o.title)}</div><div class="av-s">${esc(o.sub || "")}</div>
       <div class="av-ph"><i></i><span data-k="ph">Locating release zone…</span></div>
       <div class="av-grid">
@@ -280,12 +280,12 @@ const Avalanche = (() => {
       </div>
       <canvas class="av-prof" width="560" height="132"></canvas>
       <p class="av-note">${esc(o.note || "")}</p>`;
-    (stage || box).appendChild(hud);
+    (o.hudHost || stage || box).appendChild(hud);
     if (stage) stage.classList.add("av-on");
     const q = k => hud.querySelector(`[data-k="${k}"]`);
     const ui = { ph: q("ph"), v: q("v"), kmh: q("kmh"), bar: q("bar"), d: q("d"), dl: q("dl"), h: q("h"), el: q("el"), t: q("t"), rate: q("rate") };
     const prof = hud.querySelector(".av-prof"), pctx = prof.getContext("2d");
-    const onKey = e => { if (e.key === "Escape") { ctl.stop(); if (o.onStop) o.onStop(); } };
+    const onKey = e => { if (e.key === "Escape" && o.keys !== false) { ctl.stop(); if (o.onStop) o.onStop(); } };
     document.addEventListener("keydown", onKey);
     hud.querySelector(".av-x").onclick = () => { ctl.stop(); if (o.onStop) o.onStop(); };
 
@@ -307,6 +307,19 @@ const Avalanche = (() => {
       resolveDone();
     };
     ctl.running = () => !dead;
+    // Pause freezes the playback clock and the camera drift; resume continues the drift for the time that is left.
+    let paused = false;
+    ctl.paused = () => paused;
+    ctl.pause = on => {
+      if (dead || on === paused) return;
+      paused = on;
+      hud.classList.toggle("paused", on);
+      if (on) { map.stop(); box.style.transform = ""; }
+      else if (drift && !fading) {
+        const left = Math.max(0.3, (flowP + settle) - Math.max(0, clock - REL));
+        map.easeTo({ ...drift, duration: left * 1000 * slow, easing: t => t, essential: true, padding: o.padding });
+      }
+    };
 
     (async () => {
       try {
@@ -374,7 +387,8 @@ const Avalanche = (() => {
       let fade = 1;
       if (fading) { fade = 1 - (now - fading) / fadeDur; if (fade <= 0) { remove(); return; } }
       // Playback clock: at most 0.1 s per frame, so a slow machine sees slow motion instead of skipped phases.
-      clock += Math.min(Math.max(0, now - lastNow), 100) / 1000 / slow; lastNow = now;
+      if (!paused) clock += Math.min(Math.max(0, now - lastNow), 100) / 1000 / slow;
+      lastNow = now;
       const tp = clock, ts = Math.min(Math.max(0, tp - REL) * rate, g.endT + settle * rate);
       const sFront = g.sF(ts), vF = ts > 0 && ts < g.Tend ? g.at(g.V, sFront) : 0;
       const sinP = Math.sin(map.getPitch() * D2R), terr = map.getTerrain && map.getTerrain(), exg = (terr && +terr.exaggeration) || 1, up = sinP * exg;
@@ -382,12 +396,13 @@ const Avalanche = (() => {
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
 
       // Cinematic camera drift and shake.
-      if (tp >= REL && !camMoved && !reduce() && !fading) {
+      if (tp >= REL && !camMoved && !reduce() && !fading && !paused) {
         camMoved = true;
         const [lo, la] = g.ll(g.L * 0.62);
-        map.easeTo({ center: [lo, la], bearing: t0Cam.bearing + (o.drift ?? 14), zoom: t0Cam.zoom + 0.3, duration: (flowP + settle) * 1000 * slow, easing: t => t, essential: true, padding: o.padding });
+        drift = { center: [lo, la], bearing: t0Cam.bearing + (o.drift ?? 14), zoom: t0Cam.zoom + 0.15 };
+        map.easeTo({ ...drift, duration: (flowP + settle) * 1000 * slow, easing: t => t, essential: true, padding: o.padding });
       }
-      if (!reduce() && !fading) {
+      if (!reduce() && !fading && !paused) {
         const crackKick = tp > PRE && tp < REL + 0.6 ? 3.2 * (1 - smooth((tp - PRE) / 1.1)) : 0;
         const amp = (o.shake ?? 2.4) * Math.pow(vF / g.vmax, 2) + crackKick;
         box.style.transform = amp > 0.05 ? `translate3d(${((Math.random() - 0.5) * 2 * amp).toFixed(2)}px,${((Math.random() - 0.5) * 2 * amp).toFixed(2)}px,0)` : "";
@@ -404,8 +419,8 @@ const Avalanche = (() => {
         for (let s = 0; s <= sTrack; s += st) { P(s, -g.W(s) * 0.8); s === 0 ? ctx.moveTo(OX, OY) : ctx.lineTo(OX, OY); }
         for (let s = sTrack; s >= 0; s -= st) { P(s, g.W(s) * 0.8); ctx.lineTo(OX, OY); }
         ctx.closePath();
-        ctx.fillStyle = `rgba(226,238,255,${0.2 * shown})`; ctx.fill();
-        ctx.strokeStyle = `rgba(255,255,255,${0.32 * shown})`; ctx.lineWidth = 1.1; ctx.stroke();
+        ctx.fillStyle = `rgba(150,172,205,${0.22 * shown})`; ctx.fill();                   // scoured, compacted snow: slightly darker and bluer
+        ctx.strokeStyle = `rgba(255,255,255,${0.4 * shown})`; ctx.lineWidth = 1.1; ctx.stroke();
       }
 
       // 2. Cloud shadows on the ground.
@@ -429,12 +444,12 @@ const Avalanche = (() => {
           const wv = g.W(s), u = p.xi * wv + 0.16 * wv * Math.sin(s / 38 + p.ph) * (moving ? 1 : 0.6);
           const zz = moving ? p.zA * Math.abs(Math.sin(ts * 2.6 + p.ph)) * vr : 0;
           P(s, u);
-          CX[i] = OX; CY[i] = OY - zz * OS * up; CR[i] = clamp(p.r * OS * (moving ? 1.05 : 0.7), moving ? 2.2 : 1.6, moving ? 26 : 14); CM[i] = moving ? 1 : 0;
-          CA[i] = shown * (moving ? 0.9 : 0.94);
+          CX[i] = OX; CY[i] = OY - zz * OS * up; CR[i] = clamp(p.r * OS * (moving ? 1.05 : 0.55), moving ? 2.2 : 1.4, moving ? 26 : 10); CM[i] = moving ? 1 : 0;
+          CA[i] = shown * (moving ? 0.9 : 0.86);
         }
         for (let i = 0; i < n; i += 2) {
-          const rr = CR[i] * 1.6; ctx.globalAlpha = CA[i] * 0.35;
-          ctx.drawImage(S.shadow, CX[i] - rr * 0.8, CY[i] - rr * 0.5, rr * 2, rr * 1.4);
+          const rr = CR[i] * 1.6; ctx.globalAlpha = CA[i] * (CM[i] ? 0.62 : 0.45);              // contact shadow: reads on bright snowfields too
+          ctx.drawImage(S.shadow, CX[i] - rr * 0.8, CY[i] - rr * 0.35, rr * 2, rr * 1.4);
         }
         for (let i = 0; i < n; i++) {
           const rr = CR[i], fl = CM[i] ? 1 : 0.62; ctx.globalAlpha = CA[i];   // deposited snow lies flat
@@ -524,7 +539,7 @@ const Avalanche = (() => {
         if (o.hold != null) setTimeout(() => ctl.stop(), o.hold);
       }
     }
-    let camMoved = false;
+    let camMoved = false, drift = null;
 
     function callout(x, y, h1, h2, col, a, side) {
       if (a <= 0.01) return;
@@ -579,8 +594,21 @@ const Avalanche = (() => {
     const dx = (lo1 - lo0) * Math.cos(la0 * D2R), dy = la1 - la0, down = Math.atan2(dx, dy) / D2R;
     const el = map.getContainer(), pad = o.padding || {}, hEff = Math.max(260, el.clientHeight - (pad.top || 0) - (pad.bottom || 0)),
       wEff = Math.max(260, el.clientWidth - (pad.left || 0) - (pad.right || 0));
-    const span = Math.max(g.L + 2 * g.w0, 600), zoom = clamp(Math.log2(40075016.686 * Math.cos(lam * D2R) * 0.8 * Math.min(hEff * 1.3, wEff) / (512 * span)), 11.2, 14.8);
-    return { center: [lm, lam], zoom, pitch: o.pitch || 62, bearing: down + 180 + (o.side ?? 28) };
+    // Fit both screen axes. Vertically the path spans its run along the view (foreshortened by the pitch) PLUS its vertical drop
+    // (raised by the terrain exaggeration): on a 2,000 m face the drop dominates, and ignoring it put the release above the frame.
+    const pitch = o.pitch || 62, side = (o.side ?? 28) * D2R, terr = map.getTerrain && map.getTerrain(), exg = (terr && +terr.exaggeration) || 1;
+    const drop = Math.max(0, g.H[0] - g.H[g.N - 1]), L = Math.max(g.L, 300);
+    const vM = L * Math.cos(side) * Math.cos(pitch * D2R) + drop * exg * Math.sin(pitch * D2R) + 2 * g.w0 * Math.cos(pitch * D2R);
+    const hM = L * Math.abs(Math.sin(side)) + 2.6 * g.w0;
+    const mpp = 1.3 * Math.max(vM / hEff, hM / wEff, 600 / Math.min(hEff, wEff));
+    const zoom = clamp(Math.log2(40075016.686 * Math.cos(lam * D2R) / (512 * mpp)), 10.8, 14.8);
+    // centre on the path point half way up the screen's vertical extent (distance along the view + height), not half way along the ground
+    const sv = s => -s * Math.cos(side) * Math.cos(pitch * D2R) + g.at(g.H, Math.min(s, g.L)) * exg * Math.sin(pitch * D2R);
+    let vmin = Infinity, vmax = -Infinity; for (let i = 0; i < g.N; i++) { const v = sv(i * g.ds); vmin = Math.min(vmin, v); vmax = Math.max(vmax, v); }
+    let sc = g.L * 0.45, best = Infinity;
+    for (let i = 0; i < g.N; i++) { const d = Math.abs(sv(i * g.ds) - (vmin + vmax) / 2); if (d < best) { best = d; sc = i * g.ds; } }
+    const [lc, lac] = g.ll(sc);
+    return { center: [lc, lac], zoom, pitch, bearing: down + 180 + (o.side ?? 28) };
   }
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const moved = (map, ms) => new Promise(r => { let t = null; const f = () => { clearTimeout(t); map.off("moveend", f); r(); }; t = setTimeout(f, ms); map.on("moveend", f); });

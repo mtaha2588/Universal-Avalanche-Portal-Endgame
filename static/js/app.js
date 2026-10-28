@@ -1,8 +1,5 @@
 /* Boot, intro sequence, router and global context (region / season / window). */
 "use strict";
-// One fluorescent colour per reporting window, shared with the home page; SLOT_INK keeps the text readable on it.
-const SLOT_COL = ["#FF0000", "#FF3D00", "#FFFF00", "#39FF00", "#00FFFF", "#0047FF", "#8F00FF", "#FF00FF", "#D00020"];
-const SLOT_INK = ["#fff", "#fff", "#0a0a0a", "#0a0a0a", "#0a0a0a", "#fff", "#fff", "#fff", "#fff"];
 
 const App = (() => {
   const view = () => document.getElementById("view");
@@ -28,50 +25,7 @@ const App = (() => {
   function fillWindowSelect() {
     document.getElementById("sel-window").innerHTML = S.windows.map(w =>
       `<option value="${w.id}" ${w.id === S.window ? "selected" : ""}>${w.label}${w.prediction_available ? " ●" : ""}</option>`).join("");
-    renderSlots();
   }
-
-  // ---------------------------------------------------------- slot bar
-  let playTimer = null;
-  function renderSlots() {
-    const bar = document.getElementById("slotbar");
-    if (!bar || !S.windows.length) return;
-    const today = S.config.today, idx = S.windows.findIndex(w => w.id === S.window);
-    const groups = UI.PHASES.map(ph => ({ ...ph, wins: S.windows.filter(w => +w.start.slice(5, 7) === ph.m) })).filter(g => g.wins.length);
-    bar.innerHTML = groups.map(g => {
-      const active = g.wins.some(w => w.id === S.window);
-      return `<div class="sgroup ${active ? "active" : ""}" style="--pc:${g.c};flex:${g.wins.length}">
-        <div class="sg-h"><b>${g.name}</b>${UI.esc(g.label)}</div>
-        <div class="sg-b">${g.wins.map(w => {
-          const isToday = today >= w.start && today < w.end_exclusive;
-          return `<button type="button" class="slot ${w.id === S.window ? "sel" : ""}" data-id="${w.id}" style="--pc:${SLOT_COL[S.windows.indexOf(w) % SLOT_COL.length]};--ink:${SLOT_INK[S.windows.indexOf(w) % SLOT_INK.length]}" title="${w.id}: [${w.start}, ${w.end_exclusive})${w.prediction_available ? " · model output" : " · no model output"}">
-            ${isToday ? '<span class="flag today">TODAY</span>' : w.prediction_available ? '<span class="flag model">MODEL</span>' : ""}
-            ${UI.fmtDay(w.start)} – ${UI.fmtDay(w.last_day)}<small>${w.id.slice(-3)} · ${w.days}d</small></button>`;
-        }).join("")}</div></div>`;
-    }).join("") + `<div class="splay">
-        <button type="button" id="slot-play" aria-label="${playTimer ? "Pause" : "Play"} window animation">${playTimer ? UI.ICON.pause : UI.ICON.play}</button>
-        <div class="lbl"><small>${playTimer ? "PLAYING" : "WINDOW"}</small><b>${idx >= 0 ? S.windows[idx].id.slice(-3) : "—"}</b>
-          <span>${idx + 1} of ${S.windows.length}</span><div class="prog"><i style="width:${((idx + 1) / S.windows.length) * 100}%"></i></div></div></div>`;
-    bar.querySelectorAll(".slot").forEach(b => b.addEventListener("click", () => { stopPlay(); setWindow(b.dataset.id); }));
-    bar.querySelector("#slot-play").addEventListener("click", () => playTimer ? stopPlay() : startPlay());
-  }
-  // On #hindukush the slot bar drives the snow-outlook timeline: 5 s per slot, skipping windows the outlook does not model.
-  const hkPlay = () => current === "hindukush" && window.SF && SF.st.wins;
-  function startPlay() {
-    if (playTimer) clearInterval(playTimer);
-    playTimer = setInterval(() => {
-      let i = S.windows.findIndex(w => w.id === S.window);
-      for (let k = 0; k < S.windows.length; k++) {
-        i = (i + 1) % S.windows.length;
-        if (!hkPlay()) break;
-        const n = SF.st.wins.findIndex(w => w.id === S.windows[i].id) + 1;
-        if (n && SF.st.mod.includes(n)) break;
-      }
-      setWindow(S.windows[i].id);
-    }, hkPlay() ? SF.SLOT_MS : 3500);
-    renderSlots();
-  }
-  function stopPlay() { if (playTimer) { clearInterval(playTimer); playTimer = null; renderSlots(); } }
 
   function fillHeader() {
     document.getElementById("sel-region").innerHTML = S.regions.map(r =>
@@ -101,11 +55,13 @@ const App = (() => {
 
   async function render(name) {
     const target = Views[name] ? name : (name === "map" ? "map" : "overview");
-    if (current === "hindukush" && target !== "hindukush" && window.HK) { stopPlay(); HK.dispose(); }
+    if (current === "hindukush" && target !== "hindukush" && window.HK) HK.dispose();
     if (current === "karakoram" && target !== "karakoram" && window.KK) KK.dispose();
     if (current === "snowforecast" && target !== "snowforecast" && window.SF) SF.dispose();
+    if (current === "snowclimate" && target !== "snowclimate" && window.SC) SC.dispose();
     current = target;
-    document.querySelectorAll(".sidenav a").forEach(a => a.classList.toggle("active", a.dataset.view === target));
+    const navView = target === "snowclimate" ? "snowforecast" : target;  // both snow pages sit under the snow icon
+    document.querySelectorAll(".sidenav a").forEach(a => a.classList.toggle("active", a.dataset.view === navView));
     document.getElementById("sidenav").classList.remove("open");
     document.body.classList.toggle("map-mode", target === "map");
     if (target === "map") {
@@ -125,7 +81,7 @@ const App = (() => {
     updateChips();
     MapView.onContextChange(what);
     // The Hindu Kush screening is static terrain analysis: region / window changes do not alter it.
-    if (current && current !== "map" && current !== "hindukush" && current !== "karakoram" && current !== "snowforecast") await render(current);
+    if (current && current !== "map" && current !== "hindukush" && current !== "karakoram" && current !== "snowforecast" && current !== "snowclimate") await render(current);
   }
 
   async function setRegion(id) {
@@ -134,7 +90,6 @@ const App = (() => {
   }
   async function setWindow(id) {
     S.window = id; document.getElementById("sel-window").value = id;
-    renderSlots();
     if (current === "hindukush" && window.HKF) HKF.fromTop();
     await contextChanged("window");
   }
@@ -147,7 +102,7 @@ const App = (() => {
     document.getElementById("sel-region").addEventListener("change", e => setRegion(e.target.value));
     document.getElementById("sel-window").addEventListener("change", e => setWindow(e.target.value));
     document.getElementById("sel-season").addEventListener("change", async e => {
-      stopPlay(); S.season = +e.target.value; S.window = null; await loadWindows(); await contextChanged("window");
+      S.season = +e.target.value; S.window = null; await loadWindows(); await contextChanged("window");
     });
     document.getElementById("nav-toggle").addEventListener("click", () => document.getElementById("sidenav").classList.toggle("open"));
     window.addEventListener("hashchange", () => render(location.hash.slice(1)));
@@ -212,6 +167,6 @@ const App = (() => {
   }
 
   document.addEventListener("DOMContentLoaded", boot);
-  return { setRegion, setWindow, render, startPlay, stopPlay, playing: () => !!playTimer };
+  return { setRegion, setWindow, render };
 })();
 window.App = App;
