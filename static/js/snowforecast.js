@@ -355,7 +355,7 @@ const HKF = (() => {
     setWin(win); applyMode();
     register(el);
     if (!auto) el.querySelector(".hk-stage").scrollIntoView({ behavior: "smooth", block: "start" });
-    else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setTimeout(() => { if (on && !playing()) App.startPlay(); }, 3200);
+    else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setTimeout(() => { if (on && !playing() && !HK.state.tour) App.startPlay(); }, 3200);
   }
 
   // ------------------------------------------------------------ tooltips

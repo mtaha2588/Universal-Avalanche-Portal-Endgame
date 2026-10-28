@@ -320,6 +320,22 @@ IDs look like `2026-27-W01`. The home screen's JS duplicates this logic; keep it
   Its map container selector is `.bxm .bxm-map`: Mapbox CSS sets `.mapboxgl-map { position: relative }`, which made it 0 px tall.
 - To add an event: copy its outputs to `static/history/<id>/`, add an entry to `HIST`, register it in `data/catalog.json`.
 
+## Avalanche animation (Hindu Kush tour, Karakoram Batura)
+
+- `static/js/avalanche.js` (`Avalanche.play(map, opts)`, loaded by portal.html before hindukush.js): a canvas over the 3D map (`.av-cv`, inside the map
+  container) + read-out panel (`.av-hud`, in `.hk-stage`; `.hk-stage.av-on` hides the detail card, legend and caption). Points are placed with
+  `map.project()` on a path mesh (7 nodes across), so the snow follows the map's own terrain while the camera moves. Release lock -> slab fracture
+  (flash, ground shock ring) -> dense flow (1,400-1,800 particles) + powder cloud + slab blocks + scoured track -> deposit; call-outs RELEASE /
+  PEAK SPEED / RUN-OUT; camera drift and a light shake (none with reduced motion). Esc or x stops it.
+- Hindu Kush "Avalanche tour" (`#hk-tour`): visits the general-risk stars of the current slot (`HKF.order()`, else top 10 by area), ~6 s each
+  (fly 1.3 s, flow 3.4 s). Motion = sliding block with Voellmy-type friction (mu 0.20, xi*h 4,000 m/s², textbook defaults, NOT calibrated) on the
+  portal's DEM tiles; starts are searched across the release area (a centroid can sit on the valley floor) preferring >= mean elevation - 250 m.
+  Labelled ILLUSTRATIVE: not a forecast or run-out prediction. Map drag ends the tour but lets the current run finish.
+- Karakoram: "Batura avalanche" (rail + toolbar; autoplays once per browser session) plays the NGT model's own path, times and speeds
+  (`static/history/batura_1974/3d/avalanche_path_with_time.csv`, release props from `avalanche_features.geojson`) at 5x. It starts from the model's
+  release point (4,607 m), not from a summit. Labelled "model · not observed".
+- Playback clock advances at most 0.1 s per frame (slow machines get slow motion, not skipped phases). Test hook: `Avalanche.slowmo(6)`.
+
 ## One palette (home page)
 
 - `SLOT_COL` (season tabs' fluorescent set, defined above `M` in home.html) is the only palette: module tabs take `TAB_COL[id]`, the three glacier

@@ -208,7 +208,7 @@ const HK = (() => {
     map.on("mousemove", e => {
       const c = $("#hk-coord"); if (c) c.textContent = `${e.lngLat.lat.toFixed(4)}°N  ${e.lngLat.lng.toFixed(4)}°E`;
     });
-    ["dragstart", "wheel", "touchstart"].forEach(ev => map.on(ev, e => { if (e.originalEvent) stopTour(); }));
+    ["dragstart", "wheel", "touchstart"].forEach(ev => map.on(ev, e => { if (e.originalEvent) stopTour(true); }));
 
     st.ready = true;
     applyLayers(); refreshMarkers();
@@ -340,19 +340,48 @@ const HK = (() => {
   }
 
   // ------------------------------------------------------------ guided tour
-  function startTour() {
-    const list = filtered().slice(0, Math.min(st.listN, 10));
-    if (!list.length) return;
-    let k = 0;
-    const step = () => { select(list[k].properties.rank); k = (k + 1) % list.length; };
-    step();
-    st.tour = setInterval(step, 6500);
-    const b = $("#hk-tour"); if (b) { b.classList.add("on"); b.innerHTML = `${UI.ICON.pause} Stop tour`; }
+  // Visits the general-risk main hotspots of the current slot (forecast mode; else the top 10 by area) and plays the
+  // avalanche animation at each (static/js/avalanche.js): about 6 s per hotspot. The run is illustrative, not a forecast.
+  function tourList() {
+    const o = window.HKF && HKF.order();
+    return (o && o.length ? o : filtered()).slice(0, 10)
+      .map(x => st.hotspots.find(f => f.properties.rank === x.properties.rank)).filter(Boolean);
   }
-  function stopTour() {
+  function avalancheAt(f, onStop) {
+    const p = f.properties, [lon, lat] = f.geometry.coordinates, wide = window.innerWidth > 1300;
+    return Avalanche.play(st.map, {
+      lon, lat, seed: p.rank, areaHa: p.area_ha, elev: p.mean_elev_m, halfWidth: Math.min(170, Math.max(60, Math.sqrt(p.area_ha * 1e4) * 0.3)),
+      flowSec: 3.4, flyMs: 1300, idleMs: 450, hold: 5000, onStop,
+      padding: { top: 80, bottom: 50, left: 110, right: wide ? 420 : 20 },
+      title: `Hotspot #${p.rank} · ${p.tile_id}`,
+      sub: `${fmt(p.area_ha, 1)} ha very-high area · ${fmt(p.mean_elev_m)} m mean · ${fmt(p.mean_slope_deg, 1)}° · faces ${p.facing}`,
+      releaseNote: `faces ${p.facing}`,
+      note: "Illustrative run from this screening hotspot on the 30 m DEM: sliding block with default friction (μ 0.20, ξh 4,000 m/s²), not calibrated. Snow, cloud and blocks are visual effects. Not a forecast, not a run-out prediction, not a warning.",
+    });
+  }
+  async function startTour() {
+    const list = tourList();
+    if (!list.length || !st.ready) return;
+    if (window.HKF) HKF.stopAll();
+    const id = st.tour = {};
+    const b = $("#hk-tour"); if (b) { b.classList.add("on"); b.innerHTML = `${UI.ICON.pause} Stop tour`; }
+    for (let k = 0; st.tour === id; k = (k + 1) % list.length) {
+      if (window.HKF) HKF.stopAll();                           // the slot bar must not move on during the tour
+      if (k === 0) { const fresh = tourList(); if (fresh.length) list.splice(0, list.length, ...fresh); }
+      const f = list[k % list.length], nx = list[(k + 1) % list.length];
+      select(f.properties.rank, !window.Avalanche);
+      if (window.Avalanche) {
+        Avalanche.prefetch(...nx.geometry.coordinates);
+        await avalancheAt(f, () => stopTour()).done;
+      } else await new Promise(r => setTimeout(r, 4500));
+    }
+  }
+  // keepAnim: a map drag ends the tour but lets the running avalanche finish; anything else stops it too.
+  function stopTour(keepAnim) {
+    if (!keepAnim && window.Avalanche) Avalanche.stop();
     if (!st.tour) return;
-    clearInterval(st.tour); st.tour = null;
-    const b = $("#hk-tour"); if (b) { b.classList.remove("on"); b.innerHTML = `${UI.ICON.play} Tour top 10`; }
+    st.tour = null;
+    const b = $("#hk-tour"); if (b) { b.classList.remove("on"); b.innerHTML = `${UI.ICON.play} Avalanche tour`; }
   }
 
   // ------------------------------------------------------------ side panel
@@ -511,7 +540,7 @@ const HK = (() => {
           <button type="button" class="hk-3d ${st.terrain ? "on" : ""}" id="hk-3d" title="Toggle 3D terrain"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 20 9 7l4 7 3-4 6 10z"/></svg>3D</button>
           <button type="button" class="hk-reset" id="hk-reset" title="Reset view" aria-label="Reset view"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg></button>
           <span class="hk-dock-sep"></span>
-          <button class="btn primary hk-tourbtn" type="button" id="hk-tour">${UI.ICON.play} Tour top 10</button>
+          <button class="btn primary hk-tourbtn" type="button" id="hk-tour" title="Fly to each general-risk hotspot and play an illustrative avalanche there (Esc stops)">${UI.ICON.play} Avalanche tour</button>
         </div></div>
       <div class="hk-stage no-kpi hk-docked">
         <div class="hk-mapwrap">

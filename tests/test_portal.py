@@ -78,7 +78,7 @@ def test_home_portal_and_report(client):
     home = client.get("/")
     assert home.status_code == 200 and b'href="/portal"' in home.data
     portal = client.get("/portal")
-    assert portal.status_code == 200 and b'class="home-btn" href="/"' in portal.data
+    assert portal.status_code == 200 and b'class="home-btn" href="/#home"' in portal.data
     r = client.get("/report?region=karakoram")
     assert r.status_code == 200 and b"Decision support" in r.data
 

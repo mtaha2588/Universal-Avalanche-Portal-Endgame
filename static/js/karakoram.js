@@ -13,7 +13,11 @@ const KK = (() => {
     general: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.8 6 6.5.7-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.1 1.4-6.4L2.7 9.2l6.5-.7z"/></svg>',
     hk: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 20 9 6.5l4.2 6.8 2.6-3.6L22.5 20z"/></svg>',
     pop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg>',
+    av: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20 9 5l3 5"/><path d="M12 10c1.5 3 4 5 9 6"/><circle cx="16" cy="13" r="1.3" fill="currentColor"/><circle cx="19.5" cy="18.5" r="1.1" fill="currentColor"/><circle cx="13" cy="17" r="1.6" fill="currentColor"/></svg>',
   };
+  // Batura Glacier avalanche, 9 Aug 1974: the NGT notebook's model path, times and speeds (Historical Overview, catalog id history_batura_1974).
+  const BATURA = "/static/history/batura_1974/3d/";
+  const BATURA_REF = [74.65, 36.5333];                       // "Batura Glacier reference point" in avalanche_features.geojson
   const ASPECTS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
   const st = { map: null, gl: null, ready: false, hot: [], towns: [], allTowns: [], list: true, pop: false, base: "sat", terrain: true, sel: null, popup: null };
   const $ = s => document.querySelector(s);
@@ -101,6 +105,10 @@ const KK = (() => {
     st.ready = true;
     apply();
     map.easeTo({ ...VIEW, duration: 2600, padding: { top: 70, bottom: 150, left: 230, right: window.innerWidth > 1100 ? 420 : 20 } });
+    // First visit in this browser session: play the Batura avalanche once, after the opening camera move.
+    let seen = true;
+    try { seen = !!sessionStorage.getItem("kk-batura"); sessionStorage.setItem("kk-batura", "1"); } catch { /* storage blocked: do not autoplay */ }
+    if (!seen && !matchMedia("(prefers-reduced-motion: reduce)").matches) setTimeout(() => { if (st.map === map && !Avalanche.active()) batura(); }, 3000);
     const eng = $("#kk-engine"); if (eng) eng.textContent = kind === "mapbox" ? "Mapbox GL JS v3" : "MapLibre GL JS (token-free)";
   }
 
@@ -123,6 +131,7 @@ const KK = (() => {
     const p = f.properties, [lon, lat] = f.geometry.coordinates;
     if (st.ready) {
       st.map.setFilter("kk-sel", ["==", ["get", "rank"], rank]);
+      if (fly && window.Avalanche) Avalanche.stop();
       if (fly) st.map.flyTo({ center: [lon, lat], zoom: 11, pitch: st.terrain ? 60 : 0, bearing: st.terrain ? -20 : 0, duration: 2400, essential: true, padding: { top: 90, bottom: 120, left: 230, right: window.innerWidth > 1100 ? 740 : 20 } });
     }
     document.querySelectorAll(".hk-row").forEach(r => r.classList.toggle("sel", +r.dataset.rank === rank));
@@ -164,6 +173,40 @@ const KK = (() => {
     document.querySelectorAll("#kk-list .hk-row").forEach(r => r.addEventListener("click", () => select(+r.dataset.rank)));
   }
 
+  // ------------------------------------------------------------ Batura avalanche (model reconstruction)
+  let baturaData = null;
+  async function baturaLoad() {
+    if (baturaData) return baturaData;
+    const [csv, feats] = await Promise.all([fetch(BATURA + "avalanche_path_with_time.csv").then(r => { if (!r.ok) throw new Error("path " + r.status); return r.text(); }),
+      fetch(BATURA + "avalanche_features.geojson").then(r => r.json()).catch(() => ({ features: [] }))]);
+    const lines = csv.trim().split(/\r?\n/), head = lines[0].split(",");
+    const col = k => head.indexOf(k);
+    const path = lines.slice(1).map(l => { const v = l.split(",").map(Number); return { lon: v[col("lon")], lat: v[col("lat")], elev: v[col("elevation_m")], t: v[col("time_s")], v: v[col("speed_ms")] }; });
+    const rel = (feats.features.find(f => /Release point/.test(f.properties.name)) || { properties: {} }).properties;
+    return (baturaData = { path, rel });
+  }
+  async function batura() {
+    if (!st.ready || !window.Avalanche) return;
+    if (Avalanche.active()) { Avalanche.stop(); syncAv(false); return; }
+    let d;
+    try { d = await baturaLoad(); } catch (e) { console.warn("Batura path:", e.message); return; }
+    if (!st.ready) return;
+    const p0 = d.path[0], pl = d.path[d.path.length - 1], vmax = Math.max(...d.path.map(p => p.v)), r = d.rel;
+    syncAv(true);
+    const run = Avalanche.play(st.map, {
+      lon: p0.lon, lat: p0.lat, path: d.path, seed: 1974, halfWidth: 110, rate: 5, flyMs: 2600, idleMs: 1500, hold: 14000, side: 38, drift: 22, shake: 3,
+      padding: window.innerWidth > 1100 ? { top: 190, bottom: 60, left: 310, right: 420 } : { top: 60, bottom: 40, left: 20, right: 20 },
+      intro: { camera: { center: BATURA_REF, zoom: 10.4, pitch: 62, bearing: -28 }, ms: 2600, hold: 900, label: "Batura Glacier, Karakoram" },
+      title: "Batura Glacier avalanche · 9 Aug 1974",
+      sub: `Release ${fmt(r.elevation_m || p0.elev)} m · slope ${fmt(r.slope_deg)}° · aspect ${fmt(r.aspect_deg)}° · run-out ${fmt(pl.elev)} m in ${fmt(pl.t)} s · max ${fmt(vmax, 1)} m/s`,
+      releaseNote: r.slope_deg ? `slope ${fmt(r.slope_deg)}°` : "",
+      note: "Model reconstruction from the NGT notebook: release point, path, times and speeds are copied unchanged (avalanche_path_with_time.csv), played at 5× speed. Snow particles, powder cloud and blocks are illustration. Not an observation, not a forecast.",
+      onStop: () => syncAv(false),
+    });
+    run.done.then(() => setTimeout(() => syncAv(Avalanche.active()), 15000));
+  }
+  function syncAv(on) { document.querySelectorAll('[data-k="batura"],#kk-batura').forEach(b => b.classList.toggle("on", on)); }
+
   function syncRail() {
     document.querySelector('.hkf-ic[data-k="general"]')?.classList.toggle("on", st.list);
     document.querySelector('.hkf-ic[data-k="pop"]')?.classList.toggle("on", st.pop);
@@ -188,7 +231,7 @@ const KK = (() => {
 
     el.innerHTML = head + `<div class="hk-bar"><div class="hk-bar-t"><span class="eyebrow">Karakoram</span><b>Hotspots</b>
         <span class="tag hk-tag" title="Hotspots supplied by NGT from a terrain-based ranking. The risk index is an index (0-1), not a probability, and has not been validated against observed avalanches. Locations need field verification.">Screening · not a forecast</span></div>
-        <div class="toolbar" style="margin:0"><a class="btn" href="#hindukush">← Hindu Kush</a><a class="btn" href="#mountains">All mountain systems</a></div></div>
+        <div class="toolbar" style="margin:0"><button type="button" class="btn primary" id="kk-batura" title="Batura Glacier avalanche, 9 Aug 1974 (model reconstruction)">${UI.ICON.play} Batura avalanche</button><a class="btn" href="#hindukush">← Hindu Kush</a><a class="btn" href="#mountains">All mountain systems</a></div></div>
       <div class="hk-stage hk-fc-on">
         <div class="hk-mapwrap">
           <div id="hk-map" class="hk-map"></div>
@@ -201,6 +244,7 @@ const KK = (() => {
           <div class="hkf-rail">
             <button type="button" class="hkf-ic general" data-k="general" title="General risk: red stars and the hotspot list (click a row to go to it)"><span>${ICON.general}</span><em>General risk</em></button>
             <button type="button" class="hkf-ic pop" data-k="pop" title="Show populated areas (green dots)"><span>${ICON.pop}</span><em>Populated</em></button>
+            <button type="button" class="hkf-ic av" data-k="batura" title="Batura Glacier avalanche, 9 Aug 1974: model reconstruction played on the 3D map (Esc stops)"><span>${ICON.av}</span><em>Batura avalanche</em></button>
             <a class="hkf-ic hkgo" href="#hindukush" title="Go to the Hindu Kush region"><span>${ICON.hk}</span><em>Hindu Kush</em></a>
           </div>
           <div class="hkf-cap"><small>Karakoram · supplied hotspots</small><b>General risk</b><div class="hkf-cnt" id="kk-cnt" style="justify-content:center"></div></div>
@@ -232,6 +276,8 @@ const KK = (() => {
     renderList(); syncRail();
     el.querySelector('.hkf-ic[data-k="general"]').onclick = () => { st.list = !st.list; renderList(); syncRail(); };
     el.querySelector('.hkf-ic[data-k="pop"]').onclick = () => { st.pop = !st.pop; apply(); syncRail(); };
+    el.querySelector('.hkf-ic[data-k="batura"]').onclick = batura;
+    el.querySelector("#kk-batura").onclick = batura;
     el.querySelectorAll(".hk-seg button").forEach(b => b.addEventListener("click", () => {
       st.base = b.dataset.b; el.querySelectorAll(".hk-seg button").forEach(x => x.classList.toggle("on", x === b)); apply();
     }));
@@ -241,6 +287,7 @@ const KK = (() => {
   }
 
   function dispose() {
+    if (window.Avalanche) Avalanche.stop(true);
     if (st.map) { try { st.map.remove(); } catch { /* already detached */ } }
     st.map = null; st.ready = false; st.sel = null;
   }
