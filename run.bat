@@ -21,7 +21,17 @@ rem Reinstall packages only when requirements.txt has changed since the last ins
 fc /b requirements.txt .venv\requirements.installed >nul 2>&1
 if errorlevel 1 (
   echo Installing dependencies...
-  pip install -q -r requirements.txt && copy /y requirements.txt .venv\requirements.installed >nul
+  python -m pip install -q -r requirements.txt && copy /y requirements.txt .venv\requirements.installed >nul
+)
+python -c "import flask, waitress, dotenv" >nul 2>&1
+if errorlevel 1 (
+  echo.
+  echo  The portal's Python packages could not be installed ^(Flask, Waitress^).
+  echo  Check the internet connection, then run this file again. If it still fails, delete the .venv folder
+  echo  and run again. Python 3.10 - 3.12 from python.org is recommended.
+  python --version
+  pause
+  exit /b 1
 )
 
 rem First run from a GitHub ZIP: .env (Mapbox key) and the local terrain tiles are not in the download.
@@ -55,16 +65,25 @@ for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:":5000 .*LISTENING"') d
 timeout /t 1 /nobreak >nul
 
 echo Starting portal server...
-start "Avalanche Portal Server" /min python app.py
+rem The server's messages go to server.log, so an error can be shown here if it fails to start.
+if exist server.log del /q server.log >nul 2>&1
+start "Avalanche Portal Server" /min cmd /c "python app.py > server.log 2>&1"
 
-rem Wait until the server answers before opening the browser.
+rem Wait until the server answers before opening the browser (curl ships with Windows 10 and 11).
 set /a tries=0
 :wait
 timeout /t 1 /nobreak >nul
 set /a tries+=1
 curl -s -o nul http://127.0.0.1:5000/api/config && goto ready
-if %tries% lss 30 goto wait
-echo The server did not start. Check the "Avalanche Portal Server" window for errors.
+findstr /c:"Traceback" server.log >nul 2>&1 && goto failed
+if %tries% lss 45 goto wait
+:failed
+echo.
+echo  The portal server did not start. Its messages:
+echo  ------------------------------------------------------------
+if exist server.log (type server.log) else (echo  ^(no output^))
+echo  ------------------------------------------------------------
+echo  Send a photo of this window to the portal team.
 pause
 exit /b 1
 
