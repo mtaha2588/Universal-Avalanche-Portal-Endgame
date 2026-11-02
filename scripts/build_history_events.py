@@ -39,6 +39,8 @@ UA = {"User-Agent": "NDMA-avalanche-portal/1.0 (historical event geocoding; low 
 # Per record: how it is located and whether / how a path is built. Queries were checked by hand against the OSM answers
 # (district and province in the display name must match the record).
 LOWARI_N = {"osm": "way/448975812", "end": "north", "label": "Lowari Tunnel, north (Chitral) portal"}
+# Records left out of the portal entirely (still in the source CSV), at the user's request.
+EXCLUDED = {"PK027": "Pattan earthquake area: no avalanche documented (earthquake candidate)."}
 GEO = {
     "PK014": dict(tier="C", q="Shispare", want="peak", note="Shispare summit (OpenStreetMap). Camp II is not published; the path is placed near 5,700 m on the peak, as the record says.",
                   sim=dict(mode="band", R=4500, z=(5550, 5900))),
@@ -47,7 +49,7 @@ GEO = {
     "PK015": dict(tier="B", q="Behrain", want="town", note="Bahrain (Behrain) town, Swat (OpenStreetMap).", sim=dict(mode="impact", R=5000, tol=350)),
     "PK036": dict(tier="E", note="Village not named in the source."),
     "PK016": dict(tier="B", q="Lowari Pass", want="mountain_pass", note="Lowari Pass (OpenStreetMap). The record says the Chitral side; the exact road position is not given.",
-                  sim=dict(mode="impact", R=4500, tol=450)),
+                  sim=dict(mode="impact", R=4500, tol=450, to_place=True)),
     "PK017": dict(tier="C", q="Jagran", want="village", note="Misra Jagran is not mapped; Jagran village (lower Neelum, OpenStreetMap) is used.", sim=dict(mode="impact", R=4500, tol=450)),
     "PK031": dict(tier="B", q="Khawaja Seri", want="village", note="Khawaja Seri village, Sharda tehsil (OpenStreetMap).", sim=dict(mode="impact", R=4500, tol=350)),
     "PK032": dict(tier="D", q="Neelam Valley District", want="administrative", note="Neelum Valley; the place is not named in the source."),
@@ -209,6 +211,164 @@ def slide(T, x, y, record=False, dt=0.2, steps=2400):
     return track
 
 
+def headroom(T, X, Y):
+    """How much higher the terrain rises within ~400 m of each cell: small = the cell is at the top of its slope, just under the
+    ridge or peak where a slab breaks away (the crown), large = somewhere down the face."""
+    top = np.full(len(X), -np.inf)
+    for r in (130.0, 260.0, 400.0):
+        for a in np.arange(0, 2 * np.pi, np.pi / 6):
+            top = np.fmax(top, T(X + r * np.cos(a), Y + r * np.sin(a)))
+    return np.maximum(0.0, top - T(X, Y))
+
+
+def climb(T, x, y, step=20.0, max_m=1500.0):
+    """Walk up the fall line from (x, y) while the slope is still avalanche terrain (>= 25 deg): the top of the start zone."""
+    for _ in range(int(max_m / step)):
+        gx, gy = T.grad(np.array([x]), np.array([y])); m = float(np.hypot(gx[0], gy[0]))
+        if not (m >= math.tan(math.radians(25))):
+            break
+        nx, ny = x + gx[0] / m * step, y + gy[0] / m * step
+        if not (T(np.array([nx]), np.array([ny]))[0] > T(np.array([x]), np.array([y]))[0]):
+            break
+        x, y = nx, ny
+    return x, y
+
+
+def ascend(T, x, y, step=20.0, max_m=6000.0, zmax=None):
+    """Climb from (x, y) to the top of that mountain face: always towards the highest of 16 directions, looking 20, 60 and
+    120 m ahead so small bumps of the 30 m DEM do not stop it, until nothing around is higher (the summit or the top of the
+    ridge) or the elevation limit is reached. Returns the track, bottom first."""
+    pts, z = [(x, y)], float(T(np.array([x]), np.array([y]))[0])
+    ang = np.arange(0, 2 * np.pi, np.pi / 8)
+    walked = 0.0
+    while walked < max_m:
+        best = None
+        for r in (step, 3 * step, 6 * step):
+            cx, cy = x + r * np.cos(ang), y + r * np.sin(ang)
+            cz = T(cx, cy)
+            if not np.isfinite(cz).any():
+                continue
+            j = int(np.nanargmax(cz))
+            if cz[j] > z + 0.3 and (zmax is None or cz[j] <= zmax):
+                best = (float(cx[j]), float(cy[j]), float(cz[j]), r)
+                break                                         # the nearest look-ahead that still climbs
+        if not best:
+            break
+        x, y, z, r = best; walked += r
+        pts.append((x, y))
+    return pts
+
+
+def run_along(T, lx, ly, ds=4.0, mu=MU, xih=XIH, vmin=0.0):
+    """The same sliding block (gravity, Coulomb + Voellmy friction) run along a fixed line: speeds and times for a path that
+    starts at the summit and follows the fall line down."""
+    lx, ly = np.asarray(lx, float), np.asarray(ly, float)
+    c = np.concatenate([[0.0], np.cumsum(np.hypot(np.diff(lx), np.diff(ly)))])
+    s = np.arange(0.0, c[-1], ds)
+    X, Y = np.interp(s, c, lx), np.interp(s, c, ly)
+    k = 6                                                   # smooth the 20 m climbing steps
+    ker = np.ones(2 * k + 1) / (2 * k + 1)
+    X = np.convolve(np.pad(X, k, mode="edge"), ker, "valid"); Y = np.convolve(np.pad(Y, k, mode="edge"), ker, "valid")
+    Z = T(X, Y)
+    v, t, d, out, loose = 2.0, 0.0, 0.0, [], True
+    for i in range(len(s) - 1):
+        out.append(dict(x=float(X[i]), y=float(Y[i]), z=float(Z[i]), t=t, d=d, v=v))
+        h = math.hypot(X[i + 1] - X[i], Y[i + 1] - Y[i]); dz = float(Z[i + 1] - Z[i]); l = math.hypot(h, dz)
+        if l < 1e-6 or not math.isfinite(dz):
+            continue
+        sin, cos = -dz / l, h / l
+        if loose and sin > math.sin(math.radians(25)) and d > 40:
+            loose = False                                   # the fracture has reached the steep face: from here on, physics only
+        v2 = v * v + 2 * (G * sin - mu * G * cos - G * v * v / xih) * l
+        if v2 <= 0.25 and not loose and not vmin:
+            break                                           # friction has stopped it
+        # breaking loose across the rounded summit cap: creeping, not stopped; vmin: a large avalanche's mass carried over benches
+        vn = math.sqrt(max(v2, 1.0 if loose else vmin * vmin))
+        t += l / max(0.5, (v + vn) / 2); d += h; v = vn
+    if out:
+        out.append(dict(x=float(X[len(out)]), y=float(Y[len(out)]), z=float(Z[len(out)]), t=t, d=d, v=0.0))
+    return out
+
+
+def peak_run(T, ax, ay, zT, R=4000.0, cell=45.0, top=12, near=2500.0, band=None, through=None):
+    """The avalanche from the highest ground above the documented place (user request: break at the summit / ridge top and
+    come down the big face below it). Peaks within R (higher than everything within ~90 m and at least 300 m above the
+    place), highest first; from each, sliding blocks start 60 m below the top in 16 directions and run down the terrain by
+    themselves (the fall line into the face or gully). Takes the highest peak whose run comes within `near` of the documented
+    place (impact) or, with `band` = the record's elevation band (z0, z1), whose run starts above the band and comes down
+    through it (and below `through`, if given), and from it the run with the biggest vertical drop. Returns (x, y) or None."""
+    n = int(math.ceil(R / cell))
+    gx = np.arange(-n, n + 1) * cell
+    X, Y = np.meshgrid(gx + ax, gx + ay)
+    Z = T(X.ravel(), Y.ravel()).reshape(X.shape)
+    m = Z.shape[0]
+    Zp = np.pad(np.where(np.isfinite(Z), Z, -np.inf), 2, constant_values=-np.inf)
+    nbmax = np.max([Zp[2 + di:2 + di + m, 2 + dj:2 + dj + m] for di in range(-2, 3) for dj in range(-2, 3) if di or dj], axis=0)
+    ok = np.isfinite(Z) & (Z >= nbmax) & (Z >= zT + 300 if band is None else Z >= band[1]) & (np.hypot(X - ax, Y - ay) <= R)
+    peaks = sorted(np.argwhere(ok).tolist(), key=lambda p: -Z[p[0], p[1]])[:top]
+    if not peaks:
+        return None
+    ang = np.arange(0, 2 * np.pi, np.pi / 8)
+    SX = np.concatenate([X[i, j] + 60 * np.cos(ang) for i, j in peaks]); SY = np.concatenate([Y[i, j] + 60 * np.sin(ang) for i, j in peaks])
+    PZ = np.repeat([Z[i, j] for i, j in peaks], len(ang))
+    track = slide(T, SX, SY)
+    PX = np.array([p[0] for p in track]); PY = np.array([p[1] for p in track])
+    ze = T(PX[-1], PY[-1]); L = np.hypot(np.diff(PX, axis=0), np.diff(PY, axis=0)).sum(axis=0)
+    if band is None:                                                        # impact: comes down towards the documented place
+        good = np.isfinite(ze) & (L >= 600) & (np.hypot(PX - ax, PY - ay).min(axis=0) <= near)
+    else:                                                                   # band: comes down through the record's elevation
+        good = np.isfinite(ze) & (L >= 600) & (ze <= band[0])
+        if through is not None:
+            good &= ze <= through
+    if not good.any():
+        return None
+    top_z = PZ[good].max()                                                  # the highest peak with a qualifying run
+    score = np.where(good & (PZ >= top_z - 0.5), PZ - ze, -np.inf)          # ... and its run with the biggest drop
+    k = int(np.argmax(score))
+    return float(SX[k]), float(SY[k])
+
+def route_down(T, sx, sy, ax, ay, cell=45.0):
+    """A downhill route from (sx, sy) to the documented place (ax, ay): Dijkstra over a 45 m grid, moving only to cells not
+    higher than the current one (5 m DEM noise allowed); steep steps are cheaper, so it follows faces, gullies and the valley.
+    Returns the route (start first), smoothed over +-90 m, or None."""
+    import heapq
+    x0, x1 = min(sx, ax) - 1500, max(sx, ax) + 1500; y0, y1 = min(sy, ay) - 1500, max(sy, ay) + 1500
+    gx, gy = np.arange(x0, x1 + cell, cell), np.arange(y0, y1 + cell, cell)
+    X, Y = np.meshgrid(gx, gy); Z = T(X.ravel(), Y.ravel()).reshape(X.shape)
+    ny_, nx_ = Z.shape
+    si, sj = int(round((sy - y0) / cell)), int(round((sx - x0) / cell)); ti, tj = int(round((ay - y0) / cell)), int(round((ax - x0) / cell))
+    dist = np.full(Z.shape, np.inf); prev = np.full(Z.shape + (2,), -1, int); dist[si, sj] = 0.0; pq = [(0.0, si, sj)]
+    while pq:
+        d, i, j = heapq.heappop(pq)
+        if (i, j) == (ti, tj):
+            break
+        if d > dist[i, j]:
+            continue
+        for di in (-1, 0, 1):
+            for dj in (-1, 0, 1):
+                a, b = i + di, j + dj
+                if (di or dj) and 0 <= a < ny_ and 0 <= b < nx_ and np.isfinite(Z[a, b]):
+                    drop = Z[i, j] - Z[a, b]
+                    if drop < -5:
+                        continue
+                    h = cell * math.hypot(di, dj)
+                    c = h * (1 + 4.0 * (1 - min(1.0, max(0.0, drop) / h / 0.7)))
+                    if d + c < dist[a, b]:
+                        dist[a, b] = d + c; prev[a, b] = (i, j); heapq.heappush(pq, (d + c, a, b))
+    if not np.isfinite(dist[ti, tj]):
+        return None
+    pts, (i, j) = [], (ti, tj)
+    while i >= 0:
+        pts.append((float(X[i, j]), float(Y[i, j]))); i, j = prev[i, j]
+    pts.reverse()
+    lx, ly = np.array([p[0] for p in pts]), np.array([p[1] for p in pts])
+    c_ = np.concatenate([[0.0], np.cumsum(np.hypot(np.diff(lx), np.diff(ly)))]); s_ = np.arange(0.0, c_[-1] + 5, 10.0)
+    Xs, Ys = np.interp(s_, c_, lx), np.interp(s_, c_, ly); k = 9; ker = np.ones(2 * k + 1) / (2 * k + 1)
+    Xs = np.convolve(np.pad(Xs, k, mode="edge"), ker, "valid"); Ys = np.convolve(np.pad(Ys, k, mode="edge"), ker, "valid")
+    Xs[0], Ys[0], Xs[-1], Ys[-1] = sx, sy, ax, ay
+    return list(Xs), list(Ys)
+
+
 def build_path(T, ev, spec, lon, lat):
     s = spec["sim"]
     ax, ay = T.xy(lon, lat)
@@ -259,8 +419,90 @@ def build_path(T, ev, spec, lon, lat):
         if not hit.any():
             return None, "no simulated slide from the documented elevation band"
         score = np.where(hit, (zc - ze) + 150 * ((sl >= 30) & (sl <= 45)), -np.inf)
+    # Start at the top of the slope: among the runs that qualify, prefer those released just under the ridge (headroom <= 150 m),
+    # and within them the ones with the least slope left above.
+    hr = headroom(T, X, Y)
+    crest = hit & (hr <= 150)
+    if crest.any():
+        score = np.where(crest, score, -np.inf)
+    score = score - 1.2 * hr
     k = int(np.argmax(score))
-    tr = slide(T, X[k:k + 1], Y[k:k + 1], record=True)
+    x0, y0, rel_sl = X[k:k + 1], Y[k:k + 1], float(sl[k])
+    # Then climb the fall line from that cell to the crest (while the slope stays >= 25 deg) and release there instead, if the run
+    # from the crest still reaches the documented place (impact) or stays in the documented band.
+    cx, cy = climb(T, X[k], Y[k])
+    if np.hypot(cx - X[k], cy - Y[k]) > 40:
+        tr2 = slide(T, np.array([cx]), np.array([cy]), record=True)
+        xs2, ys2 = np.array([p["x"] for p in tr2]), np.array([p["y"] for p in tr2])
+        ok2 = len(tr2) > 5 and np.isfinite(tr2[-1]["z"])
+        if ok2 and s["mode"] == "impact":
+            d2 = np.hypot(xs2 - ax, ys2 - ay); j = int(d2.argmin())
+            ok2 = d2[j] <= max(s["tol"], float(dmin[k]) + 100) and abs(tr2[j]["z"] - zT) <= 150   # as close to the place as before
+        elif ok2:
+            ok2 = tr2[0]["z"] <= s["z"][1] + 150 and ("through" not in s or tr2[-1]["z"] <= s["through"])
+        if ok2:
+            x0, y0 = np.array([cx]), np.array([cy])
+    tr = slide(T, x0, y0, record=True)
+    # Start at the peak (user request): climb from the release to the summit / highest point above it and run the avalanche down
+    # the whole line (summit -> release -> the run). Kept only if it still reaches the documented place (impact) or does not stop
+    # in the first half (band; the climb stays inside the record's elevation band).
+    up_all = ascend(T, tr[0]["x"], tr[0]["y"], zmax=s["z"][1] + 50 if s["mode"] == "band" else None)
+    d_orig = float(np.hypot(np.array([p["x"] for p in tr]) - ax, np.array([p["y"] for p in tr]) - ay).min())
+    # from the summit first; if that run misses the place, from 3/4, 1/2 and 1/4 of the way up
+    for frac in (1.0, 0.75, 0.5, 0.25):
+        up = up_all[:max(1, int(round(len(up_all) * frac)))]
+        if len(up) <= 2:
+            break
+        lx = [p[0] for p in reversed(up)] + [p["x"] for p in tr[1:]]
+        ly = [p[1] for p in reversed(up)] + [p["y"] for p in tr[1:]]
+        tr3 = run_along(T, lx, ly)
+        total = float(np.hypot(np.diff(lx), np.diff(ly)).sum())
+        ok3 = len(tr3) > 10
+        if ok3 and s["mode"] == "impact":
+            x3, y3 = np.array([p["x"] for p in tr3]), np.array([p["y"] for p in tr3])
+            d3 = np.hypot(x3 - ax, y3 - ay); j = int(d3.argmin())
+            ok3 = d3[j] <= max(s["tol"], d_orig + 100) and abs(tr3[j]["z"] - zT) <= 150
+        elif ok3:
+            ok3 = tr3[-1]["d"] >= 0.5 * total
+        if ok3:
+            tr = tr3
+            x0, y0 = np.array([tr[0]["x"]]), np.array([tr[0]["y"]])
+            break
+    # Impact events: the avalanche breaks at the highest ground above the documented place and comes down the face below it by
+    # itself (user request, with a sketch: start at the ridge top, fall down the big face). It does not have to end exactly at
+    # the documented place any more; how close it comes is stored in place_dist_m and shown.
+    # Band events (climbers hit at the elevation the record gives) likewise start at the highest point above and must come down
+    # through that elevation (user request: every avalanche from the peak).
+    if s["mode"] == "impact":
+        st = peak_run(T, ax, ay, zT, R=min(s["R"], 4000.0))
+    else:
+        st = peak_run(T, ax, ay, zT, R=max(s["R"], 3000.0), band=s["z"], through=s.get("through"))
+    if st:
+        tr5 = slide(T, np.array([st[0]]), np.array([st[1]]), record=True)
+        if len(tr5) > 10 and tr5[0]["z"] > tr[0]["z"]:
+            tr = tr5
+            x0, y0 = np.array([tr[0]["x"]]), np.array([tr[0]["y"]])
+    # Per-event route to the documented place (user, with a sketch: Lowari Top - the debris must lie at the documented place): from
+    # the summit start down a downhill route to the place, the mass kept moving (>= 6 m/s) over the flatter benches near the pass.
+    carried = False
+    if s.get("to_place") and s["mode"] == "impact":
+        rd = route_down(T, tr[0]["x"], tr[0]["y"], ax, ay)
+        if rd:
+            tr6 = run_along(T, rd[0], rd[1], vmin=6.0)
+            if len(tr6) > 10:
+                tr, carried = tr6, True
+                x0, y0 = np.array([tr[0]["x"]]), np.array([tr[0]["y"]])
+    # slope of the start zone: the steepest ~100 m stretch in the first 500 m (where the slab breaks; the summit itself is flatter)
+    ds_ = np.array([p["d"] for p in tr]); zs_ = np.array([p["z"] for p in tr]); best = None
+    for i in range(len(tr)):
+        if ds_[i] > 500:
+            break
+        j = int(np.searchsorted(ds_, ds_[i] + 100))
+        if j < len(tr) and ds_[j] - ds_[i] > 30:
+            a = math.degrees(math.atan((zs_[i] - zs_[j]) / (ds_[j] - ds_[i])))
+            best = a if best is None else max(best, a)
+    if best is not None:
+        rel_sl = best
     # smooth the track over +-6 steps (the 30 m DEM gradient is noisy), as the browser engine does
     xs, ys = np.array([p["x"] for p in tr]), np.array([p["y"] for p in tr])
     sx, sy = xs.copy(), ys.copy()
@@ -276,20 +518,62 @@ def build_path(T, ev, spec, lon, lat):
     rel = tr[0]
     gxr, gyr = T.grad(np.array([rel["x"]]), np.array([rel["y"]]))
     aspect = (math.degrees(math.atan2(-gxr[0], -gyr[0])) + 360) % 360       # direction the slope faces (downhill)
-    res = dict(mode=s["mode"], release=dict(lon=pts[0][0], lat=pts[0][1], z=pts[0][2], slope_deg=round(float(sl[k])), aspect_deg=round(aspect)),
+    res = dict(mode=s["mode"], release=dict(lon=pts[0][0], lat=pts[0][1], z=pts[0][2], slope_deg=round(rel_sl), aspect_deg=round(aspect),
+                                            below_crest_m=round(float(headroom(T, x0, y0)[0]))),
                runout=dict(lon=pts[-1][0], lat=pts[-1][1], z=pts[-1][2]),
                length_m=round(tr[-1]["d"]), drop_m=round(tr[0]["z"] - tr[-1]["z"]), vmax_ms=round(max(p["v"] for p in tr), 1), duration_s=round(tr[-1]["t"], 1),
                path=pts, candidates=int(hit.sum()))
+    if carried:
+        res["route_to_place"] = "Route from the summit down to the documented place; the mass is kept moving (>= 6 m/s) over flatter benches."
     if s["mode"] == "impact":
-        res["place_dist_m"] = round(float(np.hypot(PX[:, k] - ax, PY[:, k] - ay).min()))
+        res["place_dist_m"] = round(float(np.hypot(xs - ax, ys - ay).min()))
         res["place_z"] = round(zT)
     return res, None
+
+
+BATURA = ROOT / "static" / "history" / "batura_1974" / "3d"
+BATURA_EXT = ROOT / "static" / "history" / "batura_1974" / "summit_extension.json"
+
+
+def batura_extension():
+    """Batura 1974 (NGT model reconstruction): the model's own path, times and speeds stay unchanged. At the user's request the
+    tour starts the avalanche higher, at the peak above the model's release point: climb from the release to the top of that
+    mountain (`ascend`) and run the same sliding block as the other tour paths back down that line to the release (`run_along`).
+    Written to its own file; the tour prepends it to the model path and says so. Illustration, not part of the model."""
+    rows = list(csv.DictReader((BATURA / "avalanche_path_with_time.csv").open(encoding="utf-8")))
+    lon, lat = float(rows[0]["lon"]), float(rows[0]["lat"])
+    T = Terrain(lon, lat)
+    up = ascend(T, *T.xy(lon, lat))
+    if len(up) < 3:
+        BATURA_EXT.unlink(missing_ok=True)
+        return
+    line = list(reversed(up))
+    # the slab breaks just under the summit, where the fall line first gets steep (>= 25 deg), not on the flat summit cap
+    zl = T(np.array([p[0] for p in line]), np.array([p[1] for p in line]))
+    for i in range(len(line) - 3):
+        hh = math.hypot(line[i + 3][0] - line[i][0], line[i + 3][1] - line[i][1])
+        if hh > 1 and (zl[i] - zl[i + 3]) / hh >= math.tan(math.radians(25)):
+            line = line[i:]
+            break
+    tr = run_along(T, [p[0] for p in line], [p[1] for p in line])
+    pts = []
+    for i, p in enumerate(tr[:-1]):                       # the last point is the model's release itself
+        if i % 5:
+            continue
+        lo, la = T.ll(p["x"], p["y"])
+        pts.append([round(lo, 6), round(la, 6), round(p["z"]), round(p["t"], 1), round(p["v"], 1)])
+    out = dict(note="Illustrative extension above the NGT model's release point (user request: start at the peak). Sliding block with "
+                    "Voellmy-type friction (mu 0.20, xi*h 4000 m/s2) on the portal DEM, from the top of the mountain down the line to the model's "
+                    "release. Not part of the NGT model: the model's own path, times and speeds follow unchanged.",
+               peak_z=pts[0][2], release_z=round(float(rows[0]["elevation_m"])), duration_s=round(tr[-1]["t"], 1), arrive_ms=round(tr[-2]["v"], 1), path=pts)
+    BATURA_EXT.write_text(json.dumps(out, separators=(",", ":")), encoding="utf-8")
+    print(f"Batura summit extension: {out['peak_z']} m -> model release {out['release_z']} m, {len(pts)} points, {out['duration_s']} s")
 
 
 def main():
     refresh = "--refresh-osm" in sys.argv
     cache = json.loads(CACHE.read_text(encoding="utf-8")) if CACHE.exists() else {}
-    rows = list(csv.DictReader(SRC.open(encoding="utf-8")))
+    rows = [r for r in csv.DictReader(SRC.open(encoding="utf-8")) if r["event_id"] not in EXCLUDED]
     feats, n_anim = [], 0
     for r in rows:
         ev = r["event_id"]
@@ -321,11 +605,13 @@ def main():
     CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=1), encoding="utf-8")
     meta = dict(source=SRC.name, records=len(rows), animated=n_anim,
                 method="Release cells: 28-55 deg slopes on the portal DEM (Copernicus GLO-30 zoom 12, ~30 m) within the search radius; sliding block with "
-                       "Voellmy-type friction (mu 0.20, xi*h 4000 m/s2, textbook defaults, not calibrated). impact = the run that reaches the documented "
-                       "place with the largest drop; band = release at the elevation given in the record. Illustrative: not the historical path.",
+                       "Voellmy-type friction (mu 0.20, xi*h 4000 m/s2, textbook defaults, not calibrated). impact = released at the highest ground "
+                       "above the documented place (a peak within 4 km) and run down its own fall line; place_dist_m says how close it comes to the "
+                       "place; band = release at the elevation given in the record. Illustrative: not the historical path.",
                 geocoder="OpenStreetMap Nominatim (data (c) OpenStreetMap contributors, ODbL)", generated=time.strftime("%Y-%m-%d"))
     OUT.write_text(json.dumps(dict(type="FeatureCollection", metadata=meta, features=feats), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"{len(feats)} records, {n_anim} with an illustrative path -> {OUT.relative_to(ROOT)}")
+    batura_extension()
 
 
 if __name__ == "__main__":

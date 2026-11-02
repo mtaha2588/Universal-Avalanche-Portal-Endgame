@@ -198,7 +198,9 @@ def test_history_events_keep_records_and_label_paths(client):
     import csv
     r = client.get("/api/history/events").get_json()
     assert r["available"] and "Illustrative" in r["metadata"]["method"]
-    src = {row["event_id"]: row for row in csv.DictReader((ROOT / "data/history/events/avalanche_events_pakistan_compiled.csv").open(encoding="utf-8"))}
+    excluded = {"PK027"}                                                   # left out at the user's request (scripts/build_history_events.py EXCLUDED)
+    src = {row["event_id"]: row for row in csv.DictReader((ROOT / "data/history/events/avalanche_events_pakistan_compiled.csv").open(encoding="utf-8"))
+           if row["event_id"] not in excluded}
     feats = r["features"]
     assert len(feats) == len(src)
     for f in feats:
@@ -214,7 +216,7 @@ def test_history_events_keep_records_and_label_paths(client):
         if p["loc"]["tier"] == "E":
             assert f["geometry"] is None
     ids = {f["properties"]["event_id"]: f["properties"] for f in feats}
-    assert ids["PK027"]["anim"] is None and ids["PK038"]["anim"] is None    # earthquake candidate, glacier movement
+    assert "PK027" not in ids and ids["PK038"]["anim"] is None              # earthquake candidate removed; glacier movement not animated
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -251,6 +253,51 @@ def test_era5_winter_climate_keeps_estimated_year_out(client):
     assert all(len(t["v"]["t2m"]) == 41 for t in r["tiles"])
     assert client.get("/api/climate/era5_winter/tile_year_values_winter.csv").status_code == 200
     assert client.get("/api/climate/era5_winter/secret.csv").status_code == 404
+
+
+def test_history_tour_keeps_its_own_class_names_and_crest_releases(client):
+    # home.html's intro overlay owns `.cine` (pointer-events: none); the tour once reused it and its controls stopped taking clicks
+    js = client.get("/static/js/histtour.js").data
+    assert b'classList.add("cine")' not in js and b'classList.add("ht-cine")' in js and b'look: "real"' in js
+    # snow on the upper mountain only: never near the run-out (valleys, towns), fading out at the image edge (no boundary)
+    assert b"/static/js/snowcap.js" in client.get("/").data and b"SnowCap.local" in js
+    sc = client.get("/static/js/snowcap.js").data
+    assert b"floor + 300" in sc and b"smooth(0, 1, edge)" in sc
+    feats = client.get("/api/history/events").get_json()["features"]
+    rel = [f["properties"]["anim"]["release"] for f in feats if f["properties"].get("anim") and f["properties"]["anim"].get("mode") in ("impact", "band")]
+    assert rel and all(r["below_crest_m"] <= 250 for r in rel)          # every path starts at the summit / top of its slope
+    imp = [f["properties"]["anim"] for f in feats if f["properties"].get("anim") and f["properties"]["anim"].get("mode") == "impact"]
+    assert imp and all(a["place_dist_m"] <= 2600 for a in imp)          # comes down towards the documented place (stored, shown)
+
+def test_home_map_official_view_of_jammu_kashmir(client):
+    # front page shows the whole of Jammu & Kashmir with Pakistan (official map), Indian-held part labelled; study area unchanged
+    import json
+    r = json.loads(client.get("/static/geo/official_view.geojson").data)
+    layers = {f["properties"]["layer"]: f for f in r["features"]}
+    assert set(layers) == {"mask", "iiojk"} and layers["iiojk"]["properties"]["name"] == "Indian Illegally Occupied Jammu & Kashmir"
+    home = client.get("/").data
+    assert b"/static/geo/official_view.geojson" in home and b"Indian Illegally Occupied" in home
+
+
+def test_home_intro_plus_showreel_is_wired(client):
+    home = client.get("/").data
+    assert b'data-act="reel"' in home and b"/static/js/showreel.js" in home and b"stopIntro" in home
+    js = client.get("/static/js/showreel.js").data
+    assert b"HistTour.open" in js and b"/portal#" in js and b'data-pg="' in js and b"Escape" in js
+
+
+def test_own_scripts_are_revalidated(client):
+    # browsers must never keep running an old copy of the portal's own code after an update
+    for p in ("/static/js/avalanche.js", "/static/js/histtour.js", "/static/css/histtour.css"):
+        assert client.get(p).headers.get("Cache-Control") == "no-cache"
+
+
+def test_home_climate_data_module_is_wired(client):
+    home = client.get("/").data
+    assert b'special: "climate"' in home and b"/static/js/climatedata.js" in home and b"/static/css/climatedata.css" in home
+    js = client.get("/static/js/climatedata.js").data
+    assert b"/api/climate/era5_winter" in js and b"/api/forecast/snow" in js and b"not in the supplied run" in js
+    assert b"1_Pakistan_6maps_5yrs_per_second.mp4" in js and b'target="_blank"' not in js   # run's video first; nothing opens a new tab
 
 
 def test_hk_snow_zones_and_tiles(client):

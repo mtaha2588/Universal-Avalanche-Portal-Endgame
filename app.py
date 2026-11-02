@@ -62,6 +62,15 @@ def create_app(config: type[Config] = Config) -> Flask:
         # Served as a static file: the page contains JS template literals that Jinja must not parse.
         return send_from_directory(app.template_folder, "home.html")
 
+    @app.after_request
+    def revalidate_own_code(resp):
+        # The portal's own scripts and styles are sent without a lifetime, which lets browsers guess one and keep running an old
+        # copy after an update (seen: the tour kept a removed script). "no-cache" = always ask; unchanged files cost a 304 only.
+        p = request.path
+        if p.startswith(("/static/js/", "/static/css/")) and "Cache-Control" not in resp.headers:
+            resp.headers["Cache-Control"] = "no-cache"
+        return resp
+
     @app.get("/sw.js")
     def service_worker():
         # Map tile cache. Served from the root so its scope covers / and /portal; never cached itself, so updates apply.
@@ -69,7 +78,7 @@ def create_app(config: type[Config] = Config) -> Flask:
         resp.headers["Cache-Control"] = "no-cache"
         return resp
 
-    # Terrain elevation tiles (open AWS Terrain Tiles, terrarium PNG) for every 3D map. Tiles downloaded by scripts/fetch_dem.py
+    # Terrain elevation tiles  very crucial for the extraction of good  data and dispaly on the portal (open AWS Terrain Tiles, terrarium PNG) for every 3D map. Tiles downloaded by scripts/fetch_dem.py
     # are served from disk and cached by the browser for a year (they never change); anything else is redirected to the public copy.
     dem_dir = config.DATA_DIR / "dem" / "terrarium"
 

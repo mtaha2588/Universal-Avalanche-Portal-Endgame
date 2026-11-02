@@ -72,6 +72,8 @@
   .mlabel.prov { font: 700 11.5px var(--font); color: #f8fafc; letter-spacing: .04em; }
   .mlabel.prov small { display: block; font: 500 9px var(--font); color: #cbd5e1; letter-spacing: .08em; text-transform: uppercase; }
   .mlabel.disp { font: 700 10.5px var(--font); color: #fcd34d; font-style: italic; }
+  .mlabel.disp.iiojk { font: 800 12px/1.25 var(--font); font-style: normal; color: #fde68a; text-align: center; text-shadow: 0 1px 3px #000, 0 0 8px rgba(0,0,0,.8); }
+  .mlabel.disp.iiojk small { display: block; font: 600 9.5px var(--font); color: #fcd34d; letter-spacing: .08em; text-transform: uppercase; opacity: .9; }
   .mlabel.loc { font: 800 10px var(--font); color: #fca5a5; letter-spacing: .14em; text-transform: uppercase; }
   .mlabel.gname { pointer-events: auto; cursor: pointer; display: flex; align-items: center; gap: 5px;
     font: 700 11px var(--font); color: #fff; padding: 2px 8px 2px 5px; border-radius: 999px;
@@ -654,23 +656,91 @@
   .hev-tx em { font-style: normal; font-size: 12px; color: var(--text-2); }
   .hev-ic { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; color: #fff; background: linear-gradient(135deg, #f472b6, #be185d); flex: none; }
   /* guided historic tour (static/js/histtour.js) and the compiled records list */
-  .htv { position: relative; display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: center; margin: 4px 0 18px; padding: 20px 22px; border-radius: 18px; overflow: hidden;
-    border: 1px solid rgba(125, 211, 252, .35); background: linear-gradient(120deg, rgba(8, 18, 34, .92), rgba(12, 30, 56, .82)), url("/static/history/batura_1974/fig3_which_side_and_map.png") center / cover; }
-  .htv small { font: 700 10.5px var(--mono); letter-spacing: .22em; color: #7dd3fc; text-transform: uppercase; }
-  .htv h4 { margin: 6px 0 8px; font-size: 22px; line-height: 1.2; }
-  .htv p { margin: 0; color: var(--text-2); font-size: 13px; line-height: 1.5; }
-  .htv-n { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .htv-n div { padding: 10px; border-radius: 12px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); text-align: center; }
-  .htv-n b { display: block; font-size: 24px; } .htv-n span { font-size: 11px; color: var(--muted); }
-  .htv-b { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-  .htv-b button { padding: 10px 18px; border-radius: 999px; font: 700 13px var(--font); cursor: pointer; border: 1px solid rgba(125, 211, 252, .5); background: rgba(255, 255, 255, .05); color: #e0f2fe; }
-  .htv-b button.go { background: linear-gradient(180deg, #38bdf8, #2563eb); border-color: transparent; color: #fff; box-shadow: 0 0 24px rgba(56, 189, 248, .35); }
-  .hrecs { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; margin-top: 10px; }
-  .hrec { text-align: left; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .03); color: inherit; font: inherit; cursor: pointer; transition: border-color .2s, transform .2s; }
-  .hrec:hover { border-color: #7dd3fc; transform: translateY(-2px); }
-  .hrec small { font: 600 10.5px var(--mono); color: var(--muted); } .hrec b { display: block; font-size: 13px; line-height: 1.3; margin: 2px 0; }
-  .hrec span { font-size: 11px; color: var(--muted); } .hrec span em { font-style: normal; color: #fca5a5; } .hrec span i { font-style: normal; color: #bae6fd; }
-  @media (max-width: 800px) { .htv { grid-template-columns: 1fr; } }
+  /* Historical Overview module (hx-*): cinematic hero, decade chart, featured reconstruction, filterable records */
+  .hx { --dc: #94a3b8; }
+  .hx-hero { position: relative; display: grid; grid-template-columns: 1.3fr 1fr; gap: 22px; align-items: center; margin: 2px 0 22px; padding: 28px 28px 26px; border-radius: 20px;
+    overflow: hidden; isolation: isolate; border: 1px solid rgba(125, 211, 252, .35); box-shadow: 0 24px 60px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .08); }
+  .hx-bg { position: absolute; inset: -6%; z-index: -2; background: url("/static/history/batura_1974/panel/relief.png") center / cover; animation: hx-drift 38s ease-in-out infinite alternate; }
+  .hx-hero::before { content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(100deg, rgba(4, 9, 20, .96) 0%, rgba(5, 12, 26, .86) 46%, rgba(6, 16, 34, .55) 100%), radial-gradient(ellipse at 85% 0%, rgba(56, 189, 248, .25), transparent 55%); }
+  @keyframes hx-drift { from { transform: scale(1.02) translate(-1%, 0); } to { transform: scale(1.1) translate(1.5%, -2%); } }
+  .hx-snow { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .55;
+    background-image: radial-gradient(1.6px 1.6px at 12% 18%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 32% 62%, #fff 50%, transparent 51%),
+      radial-gradient(1.8px 1.8px at 58% 28%, #fff 50%, transparent 51%), radial-gradient(1.1px 1.1px at 74% 72%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 88% 40%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 46% 88%, #fff 50%, transparent 51%);
+    background-size: 340px 300px; animation: hx-snow 14s linear infinite; }
+  @keyframes hx-snow { to { background-position: -120px 300px; } }
+  .hx-h small { display: inline-flex; align-items: center; gap: 8px; font: 700 10.5px var(--mono); letter-spacing: .22em; color: #7dd3fc; text-transform: uppercase; }
+  .hx-h small::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #22d3ee; box-shadow: 0 0 10px #22d3ee; animation: hx-live 1.6s infinite; }
+  @keyframes hx-live { 50% { opacity: .35; } }
+  .hx-h h4 { margin: 10px 0 10px; font-size: 29px; line-height: 1.12; letter-spacing: -.015em; }
+  .hx-h h4 span { background: linear-gradient(90deg, #e0f2fe, #7dd3fc 45%, #a78bfa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hx-h p { margin: 0; max-width: 520px; color: #cbd5e1; font-size: 14px; line-height: 1.5; }
+  .hx-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .hx-cta button { display: inline-flex; align-items: center; gap: 7px; padding: 11px 18px; border-radius: 999px; font: 700 13px var(--font); cursor: pointer; color: #e0f2fe;
+    border: 1px solid rgba(125, 211, 252, .5); background: rgba(8, 20, 38, .6); backdrop-filter: blur(6px); transition: transform .2s, box-shadow .2s, border-color .2s, background .2s; }
+  .hx-cta button em { font-style: normal; font: 700 11px var(--mono); padding: 1px 7px; border-radius: 999px; background: rgba(255, 255, 255, .14); }
+  .hx-cta button:hover { transform: translateY(-2px); border-color: #7dd3fc; background: rgba(56, 189, 248, .16); }
+  .hx-cta button.go { color: #fff; border-color: transparent; background: linear-gradient(180deg, #38bdf8, #2563eb); box-shadow: 0 8px 28px rgba(37, 99, 235, .5), inset 0 1px 0 rgba(255, 255, 255, .35); }
+  .hx-cta button.go:hover { box-shadow: 0 10px 34px rgba(56, 189, 248, .6), inset 0 1px 0 rgba(255, 255, 255, .35); }
+  .hx-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hx-stats div { padding: 14px 14px 12px; border-radius: 14px; background: rgba(6, 14, 28, .62); border: 1px solid rgba(160, 185, 220, .2); backdrop-filter: blur(8px); }
+  .hx-stats b { display: block; font-size: 30px; line-height: 1.05; font-weight: 800; font-variant-numeric: tabular-nums; color: #fff; }
+  .hx-stats span { display: block; margin-top: 4px; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #93a4bd; }
+  .hx-stats .d { border-color: rgba(244, 63, 94, .45); background: linear-gradient(160deg, rgba(244, 63, 94, .22), rgba(6, 14, 28, .62)); } .hx-stats .d b { color: #ffe4e6; }
+  .hx-sh { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 6px 0 10px; }
+  .hx-sh h5 { margin: 0; display: flex; align-items: center; gap: 8px; } .hx-sh > span { font-size: 12px; color: var(--muted); }
+  .hx-sh h5 em { font: 700 11px var(--mono); font-style: normal; padding: 1px 8px; border-radius: 999px; color: #7dd3fc; background: rgba(125, 211, 252, .12); }
+  .hx-decs { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px; margin-bottom: 24px; }
+  .hx-dec { position: relative; display: grid; gap: 2px; text-align: left; padding: 12px 12px 11px; border-radius: 14px; cursor: pointer; color: inherit; font: inherit; overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--dc) 35%, transparent); background: linear-gradient(170deg, color-mix(in srgb, var(--dc) 16%, transparent), rgba(255, 255, 255, .02));
+    transition: transform .2s, box-shadow .2s, border-color .2s; }
+  .hx-dec:hover { transform: translateY(-3px); box-shadow: 0 12px 28px color-mix(in srgb, var(--dc) 28%, transparent); border-color: var(--dc); }
+  .hx-dec.on { border-color: var(--dc); box-shadow: 0 0 0 1px var(--dc), 0 12px 28px color-mix(in srgb, var(--dc) 30%, transparent); }
+  .hx-dec-bar { height: 46px; display: flex; align-items: flex-end; margin-bottom: 6px; }
+  .hx-dec-bar i { display: block; width: 100%; height: var(--h); min-height: 6px; border-radius: 6px 6px 2px 2px; transform-origin: bottom;
+    background: linear-gradient(180deg, var(--dc), color-mix(in srgb, var(--dc) 35%, transparent)); box-shadow: 0 0 16px color-mix(in srgb, var(--dc) 45%, transparent); animation: hx-grow .9s cubic-bezier(.2, .8, .2, 1) both; }
+  @keyframes hx-grow { from { transform: scaleY(0); } }
+  .hx-dec b { font-size: 19px; font-weight: 800; color: var(--dc); }
+  .hx-dec-n { font-size: 12px; color: #e2e8f0; } .hx-dec-n strong { font-size: 14px; color: #fff; }
+  .hx-dec-m { font-size: 10.5px; color: var(--muted); }
+  .hx-feat { display: grid; grid-template-columns: 300px 1fr; width: 100%; margin-bottom: 24px; padding: 0; text-align: left; border-radius: 18px; overflow: hidden; cursor: pointer; color: inherit; font: inherit;
+    border: 1px solid rgba(167, 139, 250, .4); background: linear-gradient(120deg, rgba(167, 139, 250, .12), rgba(255, 255, 255, .02)); transition: transform .2s, box-shadow .2s, border-color .2s; }
+  .hx-feat:hover { transform: translateY(-3px); border-color: #a78bfa; box-shadow: 0 16px 38px rgba(167, 139, 250, .28); }
+  .hx-feat-img { position: relative; min-height: 190px; background: url("/static/history/batura_1974/map/tile.png") center / cover; }
+  .hx-feat-img::after { content: "Model reconstruction"; position: absolute; left: 12px; top: 12px; padding: 3px 10px; border-radius: 999px; font: 700 10px var(--mono); letter-spacing: .08em;
+    text-transform: uppercase; color: #ede9fe; background: rgba(76, 29, 149, .85); border: 1px solid rgba(196, 181, 253, .6); }
+  .hx-feat-tx { display: grid; align-content: center; gap: 6px; padding: 18px 20px; }
+  .hx-feat-tx small { font: 700 11px var(--mono); letter-spacing: .1em; color: #c4b5fd; text-transform: uppercase; }
+  .hx-feat-tx b { display: flex; align-items: center; gap: 9px; font-size: 19px; } .hx-feat-tx > span { font-size: 13px; color: var(--muted); }
+  .hx-kpi { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .hx-kpi span { display: grid; padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line); }
+  .hx-kpi strong { font-size: 14px; color: #fff; } .hx-kpi i { font-style: normal; font-size: 10px; color: var(--muted); }
+  .hx-feat-go { margin-top: 8px; font-size: 12.5px; font-weight: 700; color: #c4b5fd; }
+  .hx-f { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hx-f input { width: 220px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, .04); color: #fff; font: 13px var(--font); outline: none; }
+  .hx-f input:focus { border-color: #7dd3fc; box-shadow: 0 0 0 3px rgba(125, 211, 252, .15); }
+  .hx-f button { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, .04); color: #cbd5e1; font: 600 12.5px var(--font); cursor: pointer; }
+  .hx-f button.on, .hx-f button:hover { border-color: #7dd3fc; color: #fff; background: rgba(125, 211, 252, .12); }
+  .hx-recs { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 10px; }
+  .hx-rec { position: relative; display: grid; gap: 4px; text-align: left; padding: 11px 13px 11px 16px; border-radius: 13px; cursor: pointer; color: inherit; font: inherit; overflow: hidden;
+    border: 1px solid var(--line); background: linear-gradient(100deg, color-mix(in srgb, var(--dc) 9%, transparent), rgba(255, 255, 255, .02) 60%);
+    animation: hx-in .4s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 18ms); transition: transform .2s, border-color .2s, box-shadow .2s; }
+  @keyframes hx-in { from { opacity: 0; transform: translateY(8px); } }
+  .hx-rec::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--dc); box-shadow: 0 0 10px var(--dc); }
+  .hx-rec:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--dc) 65%, transparent); box-shadow: 0 10px 24px color-mix(in srgb, var(--dc) 20%, transparent); }
+  .hx-rec-t { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .hx-rec-t small { font: 600 10.5px var(--mono); color: color-mix(in srgb, var(--dc) 70%, #cbd5e1); }
+  .hx-rec-t small { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hx-rec-t i { flex: none; white-space: nowrap; font-style: normal; font: 700 9px var(--font); letter-spacing: .06em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; color: var(--muted); border: 1px solid var(--line); }
+  .hx-rec-t i.an { color: #e0f2fe; border-color: rgba(125, 211, 252, .45); background: rgba(125, 211, 252, .12); }
+  .hx-rec b { font-size: 13.5px; line-height: 1.3; }
+  .hx-rec-m { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+  .hx-rec-m em { font-style: normal; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+  .hx-rec-m em.s1 { color: #fde68a; background: rgba(251, 191, 36, .13); } .hx-rec-m em.s2 { color: #fdba74; background: rgba(249, 115, 22, .17); }
+  .hx-rec-m em.s3 { color: #fee2e2; background: rgba(239, 68, 68, .3); box-shadow: inset 0 0 0 1px rgba(248, 113, 113, .55); } .hx-rec-m em.s0 { color: var(--muted); font-weight: 500; padding-left: 0; }
+  @media (max-width: 860px) { .hx-hero, .hx-feat { grid-template-columns: 1fr; } .hx-f input { width: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .hx-bg, .hx-snow, .hx-h small::before { animation: none; } }
   .hev-ic svg { width: 17px; height: 17px; } .hev-ic.big { width: 46px; height: 46px; border-radius: 13px; } .hev-ic.big svg { width: 26px; height: 26px; }
   .hback { background: none; border: 0; color: var(--c); font: 700 13px var(--font); cursor: pointer; padding: 0 0 12px; }
   .hhead { display: flex; gap: 14px; align-items: center; } .hhead small { font: 700 11.5px var(--mono); color: var(--c); letter-spacing: .05em; }
@@ -902,6 +972,7 @@
   @keyframes cineSpin { to { transform: rotate(360deg); } }
   .gchip.intro { color: #e0e7ff; border-color: rgba(165,180,252,.45); }
   .gchip.intro:hover { background: rgba(79,70,229,.35); }
+  .gchip.intro.plus { color: #fff; border-color: rgba(56,189,248,.6); background: linear-gradient(120deg, rgba(56,189,248,.28), rgba(79,70,229,.28)); box-shadow: 0 0 14px rgba(56,189,248,.25); }
   @media (max-width: 760px) {
     .cine-cap { left: 20px; bottom: calc(7.5vh + 70px); } .cine-brand { left: 20px; } .cine-skip { right: 16px; }
     .cine-steps li { width: 52px; font-size: 0; } .cine-stats > div { padding: 10px 12px; } .cine-stats b { font-size: 19px; }
@@ -940,6 +1011,7 @@
 </style>
 <link rel="stylesheet" href="/static/css/avalanche.css">
 <link rel="stylesheet" href="/static/css/histtour.css">
+<link rel="stylesheet" href="/static/css/climatedata.css">
 </head>
 <body>
 
@@ -1007,7 +1079,7 @@
   <div class="lb-h">Map layers <button type="button" id="lb-close" aria-label="Close">×</button></div>
   <div class="lb-sec">Boundaries</div>
   <label><input type="checkbox" data-g="pakistan" checked><i class="sw pak"></i>International boundary (Pakistan's official view)</label>
-  <label class="lb-sub"><i class="sw claim"></i>&nbsp;Dashed where it bounds India-administered disputed territory</label>
+  <label class="lb-sub"><i class="sw pak"></i>&nbsp;Includes the whole of Jammu &amp; Kashmir, as on Pakistan's official map</label>
   <label><input type="checkbox" data-g="disputed" checked><i class="sw loc"></i>Line of Control &amp; disputed areas</label>
   <label><input type="checkbox" data-g="provinces" checked><i class="sw prov"></i>Provinces &amp; territories</label>
   <label><input type="checkbox" data-g="mask" checked><i class="sw mask"></i>Dim outside the Pakistan study area</label>
@@ -1029,9 +1101,9 @@
     <div class="row">Vertical exaggeration <input type="range" id="exag" min="1" max="3" step="0.25" value="2"><b id="exag-v">2×</b></div>
     <small>Default 2× stretches heights so the mountains are easy to see. Set 1× for true elevation.</small>
   </div>
-  <p class="lb-note">Pakistan's boundary is shown as per Pakistan's official position. Jammu &amp; Kashmir is disputed territory;
-    its final status is to be decided in line with the relevant UN Security Council resolutions. The Line of Control is shown dashed, and so is the part of the
-    official outline that bounds India-administered territory: it is not drawn as a settled border.
+  <p class="lb-note">Pakistan's boundary is shown as per Pakistan's official position (political map of Pakistan, 2020): the whole of Jammu &amp; Kashmir is
+    shown with Pakistan, and the part held by India is labelled Indian Illegally Occupied Jammu &amp; Kashmir. Jammu &amp; Kashmir is disputed territory;
+    its final status is to be decided in line with the relevant UN Security Council resolutions. The Line of Control is shown dashed.
     The study area is the Pakistan-administered area (all provinces and territories, including Gilgit-Baltistan and Azad Jammu &amp; Kashmir).
     Glacier outlines are RGI v7.0 clipped to that area; glaciers elsewhere, including Siachen, are available as grey context. Glacier systems are traced from the
     RGI outlines (merged within about 5 km) and clipped to the official RGI v7.0 / GTN-G (2023) region limits, so the three systems never overlap.
@@ -1108,7 +1180,10 @@
 
 <script src="/static/js/mapcache.js"></script>
 <script src="/static/js/avalanche.js"></script>
+<script src="/static/js/snowcap.js"></script>
 <script src="/static/js/histtour.js"></script>
+<script src="/static/js/climatedata.js"></script>
+<script src="/static/js/showreel.js"></script>
 <script>
 "use strict";
 const PORTAL = "";  // same origin: the home page is served by the portal server
@@ -1162,6 +1237,8 @@ const M = [
   { id: "himalaya", t: "Western Himalaya", s: "RGI 14-03 · risk map for the region", c: "--emerald", ic: "mountain", go: ["map", "western_himalaya"] },
   { id: "history", t: "Historical Overview", s: "Past avalanche events · reconstructions", c: "--pink", ic: "history", special: "history",
     d: "Documented past avalanches, each reconstructed from reanalysis weather and a digital elevation model, with its figures, data and a 3D presentation." },
+  { id: "climate", t: "Climate Data", s: "Winter snow & climate · 1970–2026", c: "--sky", ic: "season", special: "climate",
+    d: "Winter (Dec–Feb) temperature, snow and precipitation for 305 tiles, 1970–2010 from ERA5-Land, with the 2026–27 snow outlook." },
   { id: "exposure", t: "Settlements & Infrastructure", s: "Communities · highways · road segments", c: "--amber", ic: "settle", special: "exposure",
     d: "Settlements and road segments assessed against mapped hazard zones and recorded incidents, kept in one place." },
   { id: "reports", n: "10", t: "Reports & Exports", s: "Hotspot lists by region · CSV · GeoJSON", c: "--violet", ic: "report", special: "reports",
@@ -1172,7 +1249,7 @@ const M = [
 M.filter(m => !m.hero && !m.go).forEach((m, k) => { m.n = String(k + 1).padStart(2, "0"); });
 // Module tab colours: members of SLOT_COL; the mountain-system tabs use exactly their glacier-system colour on the map.
 const TAB_COL = { overview: "#FFFF00", map: "#0047FF", outlook: "#8F00FF", hindukush: SYS_COL["Hindu Kush"], karakoram: SYS_COL["Karakoram"],
-  himalaya: SYS_COL["West Himalaya"], history: "#FF00FF", exposure: "#FF3D00", reports: "#D00020", launch: "#0047FF" };
+  himalaya: SYS_COL["West Himalaya"], history: "#FF00FF", climate: "#00FFFF", exposure: "#FF3D00", reports: "#D00020", launch: "#0047FF" };
 const TAB_BAR = { launch: "linear-gradient(180deg, #00FFFF, #0047FF, #8F00FF)" };
 const tabVars = m => { const c = TAB_COL[m.id] || "#00FFFF";
   return `--pc:${c};--ink:${inkOn(c)};--g1:${c};--g2:color-mix(in srgb, ${c} 55%, #000);--bar:${TAB_BAR[m.id] || c}`; };
@@ -1252,6 +1329,7 @@ function content(m) {
       return `<p class="desc">${m.d}</p>${part("settlements")}${part("roads")}`;
     }
     case "history": return historyHTML(m);
+    case "climate": return window.ClimateData ? ClimateData.html(m) : '<p class="desc">The climate module did not load.</p>';
     case "reports": {
       setTimeout(loadRegionLists, 0);
       return `<p class="desc">${m.d}</p>
@@ -1368,37 +1446,82 @@ const hesc = t => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&": "&a
 const MODEL_NOTE = '<div class="note"><b>Model reconstruction, not observation.</b> Release point, path, speed and duration are model estimates and should be checked against reports or imagery. Weather factors describe a ~28 km ERA5 tile, not the slope itself.</div>';
 
 function historyHTML(m) {
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const fds = s => { if (!s) return ""; const p = s.split("-"); return p.length === 1 ? p[0] : p.length === 2 ? `${MON[+p[1] - 1]} ${p[0]}` : `${+p[2]} ${MON[+p[1] - 1]} ${p[0]}`; };
+  const fd = r => r.date ? fds(r.date) : r.date_start ? fds(r.date_start) + (r.date_end && r.date_end !== r.date_start ? " – " + fds(r.date_end) : "") : "Date unknown";
+  const yr = r => +String(r.date_start || r.date || "").slice(0, 4) || 0, dec = r => yr(r) ? Math.floor(yr(r) / 10) * 10 : 0;
+  const sev = n => n >= 20 ? 3 : n >= 5 ? 2 : n > 0 ? 1 : 0;
+  const countTo = (b, v) => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { b.textContent = v.toLocaleString("en-GB"); return; }
+    const t0 = performance.now(), st = now => { const k = Math.min(1, (now - t0) / 1200); b.textContent = Math.round(v * (1 - Math.pow(1 - k, 3))).toLocaleString("en-GB"); if (k < 1) requestAnimationFrame(st); };
+    requestAnimationFrame(st);
+  };
   setTimeout(() => {
-    document.querySelectorAll("#win-body .hev").forEach(b => b.addEventListener("click", () => openEvent(b.dataset.ev)));
-    const tv = document.getElementById("htv");
-    if (!tv) return;
-    tv.querySelector(".go").onclick = () => HistTour.open({ tour: true });
-    tv.querySelector(".ghost").onclick = () => HistTour.open({});
+    const root = document.getElementById("hx");
+    if (!root) return;
+    root.querySelectorAll(".hev, .hx-feat").forEach(b => b.addEventListener("click", () => openEvent(b.dataset.ev)));
+    root.querySelector("[data-tour]").onclick = () => HistTour.open({ tour: true });
+    root.querySelector(".hx-map").onclick = () => HistTour.open({});
     HistTour.load().then(d => {                      // the compiled records (scripts/build_history_events.py), listed as supplied
-      const n = tv.querySelectorAll(".htv-n b"), recs = d.recs.filter(r => !r.model);
-      n[0].textContent = recs.length; n[1].textContent = recs.filter(r => r.geom).length; n[2].textContent = d.recs.filter(r => r.anim).length;
-      const box = document.getElementById("hrecs"); if (!box) return;
-      const fd = r => r.date || (r.date_start ? r.date_start + (r.date_end && r.date_end !== r.date_start ? " – " + r.date_end : "") : "date unknown");
-      box.innerHTML = recs.map(r => `<button type="button" class="hrec" data-id="${hesc(r.event_id)}"><small>${hesc(r.event_id)} · ${hesc(fd(r))}</small><b>${hesc(r.location)}</b>
-        <span>${r.deaths ? `<em>${hesc(r.deaths)} deaths reported</em> · ` : ""}confidence ${hesc(r.confidence)}${r.anim ? " · <i>❄ tour stop</i>" : ""}</span></button>`).join("");
-      box.querySelectorAll(".hrec").forEach(b => b.onclick = () => HistTour.open({ focus: b.dataset.id }));
-    }).catch(() => { const box = document.getElementById("hrecs"); if (box) box.innerHTML = '<p class="desc">The compiled records need the portal server (run.bat).</p>'; });
+      const DEC = HistTour.DEC || {}, col = x => DEC[x] || "#94a3b8", recs = d.recs.filter(r => !r.model), anim = d.recs.filter(r => r.anim).length;
+      const num = { recs: recs.length, map: recs.filter(r => r.geom).length, anim, deaths: recs.reduce((s, r) => s + (+r.deaths || 0), 0) };
+      root.querySelectorAll("[data-n]").forEach(b => countTo(b, num[b.dataset.n]));
+      root.querySelector("[data-tour] em").textContent = anim;
+      // records per decade: bar height = number of records
+      const decs = [...new Set(recs.map(dec).filter(Boolean))].sort((a, b) => a - b), per = x => recs.filter(r => dec(r) === x), maxN = Math.max(1, ...decs.map(x => per(x).length));
+      root.querySelector(".hx-decs").innerHTML = decs.map((x, i) => {
+        const g = per(x), dd = g.reduce((s, r) => s + (+r.deaths || 0), 0), na = g.filter(r => r.anim).length;
+        return `<button type="button" class="hx-dec" data-d="${x}" style="--dc:${col(x)};--h:${(g.length / maxN * 100).toFixed(0)}%"><span class="hx-dec-bar"><i style="animation-delay:${i * 90}ms"></i></span>
+          <b>${x}s</b><span class="hx-dec-n"><strong>${g.length}</strong> record${g.length > 1 ? "s" : ""}</span>
+          <span class="hx-dec-m">${dd ? `${dd.toLocaleString("en-GB")} ${dd === 1 ? "death" : "deaths"} reported` : "no deaths reported"}${na ? ` · ${na} in 3D` : ""}</span></button>`;
+      }).join("");
+      let fDec = 0, fAnim = false, q = "";
+      const grid = root.querySelector(".hx-recs"), cnt = root.querySelector(".hx-cnt");
+      const draw = () => {
+        const list = recs.filter(r => (!fDec || dec(r) === fDec) && (!fAnim || r.anim) && (!q || `${r.location} ${r.region || ""} ${yr(r)}`.toLowerCase().includes(q)));
+        cnt.textContent = list.length === recs.length ? recs.length : `${list.length} of ${recs.length}`;
+        grid.innerHTML = list.map((r, i) => { const n = +r.deaths || 0;
+          return `<button type="button" class="hx-rec" data-id="${hesc(r.event_id)}" style="--dc:${col(dec(r))};--i:${i}">
+            <span class="hx-rec-t"><small>${hesc(fd(r))}</small>${r.anim ? '<i class="an">▶ 3D scenario</i>' : `<i>${r.geom ? "record" : "not located"}</i>`}</span>
+            <b>${hesc(r.location)}</b>
+            <span class="hx-rec-m">${n ? `<em class="s${sev(n)}">${n.toLocaleString("en-GB")} ${n === 1 ? "death" : "deaths"}</em>` : '<em class="s0">deaths not stated</em>'}${r.region ? `<span>${hesc(r.region)}</span>` : ""}</span></button>`;
+        }).join("") || '<p class="desc">No record matches these filters.</p>';
+        grid.querySelectorAll(".hx-rec").forEach(b => b.onclick = () => HistTour.open({ focus: b.dataset.id }));
+        root.querySelectorAll(".hx-dec").forEach(b => b.classList.toggle("on", +b.dataset.d === fDec));
+        root.querySelector('.hx-f [data-f="anim"]').classList.toggle("on", fAnim);
+        root.querySelector('.hx-f [data-f="all"]').classList.toggle("on", !fDec && !fAnim && !q);
+      };
+      root.querySelectorAll(".hx-dec").forEach(b => b.onclick = () => { fDec = fDec === +b.dataset.d ? 0 : +b.dataset.d; draw(); });
+      root.querySelector('.hx-f [data-f="anim"]').onclick = () => { fAnim = !fAnim; draw(); };
+      root.querySelector('.hx-f [data-f="all"]').onclick = () => { fDec = 0; fAnim = false; q = ""; root.querySelector(".hx-f input").value = ""; draw(); };
+      root.querySelector(".hx-f input").oninput = e => { q = e.target.value.trim().toLowerCase(); draw(); };
+      draw();
+    }).catch(() => { const g = root.querySelector(".hx-recs"); if (g) g.innerHTML = '<p class="desc">The compiled records need the portal server (run.bat).</p>'; });
   });
-  return `<p class="desc">${m.d}</p>
-    <section class="htv" id="htv"><div><small>Signature experience · guided tour</small><h4>Historic avalanches, replayed on the terrain where they happened</h4>
-      <p>A cinematic tour through the compiled avalanche records of northern Pakistan: each located event is approached on the 3D satellite terrain,
-      the slab breaks loose and the avalanche runs down the real slopes, then the historical record is shown. Paths are illustrative scenarios placed by terrain
-      analysis (the records contain no paths); Batura 1974 is the NGT model reconstruction.</p>
-      <div class="htv-b"><button type="button" class="go">▶ Start the guided tour</button><button type="button" class="ghost">Open the event map</button></div></div>
-      <div class="htv-n"><div><b>—</b><span>records</span></div><div><b>—</b><span>placed on the map</span></div><div><b>—</b><span>tour stops</span></div></div></section>
-    <div class="hevs">${HIST.map(e => `<button type="button" class="hev" data-ev="${e.id}">
-      <img src="${e.dir}fig3_which_side_and_map.png" alt="" loading="lazy">
-      <span class="hev-tx"><small>${e.date}</small><b><span class="hev-ic">${ICON.avalanche}</span>${e.t}</b><span>${e.where}</span>
-      <em>3D presentation · 5 figures · data · model reconstruction</em></span></button>`).join("")}</div>
-    <h5 style="margin:22px 0 2px">Compiled historical records</h5>
-    <p class="rfoot" style="margin-top:2px">Fields as compiled (sources per record); casualty figures as reported. Click a record to open it on the event map.</p>
-    <div class="hrecs" id="hrecs"><p class="desc">Loading the compiled records…</p></div>
-    <p class="rfoot">More model reconstructions will be added as they are supplied; each is labelled as a model reconstruction.</p>`;
+  const e = HIST[0];
+  return `<section class="hx" id="hx">
+    <div class="hx-hero"><div class="hx-bg" aria-hidden="true"></div><div class="hx-snow" aria-hidden="true"></div>
+      <div class="hx-h"><small>Signature experience · guided 3D tour</small>
+        <h4>Half a century of avalanches,<br><span>replayed where they happened</span></h4>
+        <p>A guided tour on the 3D satellite terrain: each located snow avalanche runs down the real slopes where it happened, in date order. Every record is on the event map.</p>
+        <div class="hx-cta"><button type="button" class="go" data-tour>▶ Start the guided tour <em>—</em></button>
+          <button type="button" class="hx-map">◎ Event map · all records</button></div></div>
+      <div class="hx-stats"><div><b data-n="recs">—</b><span>records compiled</span></div><div><b data-n="map">—</b><span>placed on the map</span></div>
+        <div><b data-n="anim">—</b><span>replayed in 3D</span></div><div class="d" title="Sum of the figures as reported in the compiled records; not verified"><b data-n="deaths">—</b><span>deaths reported</span></div></div>
+    </div>
+    <div class="hx-sh"><h5>Records by decade</h5><span>Bar height = number of records · click a decade to filter</span></div>
+    <div class="hx-decs"></div>
+    <div class="hx-sh"><h5>Model reconstruction</h5><span>Full NGT study with figures, data and a 3D story</span></div>
+    <button type="button" class="hx-feat" data-ev="${e.id}"><span class="hx-feat-img" aria-hidden="true"></span>
+      <span class="hx-feat-tx"><small>${e.date}</small><b><span class="hev-ic">${ICON.avalanche}</span>${e.t}</b><span>${e.where}</span>
+        <span class="hx-kpi">${e.kpi.slice(0, 5).map(([v, l]) => `<span><strong>${v}</strong><i>${l.replace(/\s*\(model\)/, "")}</i></span>`).join("")}</span>
+        <span class="hx-feat-go">Open the reconstruction · 5 figures · data · 3D story →</span></span></button>
+    <div class="hx-sh"><h5>Compiled records <em class="hx-cnt">—</em></h5>
+      <div class="hx-f"><input type="search" placeholder="Search place, region or year" aria-label="Search the records"><button type="button" data-f="all" class="on">All</button><button type="button" data-f="anim">▶ 3D scenarios</button></div></div>
+    <div class="hx-recs"><p class="desc">Loading the compiled records…</p></div>
+    <p class="rfoot">Fields as compiled, with sources per record; casualty figures as reported (the total is their sum, not verified). Scenario paths are illustrative,
+      placed by terrain analysis (the records contain no paths); Batura 1974 is the NGT model reconstruction. Click any record to open it on the event map.</p>
+  </section>`;
 }
 
 // ---------- Batura 1974: the reconstruction story (sections A-H) and the full-page 3D experience ----------
@@ -2193,10 +2316,11 @@ function openWin(i) {
   document.getElementById("win-pos").textContent = `${curW + 1} / ${WM.length}`;
   document.getElementById("win-dots").innerHTML = WM.map((x, k) => `<i class="${k === curW ? "on" : ""}" data-k="${k}" title="${x.t}"></i>`).join("");
   document.getElementById("win-live").textContent = serverUp ? "● Live server connected" : "○ Live server offline (showing preview)";
+  win.classList.toggle("full", m.special === "climate");   // Climate Data opens full page (static/css/climatedata.css)
   win.classList.add("open"); scrim.classList.add("open");
   document.getElementById("close").focus({ preventScroll: true });
 }
-function closeWin() { closeExperience(); win.classList.remove("open"); scrim.classList.remove("open"); curW = -1; }
+function closeWin() { closeExperience(); win.querySelectorAll("video").forEach(v => v.pause()); win.classList.remove("open"); scrim.classList.remove("open"); curW = -1; }
 function step(d) { if (curW < 0) return; openWin(M.indexOf(WM[(curW + d + WM.length) % WM.length])); }
 document.getElementById("close").onclick = closeWin;
 document.getElementById("prev").onclick = () => step(-1);
@@ -2712,11 +2836,13 @@ function renderGlacierChips() {
     }).join("");
   const extra = `<button type="button" class="gchip pak" data-n="PAK" title="Show the whole of Pakistan"><i></i>Pakistan</button>
     <button type="button" class="gchip lyr" data-act="layers" title="Choose map layers">☰ Layers</button>
-    <button type="button" class="gchip intro" data-act="intro" title="Replay the cinematic tour: Earth, Pakistan and the three glacier systems">▶ Intro</button>`;
+    <button type="button" class="gchip intro" data-act="intro" title="Replay the cinematic tour: Earth, Pakistan and the three glacier systems">▶ Intro</button>
+    <button type="button" class="gchip intro plus" data-act="reel" title="Intro +: the whole portal plays itself as a looping film (Home or Esc to stop)">▶ Intro +</button>`;
   el.innerHTML = x3d + chips + extra;
   xel.innerHTML = chips + extra;
   [el, xel].forEach(c => c.querySelector('[data-act="layers"]').addEventListener("click", () => document.getElementById("layerbox").classList.toggle("open")));
   [el, xel].forEach(c => c.querySelector('[data-act="intro"]').addEventListener("click", () => { if (curW >= 0) closeWin(); bgMap.intro(); }));
+  [el, xel].forEach(c => c.querySelector('[data-act="reel"]').addEventListener("click", () => window.Showreel && Showreel.start()));
   [el, xel].forEach(c => c.querySelectorAll(".gchip[data-n]").forEach(b => b.addEventListener("click", () => bgMap.focus(b.dataset.n))));
   document.getElementById("explore-open").addEventListener("click", () => setExplore(true));
 }
@@ -2743,7 +2869,7 @@ document.getElementById("explore-exit").addEventListener("click", () => setExplo
 addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("explore")) setExplore(false); });
 
 const bgMap = (() => {
-  let map = null, engine = null, hoverId = null, pausedUntil = 0, tourIdx = 0, GL = null, BND = null;
+  let map = null, engine = null, hoverId = null, pausedUntil = 0, tourIdx = 0, GL = null, BND = null, BND_IIOJK = null;
   let selSystem = null, exag = DEFAULT_EXAG, cine = null, selId = "";
   // One fill and one line layer per glacier system (see addGlacierLayers).
   const GKEY = { "Hindu Kush": "hk", "Karakoram": "kk", "West Himalaya": "wh" };
@@ -2851,8 +2977,16 @@ const bgMap = (() => {
   // ---------- boundaries: Pakistan (official view), LoC & disputed areas, provinces, RGI glacier regions ----------
   async function loadBoundaries() {
     const get = u => fetch(u).then(r => { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); });
-    const [bnd, reg, ext, majors, study] = await Promise.all([get("/api/layer/boundaries"), get("/api/layer/glacier_regions"),
-      get("/api/layer/glacier_extents_pk"), get("/api/layer/major_glaciers_pk"), get("/api/layer/study_area")]);
+    let [bnd, reg, ext, majors, study, off] = await Promise.all([get("/api/layer/boundaries"), get("/api/layer/glacier_regions"),
+      get("/api/layer/glacier_extents_pk"), get("/api/layer/major_glaciers_pk"), get("/api/layer/study_area"),
+      get("/static/geo/official_view.geojson").catch(() => null)]);
+    // Pakistan's official view (scripts/build_official_view.py): the whole of Jammu & Kashmir shown like the rest of Pakistan.
+    // Only the picture changes; the study area used for analysis stays the Pakistan-administered area.
+    if (off) {
+      const m = off.features.find(f => f.properties.layer === "mask");
+      if (m) study = { ...study, features: study.features.map(f => f.properties.layer === "mask" ? m : f) };
+      BND_IIOJK = off.features.find(f => f.properties.layer === "iiojk") || null;
+    }
     // Only glaciers inside the Pakistan-administered study area are labelled; the others are listed in the info panel.
     const outside = majors.features.filter(f => !f.properties.in_study_area).map(f => f.properties.name);
     majors.features = majors.features.filter(f => f.properties.in_study_area);
@@ -2904,8 +3038,10 @@ const bgMap = (() => {
     map.addLayer({ id: "prov-fill", type: "fill", source: "bnd", filter: isL("province"), paint: { "fill-color": "#ffffff", "fill-opacity": 0.01 } }, fillBelow);
     map.addSource("study", { type: "geojson", data: BND.study });
     const isS = v => ["==", ["get", "layer"], v];
-    map.addLayer({ id: "mask-fill", type: "fill", source: "study", filter: isS("mask"), paint: { "fill-color": "#020617", "fill-opacity": 0.5 } }, below(["grg-fill"]));
-    map.addLayer({ id: "disp-fill", type: "fill", source: "bnd", filter: isL("disputed"), paint: { "fill-color": "#f59e0b", "fill-opacity": 0.08 } }, fillBelow);
+    map.addLayer({ id: "mask-fill", type: "fill", source: "study", filter: isS("mask"), paint: { "fill-color": "#020617", "fill-opacity": 0.3 } }, below(["grg-fill"]));
+    // official view: Jammu & Kashmir is not tinted as foreign territory; other disputed areas keep the faint amber
+    map.addLayer({ id: "disp-fill", type: "fill", source: "bnd", filter: BND_IIOJK ? ["all", isL("disputed"), ["!=", ["get", "name"], "Jammu and Kashmir"]] : isL("disputed"),
+      paint: { "fill-color": "#f59e0b", "fill-opacity": 0.08 } }, fillBelow);
     // Lines (always on top)
     map.addLayer({ id: "prov-line", type: "line", source: "bnd", filter: isL("province"),
       paint: { "line-color": "#ffffff", "line-opacity": 0.55, "line-width": 1.1, "line-dasharray": [3, 2] } });
@@ -2925,7 +3061,9 @@ const bgMap = (() => {
     map.addLayer({ id: "line-hit", type: "line", source: "bnd", filter: isL("line"), paint: { "line-color": "#000", "line-opacity": 0.01, "line-width": 14 } });
     // Official outline split in two: settled international boundary (solid) and the edge around India-administered
     // disputed territory (dashed), so a claim is never drawn as an agreed border.
-    const intl = ["all", isS("border"), ["==", ["get", "kind"], "international"]], claim = ["all", isS("border"), ["==", ["get", "kind"], "claim"]];
+    // Official view: the outer edge of Jammu & Kashmir is drawn like the rest of Pakistan's boundary (solid, with the same glow).
+    const intl = ["all", isS("border"), ["in", ["get", "kind"], ["literal", BND_IIOJK ? ["international", "claim"] : ["international"]]]],
+      claim = ["all", isS("border"), ["==", ["get", "kind"], BND_IIOJK ? "none" : "claim"]];
     map.addLayer({ id: "pak-glow", type: "line", source: "study", filter: intl,
       paint: { "line-color": "#16a34a", "line-width": 8, "line-blur": 5, "line-opacity": 0.75 } });
     map.addLayer({ id: "pak-line", type: "line", source: "study", filter: intl,
@@ -2944,7 +3082,9 @@ const bgMap = (() => {
       const p = f.properties;
       const PROV_MINZ = { "Islamabad Capital Territory": 7.2, "Azad Jammu & Kashmir": 6.0 };
       if (p.layer === "province") label("prov", `${p.name}<small>${p.kind}</small>`, [p.label_lon, p.label_lat], "provinces", PROV_MINZ[p.name] || 4.6);
-      if (p.layer === "disputed" && ["Jammu and Kashmir", "Siachen Glacier", "Shaksgam Valley"].includes(p.name))
+      if (p.layer === "disputed" && p.name === "Jammu and Kashmir" && BND_IIOJK)
+        label("disp iiojk", `Indian Illegally Occupied<br>Jammu &amp; Kashmir<small>disputed territory</small>`, [BND_IIOJK.properties.label_lon, BND_IIOJK.properties.label_lat], "disputed", 5.2);
+      else if (p.layer === "disputed" && ["Jammu and Kashmir", "Siachen Glacier", "Shaksgam Valley"].includes(p.name))
         label("disp", `${p.name === "Jammu and Kashmir" ? "Jammu &amp; Kashmir" : p.name} · disputed`, [p.label_lon, p.label_lat], "disputed",
           p.name === "Jammu and Kashmir" ? 5.6 : 6.6);
     });
@@ -3044,7 +3184,7 @@ const bgMap = (() => {
         return `<b>Outside the study area</b>${p.system} · ${p.rgi_id} · ${fmtN(p.area_km2, 2)} km²<br><span style="color:#8197ba">` +
           (+p.partly_inside ? "Partly inside: the inside part is drawn in colour" : "RGI v7.0 outline, grey context") + "</span>";
       case "claim-hit":
-        return `<b>Claimed boundary (dashed)</b>Edge of Pakistan's official outline around territory administered by India; final status disputed`;
+        return `<b>Claimed boundary</b>Outer edge of Jammu &amp; Kashmir on Pakistan's official map; final status disputed`;
       case "line-hit":
         return `<b>${p.name}</b>${p.name === "Line of Control" ? "Between Pakistan- and India-administered Kashmir" : p.between}`;
       case "disp-fill":
@@ -3470,7 +3610,7 @@ const bgMap = (() => {
   function spotlight(on) {
     if (!map.getLayer("mask-fill")) return;
     map.setPaintProperty("mask-fill", "fill-opacity-transition", { duration: on ? 2200 : 900, delay: 0 });
-    map.setPaintProperty("mask-fill", "fill-opacity", on ? 0.8 : 0.5);
+    map.setPaintProperty("mask-fill", "fill-opacity", on ? 0.8 : 0.3);
   }
   // Lets the DEM relief carry the intro: stronger slope shading and a lighter system tint, so peaks, ridges and valleys read in 3D
   // instead of three coloured surfaces. The terrain heights themselves are unchanged (same DEM, the user's exaggeration).
@@ -3904,11 +4044,11 @@ const bgMap = (() => {
       await step(Storm.clear());
       if (Storm.skipped) { Storm.skipped = false; endIntro(true); return; }
       if (!globe) await wait(document.getElementById("splash").classList.contains("done") ? 200 : 1300);
-      const pkCaption = () => caption({ color: "#4ade80", eyebrow: "Chapter 1 · Study area", title: "Pakistan",
+      const pkCaption = () => caption({ color: "#4ade80", eyebrow: "Study area", title: "Pakistan",
         sub: "Pakistan-administered territory, including Gilgit-Baltistan and Azad Jammu & Kashmir. Boundaries as per Pakistan's official position; Jammu & Kashmir is disputed.",
         stats: S ? [[S.study_area_km2, "km²", "study area"], [S.total.n, "", "glaciers"], [S.total.km2, "km²", "glacier ice"]] : null });
       if (globe) {
-        caption({ color: "#4ade80", eyebrow: "Chapter 1 · Pakistan", title: "Snow Avalanche Prediction Using AI", long: true,
+        caption({ color: "#4ade80", eyebrow: "Pakistan", title: "Snow Avalanche Prediction Using AI", long: true,
           sub: "The globe revolving, then zooming to the Pakistan region: the Hindu Kush, Karakoram and West Himalaya glacier systems.", stats: null });
         // The storm's globe keeps turning without a break: it glides up to the centre, grows, and turns on until Pakistan faces the
         // camera. Ease-out from the spin's own speed, so there is no jolt at the hand-over.
@@ -3926,7 +4066,7 @@ const bgMap = (() => {
 
       // 2 · Northern Pakistan
       setStep(1, 9500);
-      caption({ color: "#67e8f9", eyebrow: "Chapter 2 · Northern Pakistan", title: "Three systems",
+      caption({ color: "#67e8f9", eyebrow: "Northern Pakistan", title: "Three systems",
         sub: "Hindu Kush, Karakoram and West Himalaya on SRTM terrain. Each boundary is the RGI v7.0 sub-region extent inside the study area.",
         stats: S ? [[S.total.n, "", "glaciers"], [S.total.km2, "km²", "glacier ice"], [3, "", "mountain systems"]] : null });
       if (wide) await move("flyTo", { ...wide.start, duration: 2200, curve: 1.3 });
@@ -3962,7 +4102,7 @@ const bgMap = (() => {
         cineEl.querySelector(".cine-cap").classList.add("out");
         selSystem = name; paintSelection(); Intel.focus(name);
         await move("flyTo", sysCam);
-        caption({ color, eyebrow: `Chapter ${3 + i} · RGI v7.0 region ${s.o2region}`, title: name,
+        caption({ color, eyebrow: `RGI v7.0 region ${s.o2region}`, title: name,
           sub: `Glacier outlines dated ${s.dates[0].slice(0, 4)}–${s.dates[1].slice(0, 4)}. Figures for the part inside the study area.`,
           stats: [[s.n, "", "glaciers"], [s.km2, "km²", "glacier ice"], [`${fmt0(s.zmin_m)}–${fmt0(s.zmax_m)}`, "m", "elevation"]] });
         ping(s.center, color);
@@ -4323,7 +4463,8 @@ const bgMap = (() => {
   }
 
   const lib = () => GL ? { gl: GL, engine } : null;    // reused by the Historical Overview's "On the map" view
-  return { init, focus, fitPadding, setGroup, setExaggeration, setView, terrainInfo, layerState, pick, clickAt, intro, orient, jump, lib };
+  return { init, focus, fitPadding, setGroup, setExaggeration, setView, terrainInfo, layerState, pick, clickAt, intro, orient, jump, lib,
+    stopIntro: () => endIntro(true), introOn: () => !!cine };            // used by the Intro + showreel (static/js/showreel.js)
 })();
 
 (async function startBackground() {
