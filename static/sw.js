@@ -5,15 +5,17 @@
      (Mapbox 12 h, Esri 24 h). Their terms allow caching within those headers, not permanent storage or bulk download.
    - AWS Terrain Tiles (open data), including the portal's own copy at /api/dem/, and the MapLibre demo glyphs: kept for 30 days.
    - Versioned map libraries (mapbox-gl-js vX.Y.Z) and /static/vendor: cache-first.
+   - The portal's own media (/static/img, /static/history: videos, figures, 3D models): kept 7 days, so tours replay instantly.
    - The portal's own pages, JS, CSS and /api data (except /api/dem terrain tiles) are NOT cached here, so edits and data rebuilds always show. */
 "use strict";
 
-const VER = "v2";
+const VER = "v3";
 const TILES = `map-tiles-${VER}`;       // provider tiles, expiry from their headers
 const OPEN = `map-open-${VER}`;         // open-data tiles, 30 days
 const LIB = `map-lib-${VER}`;           // versioned libraries and static vendor files
-const KEEP = [TILES, OPEN, LIB];
-const MAX = { [TILES]: 9000, [OPEN]: 15000, [LIB]: 400 };
+const MEDIA = `portal-media-${VER}`;    // the portal's own large, unchanging media (history / climate videos, figures, 3D models)
+const KEEP = [TILES, OPEN, LIB, MEDIA];
+const MAX = { [TILES]: 30000, [OPEN]: 40000, [LIB]: 400, [MEDIA]: 600 };   // large: tours replay without network
 const OPEN_TTL = 30 * 24 * 3600;
 const STAMP = "sw-fetched";             // header added to stored copies: seconds since epoch at fetch time
 
@@ -34,6 +36,7 @@ function route(url) {
   if (h === "demotiles.maplibre.org") return OPEN;
   if (url.origin === self.location.origin && p.startsWith("/static/vendor/")) return LIB;
   if (url.origin === self.location.origin && p.startsWith("/api/dem/")) return OPEN;   // open terrain tiles, never change
+  if (url.origin === self.location.origin && (p.startsWith("/static/img/") || p.startsWith("/static/history/")) && /\.(png|jpe?g|webp|mp4|webm|glb|json|csv)$/i.test(p)) return MEDIA;
   return null;
 }
 
@@ -52,7 +55,7 @@ function maxAge(res) {
 }
 
 async function store(cacheName, key, res) {
-  const ttl = cacheName === TILES ? maxAge(res) : cacheName === OPEN ? OPEN_TTL : 365 * 24 * 3600;
+  const ttl = cacheName === TILES ? maxAge(res) : cacheName === OPEN ? OPEN_TTL : cacheName === MEDIA ? 7 * 24 * 3600 : 365 * 24 * 3600;
   if (!ttl) return;
   const headers = new Headers(res.headers);
   headers.set(STAMP, String(Math.floor(Date.now() / 1000)));

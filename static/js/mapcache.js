@@ -29,12 +29,12 @@ const MapPerf = (() => {
   // Per-map options: keep many decoded tiles in memory (panning back is instant), do not re-request tiles that expire
   // mid-session, cap the drawing resolution, draw CJK labels with a local font instead of downloading glyph ranges, skip performance telemetry.
   const opts = extra => Object.assign({
-    maxTileCacheSize: 1500,
+    maxTileCacheSize: 3000,
     refreshExpiredTiles: false,
     localIdeographFontFamily: "'Noto Sans', 'Microsoft YaHei', sans-serif",
     performanceMetricsCollection: false,
     fadeDuration: 120,
-    pixelRatio: Math.min(window.devicePixelRatio || 1, 1.5),   // 4K / 200 % screens would otherwise draw 4x the pixels
+    pixelRatio: Math.min(window.devicePixelRatio || 1, 2),     // sharp on HiDPI screens (user: pixel quality); 4K still capped at 2x
   }, extra);
 
   // Terrain elevation for every 3D map: open AWS Terrain Tiles (terrarium), served by the portal itself from data/dem

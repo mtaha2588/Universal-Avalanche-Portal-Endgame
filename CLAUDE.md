@@ -319,6 +319,16 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   `/api/export/hk_hotspots.geojson?min_ha=120`. Measured (headless, 20 s): JS heap 105 -> 65 MB, longest main-thread stall 1.5 s -> 0.77 s
   (the page's own map start-up is 0.69 s). No CSS blend modes over the map (a full-screen re-blend every frame).
 
+## Climate Data (home module)
+
+- Home module "Climate Data" (`special: "climate"` in home.html, after Historical Overview; UI `static/js/climatedata.js` → `ClimateData.html(m)`,
+  styles `static/css/climatedata.css`). Reads `/api/climate/era5_winter` and `/api/forecast/snow` only. Opens full page (`openWin` adds `.win.full`)
+  with a "Back to modules" button. Order: the run's own mp4 (`static/img/era5_winter/`) as the main player, then the original PNG figures large,
+  then the interactive charts. Everything stays in the portal: figures enlarge in the home `lightbox()`, no `target="_blank"` links.
+- Shows a 1970–2026 axis, but the supplied run ends at winter 2010: 2011–2025 is drawn as an empty hatched band ("not in the supplied run"), never filled.
+  2026–27 is the separate seasonal snow outlook (% of normal snowfall), labelled "not this scale". 1974 is estimated: hatched, left out of trends,
+  decade means and the scatter. Snow depth / SWE glacier caps (3,333 cm / 10,000 mm) are flagged in the map tooltip.
+
 ## Historical overview (past events)
 
 - Home module "Historical Overview" (`special: "history"` in home.html; `HIST` array, `historyHTML` / `openEvent` / `pane`). Event cards open a detail
@@ -367,11 +377,81 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   vectorised sliding block (same physics as the engine). `impact`: the run that reaches the documented place at the place's own height (+-150 m) with
   the largest drop; `band`: release at the record's elevation (K2 Bottleneck, Broad Peak C2-C3, Shispare ~5,700 m, Shounter Pass above 4,420 m).
   Not animated: earthquake candidate, "unclear", rain-triggered landslides, glacier movement, summer "doubtful" events, D/E locations.
+  Releases start at the peak (user request with sketches: break at the ridge top / summit, fall down the big face below it). `impact`:
+  `peak_run` takes peaks within 4 km of the place (higher than everything within ~90 m, >= 300 m above the place), lets sliding blocks run
+  from 60 m below each top down the terrain by themselves, and keeps the highest peak whose run comes within 2.5 km of the place (then its
+  biggest drop). The run does NOT have to end at the documented place any more: `place_dist_m` (0-2.5 km) says how close it comes. `band`
+  events (user: these too from the peak) use `peak_run(..., band=z, through=...)`: the highest peak above whose run comes down through the
+  record's elevation (Shispare 7,587 m through ~5,700 m, K2 8,554 m through the Bottleneck, Broad Peak 7,974 m). Track behind the flow =
+  thin, partly transparent snow; deposit = thick raised pile with more, larger blocks. Earlier steps (crest preference `headroom`, `climb`)
+  still pick the fallback. `slope_deg` = steepest ~100 m of the first 500 m. The script needs numpy + Pillow (not in the project .venv).
+- Batura 1974 in the tour starts at the peak above the model's release (user request): `batura_extension()` in the build script writes
+  `static/history/batura_1974/summit_extension.json` (climb to the top, start where the fall line first reaches 25 deg, sliding block
+  down to the model's release at 4,607 m). histtour.js prepends it; the model's own points / times / speeds follow unchanged (time-shifted)
+  and the HUD and record panel say which part is which. The model files themselves are untouched.
+- Snow and ice on the event's upper mountain: `static/js/snowcap.js` (`SnowCap.local(map, anim)`, z12 DEM around the path). User rules:
+  ice only on the peaks / upper slopes, never in valleys, rivers or towns; crisp contrast with the forest; no visible boundary; colour like
+  the imagery's own snow. So: ragged snowline ~450 m below the release (lower on north faces), nothing within 300-650 m above the run-out,
+  solid where it lies (no forest showing through), bare rock above ~45 deg, neutral white with sun shading and slight texture, faded out over
+  the outer 18 % of the image. (An earlier version, wintersnow.js, was bluish, translucent and hard-edged; the user rejected it.)
+- The tour engine runs with `look: "real"` (avalanche.js): the dense flow is one continuous body (`body()`: wide tongue with a heavy lobed
+  surging head, turbulent flanks, shaded edges, moving surface streaks, dark rim and ground shadow, freezes into the deposit tongue) plus angular
+  deposit blocks (`debris()`); release half-width 150-180 m (massive slabs, histtour.js). Colours are the neutral, slightly warm white / grey of
+  real snow in the imagery, not blue. The powder cloud is short-lived, at the head only (no fog trail), on a blurred half-size layer. No target
+  lock, neon speed trail, glow, flash, shock or impact rings, glints. Other 3D maps keep the default particle look.
+  The canvas has no depth test, so (user: it was drawn over the mountain in front) `clearView` picks bearing / pitch by DEM line of sight
+  before the flight, and `vis()` / `eraseHidden()` cut out every stretch the map's own terrain shows to be behind a nearer ridge
+  (map.unproject at the path point lands far from it), for the body, trail, cloud and blocks. The run-over track stays white (snow debris,
+  static grain), not bare ground.
+- "Intro +" (map bar, beside Intro): `static/js/showreel.js` (`Showreel.start/stop`) plays the portal as a looping film: full intro
+  (`bgMap.intro`, waits on `bgMap.introOn`) -> front page 3 s -> HistTour guided tour at 2x until event 6 begins (events 1-5) -> /portal
+  #hindukush and #karakoram in preloaded full-screen iframes, 5 s each -> Climate Data pages 0-2, 3 s each -> front page 5 s -> loop.
+  Dip-to-black cuts, chapter lower-thirds, chapter progress line, auto-hidden cursor. Home button / Esc (captured first) stops it.
+- Front-page map, official view (user request): `scripts/build_official_view.py` (shapely) writes `static/geo/official_view.geojson`:
+  the study-area mask minus Indian Illegally Occupied Jammu & Kashmir + Siachen, and the IIOJK polygon. home.html swaps in that mask,
+  draws the J&K outer edge solid like the rest of the boundary, drops the amber tint on J&K and labels it "Indian Illegally Occupied
+  Jammu & Kashmir · disputed territory"; LoC stays dashed. Picture only: the study area (analysis, glacier counts) is unchanged.
+- Climate Data tab: three pages behind icon buttons (`PAGES`: Animations, Original figures, Explore the numbers), no long scroll;
+  Explore has six views (`SUBS`), each sized to fit the full-page window (CSS `.win.full ...` heights, tile map height from innerHeight).
+- Speed / quality (user: no loading time, sharper): sw.js v3 keeps up to 30,000 provider tiles (within their max-age), 40,000 open
+  terrain tiles and the portal's own media (/static/img, /static/history) for 7 days; all maps draw at up to 2x pixel density
+  (mapcache.js, 3,000 tiles in memory); the tour prefetches every event's terrain when idle (`warmAll`).
+- Record vs animation elevations (user: contradicting values look bad): where the record gives `elevation_m` and the path passes it
+  (PK014, PK003, PK013, PK011, PK007), `recordZ` puts the record value first: HUD subtitle "struck at about X m (record) · illustrative
+  start Y m", a red "RECORD · struck about X m" call-out on the path where it passes X, start label "START · ILLUSTRATIVE", and a
+  "Struck (record)" figure in the record card.
+- Per-event route to the place (`sim.to_place`, PK016 Lowari Top, user sketch: the debris must lie at the documented place):
+  `route_down` (downhill Dijkstra, 45 m grid) from the summit start to the place, `run_along(..., vmin=6)` keeps the mass moving over
+  the benches near the pass; `anim.route_to_place` is stored and the HUD note says so.
+- Tour terrain quality: on Mapbox the tour uses Mapbox's terrain DEM (mapbox-terrain-dem-v1, to z14, live, not cached by the SW) for
+  terrain and a separate copy for a faint hillshade (`ht-relief`); pixelRatio up to 2, maxTileCacheSize 3000. No `antialias`: it made
+  the first draw ~90 s instead of ~10 s in software rendering (measured headless). MapLibre keeps the portal DEM.
+- Tour loading: the avalanche waits for the map to be idle (imagery + terrain loaded) after each flight (`intro.idleMs` 6 s, `idleMs`
+  4 s, upper bounds); the next event's terrain is prefetched while one plays; a ground-coloured `ht-ground` background layer, a sky-blue fog
+  space colour and a sky/ground CSS gradient replace black wherever tiles are still loading. app.py sends `Cache-Control: no-cache` for
+  /static/js and /static/css so browsers never keep running an old script after an update (they did: a removed snow layer kept showing).
+- Do not reuse `.cine` (home.html's intro overlay, `pointer-events: none`) in the tour: the tour's playing state is `ht-cine`. Reusing it once made the
+  whole tour ignore the mouse during playback (pause / speed did nothing; only the keyboard worked). Test guards it.
 - UI: `static/js/histtour.js` (`HistTour.open({tour|focus})`, styles `static/css/histtour.css`), started only by the user from the module's banner or a
   record card (never autoplayed). Full-screen 3D satellite map (`bgMap.lib()` engine, terrain x1.2, documentary grade, fog), records list, record panel,
-  stops: establishing flight (letterbox + lower-third) -> wind-driven snow (screen-space canvas, atmosphere only; documented weather is quoted from the
-  record) -> Avalanche engine -> conclusion card (deaths as reported, confidence) -> auto-continue after 8 s. Controls: prev, play/pause (Space), replay,
-  next (arrows), Event map, exit (Esc). Batura 1974 is a stop with the NGT model path ("model reconstruction"). Test helper: `HistTour.map()`.
+  events: establishing flight (letterbox + lower-third) -> wind-driven snow (screen-space canvas, atmosphere only; documented weather is quoted from the
+  record) -> Avalanche engine -> conclusion card (deaths as reported, confidence) -> the tour flows on to the following event by itself after a short
+  "Coming up" bar (no button press; Space / dragging the map / scrubbing pauses it); after the last event it returns to a "Tour complete" card.
+  Wording: say "event", never "stop" / "next stop". Controls (SVG icons): prev, play/pause (Space), replay, skip (arrows), playback speed gauge
+  (0.5-3x, -/+ keys, scales flights, avalanche and the hand-over; remembered in localStorage), event pins (P: DOM markers with the year that pop in
+  chronologically, hover card with place / date / deaths, labels declutter by priority; replace the circle layer while on), Event map, exit (Esc).
+  Batura 1974 is an event with the NGT model path ("model reconstruction"). Test helper: `HistTour.map()`.
+- The tour plays only records with an `anim` (22: 21 scenarios + Batura), in date order. Records without an animation are NOT in the tour (user's decision)
+  but stay in the records list, the event map pins and the "Not on the map" list. Pins and map points are danger red (filled = animated).
+- PK027 (Pattan earthquake area, no avalanche documented) is removed from the portal at the user's request: `EXCLUDED` in
+  `scripts/build_history_events.py`; it remains in the source CSV only.
+- Side panel: hero chips, stat tiles (deaths count up, confidence meter), decade-banded timeline of every record (hover reads, click opens), tabs
+  Overview / Scenario / Location / Sources. Records list: decade jump bar, one colour per decade (`DEC`, shared with the home module via `HistTour.DEC`),
+  rail + dots (filled = animated), deaths badges graded by the reported number. Event-map panel lists the 7 records that cannot be pinned.
+- Home module (`historyHTML`, `.hx-*`): drifting relief hero with stats, records-by-decade bars (click filters), featured Batura card, searchable records grid.
+- Engine extras (avalanche.js, all pages): `o.speed` / `ctl.speed(k)`, draggable timeline with Release / Peak / Run-out marks (`o.onScrub`), profile
+  hover marks that point on the mountain, speed-coloured trail, glowing head + bow wave, airborne spray, cloud glints, release flash, run-out impact ring.
+  All are visual effects around the same path; none changes the modelled quantities.
 
 ## One palette (home page)
 
