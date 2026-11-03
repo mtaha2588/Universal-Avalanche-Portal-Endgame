@@ -43,6 +43,10 @@ const HistTour = (() => {
   let el = null, map = null, gl = null, engine = "", data = null, stops = [], cur = -1, ctl = null, tok = 0, paused = false, touring = false;
   let adv = null, markers = [], wx = null, keyH = null, downH = null, ended = false, speed = 1;
   let pinsOn = false, evMarks = [], focusRec = null, dcRaf = 0;
+  // Built once, kept alive and only ever hidden/shown after that (user: no loading time): the DOM, the MapLibre/Mapbox map, its
+  // terrain and tiles all persist across open()/close(), so after the first build every open is instant. `visible` (not `el`)
+  // is the "is the tour on screen" flag; `warm()` runs the whole build ahead of time, in the background, before the user ever opens it.
+  let visible = false, buildFailed = false, buildPromise = null;
   // ------------------------------------------------------------ data
   async function load() {
     if (data) return data;
@@ -87,12 +91,17 @@ const HistTour = (() => {
     return data;
   }
 
-  // ------------------------------------------------------------ open / close
-  async function open(opt = {}) {
-    if (el) close();
-    const sp = +pref("speed"); speed = SPEEDS.includes(sp) ? sp : 1;
-    el = document.createElement("div"); el.className = "ht"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Historic avalanche tour");
-    el.innerHTML = `
+  // ------------------------------------------------------------ build (once), open / close (show / hide)
+  // The DOM, the map, its terrain source and its tiles are expensive to build but cheap to keep: built once by ensureBuilt(),
+  // then only ever hidden (close) or shown (open) again, so after the first build there is no loading screen, ever.
+  // warm() runs ensureBuilt() ahead of time, in the background, so even the very first open is already warm by the time it happens.
+  function ensureBuilt() {
+    if (el && !buildFailed) return Promise.resolve();
+    if (buildPromise) return buildPromise;
+    if (buildFailed) { el.remove(); el = null; buildFailed = false; }
+    buildPromise = (async () => {
+      el = document.createElement("div"); el.className = "ht"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Historic avalanche tour");
+      el.innerHTML = `
       <div class="ht-map" id="ht-map"></div><canvas class="ht-wx" aria-hidden="true"></canvas><div class="ht-vig" aria-hidden="true"></div>
       <div class="ht-bars" aria-hidden="true"><i></i><i></i></div>
       <header class="ht-top">
@@ -123,48 +132,68 @@ const HistTour = (() => {
         <button type="button" class="ht-ic ht-pins" data-tip="Event pins: location and year  P" aria-pressed="false" aria-label="Show event pins">${IC.pins}</button>
       </nav>
       <div class="ht-load"><i></i><b>Loading the historical records and 3D terrain…</b></div>`;
-    document.body.appendChild(el);
-    document.body.classList.add("ht-open");
-    requestAnimationFrame(() => el.classList.add("on"));
-    const q = s => el.querySelector(s);
-    q(".ht-exit").onclick = close;
-    q(".ht-fs").onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen?.().catch(() => {}); };
-    q(".ht-overview").onclick = () => overview(true);
-    q(".ht-listbtn").onclick = () => setList(!el.classList.contains("list-on"));
-    q(".ht-only").onchange = renderList;
-    el.querySelectorAll(".ht-ctl [data-a]").forEach(b => b.onclick = () => action(b.dataset.a));
-    q(".ht-spd").onclick = () => speedPop(q(".ht-spd-pop").hidden);
-    el.querySelectorAll(".ht-spd-row button").forEach(b => b.onclick = () => { setSpeed(+b.dataset.s); speedPop(false); });
-    q(".ht-pins").onclick = () => setPins(!pinsOn);
-    downH = e => { if (el && !e.target.closest(".ht-spdw")) speedPop(false); };
-    document.addEventListener("pointerdown", downH, true);
-    keyH = e => {
-      if (!el) return;
-      const typing = /INPUT|SELECT|TEXTAREA/.test(e.target.tagName);
-      if (e.key === "Escape") { if (!q(".ht-spd-pop").hidden) { speedPop(false); e.preventDefault(); } else if (document.fullscreenElement) return; else { e.preventDefault(); close(); } }
-      else if (e.key === " " && !typing && e.target.tagName !== "BUTTON") { e.preventDefault(); action("play"); }
-      else if (e.key === "ArrowRight") action("next");
-      else if (e.key === "ArrowLeft") action("prev");
-      else if ((e.key === "+" || e.key === "=") && !typing) stepSpeed(1);
-      else if ((e.key === "-" || e.key === "_") && !typing) stepSpeed(-1);
-      else if ((e.key === "p" || e.key === "P") && !typing) { if (map && data) setPins(!pinsOn); }
-      else return;
-      e.stopImmediatePropagation();
-    };
-    addEventListener("keydown", keyH, true);
-    setSpeed(speed, true);
-    setList(innerWidth > 1100);
+      document.body.appendChild(el);
+      const q = s => el.querySelector(s);
+      q(".ht-exit").onclick = close;
+      q(".ht-fs").onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen?.().catch(() => {}); };
+      q(".ht-overview").onclick = () => overview(true);
+      q(".ht-listbtn").onclick = () => setList(!el.classList.contains("list-on"));
+      q(".ht-only").onchange = renderList;
+      el.querySelectorAll(".ht-ctl [data-a]").forEach(b => b.onclick = () => action(b.dataset.a));
+      q(".ht-spd").onclick = () => speedPop(q(".ht-spd-pop").hidden);
+      el.querySelectorAll(".ht-spd-row button").forEach(b => b.onclick = () => { setSpeed(+b.dataset.s); speedPop(false); });
+      q(".ht-pins").onclick = () => setPins(!pinsOn);
+      downH = e => { if (el && visible && !e.target.closest(".ht-spdw")) speedPop(false); };
+      document.addEventListener("pointerdown", downH, true);
+      keyH = e => {
+        if (!el || !visible) return;
+        const typing = /INPUT|SELECT|TEXTAREA/.test(e.target.tagName);
+        if (e.key === "Escape") { if (!q(".ht-spd-pop").hidden) { speedPop(false); e.preventDefault(); } else if (document.fullscreenElement) return; else { e.preventDefault(); close(); } }
+        else if (e.key === " " && !typing && e.target.tagName !== "BUTTON") { e.preventDefault(); action("play"); }
+        else if (e.key === "ArrowRight") action("next");
+        else if (e.key === "ArrowLeft") action("prev");
+        else if ((e.key === "+" || e.key === "=") && !typing) stepSpeed(1);
+        else if ((e.key === "-" || e.key === "_") && !typing) stepSpeed(-1);
+        else if ((e.key === "p" || e.key === "P") && !typing) { if (map && data) setPins(!pinsOn); }
+        else return;
+        e.stopImmediatePropagation();
+      };
+      addEventListener("keydown", keyH, true);
+      setList(innerWidth > 1100);
+      try {
+        await Promise.all([load(), makeMap()]);
+      } catch (e) {
+        console.warn("HistTour:", e);
+        q(".ht-load").innerHTML = `<b>The tour could not start</b><span>${esc(e.message)}. The portal server must be running (run.bat).</span>`;
+        try { map && map.remove(); } catch { /* never got that far */ } map = null;
+        buildFailed = true;
+        throw e;
+      }
+      wx = Wx(q(".ht-wx"));
+      addLayers();
+      q(".ht-load").classList.add("off");
+    })().finally(() => { buildPromise = null; });
+    return buildPromise;
+  }
+
+  // Runs the whole build in the background, before the user ever opens the tour (called once the Historical Overview tile is
+  // opened, and again proactively on page idle), so by the time open() runs there is nothing left to load.
+  async function warm() { try { await ensureBuilt(); } catch { /* open() will report it if the user actually opens the tour */ } }
+
+  async function open(opt = {}) {
+    const sp = +pref("speed"); speed = SPEEDS.includes(sp) ? sp : 1;
     try {
-      await Promise.all([load(), makeMap()]);
+      await ensureBuilt();
     } catch (e) {
       console.warn("HistTour:", e);
-      q(".ht-load").innerHTML = `<b>The tour could not start</b><span>${esc(e.message)}. The portal server must be running (run.bat).</span>`;
       return;
     }
     if (!el) return;
-    wx = Wx(q(".ht-wx"));
-    addLayers();
-    q(".ht-load").classList.add("off");
+    visible = true;
+    document.body.classList.add("ht-open");
+    requestAnimationFrame(() => el.classList.add("on"));
+    setSpeed(speed, true);
+    setList(innerWidth > 1100);
     warmAll();
     renderList();
     if (pref("pins") === "1") setPins(true);
@@ -175,18 +204,19 @@ const HistTour = (() => {
   }
 
   function close() {
-    if (!el) return;
+    if (!el || !visible) return;
     stopRun(true); clearAdv(); tok++;
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-    removeEventListener("keydown", keyH, true);
-    document.removeEventListener("pointerdown", downH, true);
-    if (wx) wx.stop(); wx = null;
+    speedPop(false);
+    if (wx) wx.level(0);           // kept alive (not stopped): resuming it on the next open needs no rebuild
     if (dcRaf) cancelAnimationFrame(dcRaf); dcRaf = 0;
     markers.forEach(m => m.remove()); markers = [];
+    if (pinsOn) { ["ht-pt", "ht-pt-halo"].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "visible"); }); el.classList.remove("pins-on"); }
+    const pb = el.querySelector(".ht-pins"); if (pb) { pb.setAttribute("aria-pressed", false); pb.setAttribute("aria-label", "Show event pins"); }
     evMarks.forEach(m => m.mk.remove()); evMarks = []; pinsOn = false; focusRec = null;
-    try { map && map.remove(); } catch { /* already gone */ }
-    map = null; cur = -1; paused = false; touring = false;
-    el.remove(); el = null;
+    cur = -1; paused = false; touring = false;
+    visible = false;
+    el.classList.remove("on");
     document.body.classList.remove("ht-open");
   }
 
@@ -752,6 +782,6 @@ const HistTour = (() => {
     };
   }
 
-  return { open, close, load, isOpen: () => !!el, map: () => map, DEC };          // map(): test helper; DEC: decade colours (home page module)
+  return { open, close, load, warm, isOpen: () => visible, map: () => map, DEC };   // map(): test helper; DEC: decade colours (home page module)
 })();
 window.HistTour = HistTour;

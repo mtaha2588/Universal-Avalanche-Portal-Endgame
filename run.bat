@@ -21,17 +21,7 @@ rem Reinstall packages only when requirements.txt has changed since the last ins
 fc /b requirements.txt .venv\requirements.installed >nul 2>&1
 if errorlevel 1 (
   echo Installing dependencies...
-  python -m pip install -q -r requirements.txt && copy /y requirements.txt .venv\requirements.installed >nul
-)
-python -c "import flask, waitress, dotenv" >nul 2>&1
-if errorlevel 1 (
-  echo.
-  echo  The portal's Python packages could not be installed ^(Flask, Waitress^).
-  echo  Check the internet connection, then run this file again. If it still fails, delete the .venv folder
-  echo  and run again. Python 3.10 - 3.12 from python.org is recommended.
-  python --version
-  pause
-  exit /b 1
+  pip install -q -r requirements.txt && copy /y requirements.txt .venv\requirements.installed >nul
 )
 
 rem First run from a GitHub ZIP: .env (Mapbox key) and the local terrain tiles are not in the download.
@@ -54,36 +44,17 @@ if not exist data\dem\terrarium (
   if not errorlevel 2 start "Terrain download" /min python scripts\fetch_dem.py
 )
 
-rem A portal server left running from an earlier copy (e.g. an older GitHub download) would keep port 5000, and the
-rem browser would open that OLD portal. Stop any Python server listening on 5000 first.
-for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:":5000 .*LISTENING"') do (
-  tasklist /fi "PID eq %%P" 2>nul | findstr /i "python" >nul && (
-    echo  Stopping an earlier portal server ^(PID %%P^) so this copy is served...
-    taskkill /pid %%P /t /f >nul 2>&1
-  )
-)
-timeout /t 1 /nobreak >nul
-
 echo Starting portal server...
-rem The server's messages go to server.log, so an error can be shown here if it fails to start.
-if exist server.log del /q server.log >nul 2>&1
-start "Avalanche Portal Server" /min cmd /c "python app.py > server.log 2>&1"
+start "Avalanche Portal Server" /min python app.py
 
-rem Wait until the server answers before opening the browser (curl ships with Windows 10 and 11).
+rem Wait until the server answers before opening the browser.
 set /a tries=0
 :wait
 timeout /t 1 /nobreak >nul
 set /a tries+=1
 curl -s -o nul http://127.0.0.1:5000/api/config && goto ready
-findstr /c:"Traceback" server.log >nul 2>&1 && goto failed
-if %tries% lss 45 goto wait
-:failed
-echo.
-echo  The portal server did not start. Its messages:
-echo  ------------------------------------------------------------
-if exist server.log (type server.log) else (echo  ^(no output^))
-echo  ------------------------------------------------------------
-echo  Send a photo of this window to the portal team.
+if %tries% lss 30 goto wait
+echo The server did not start. Check the "Avalanche Portal Server" window for errors.
 pause
 exit /b 1
 

@@ -456,7 +456,11 @@
     /* right: one column of module tabs, styled like the season tabs on top */
     .deck { justify-content: center; margin-left: -12px; }
     .deck-h { margin-bottom: 8px; }
-    .tiles { grid-template-columns: 1fr; grid-auto-rows: auto; gap: 8px; flex: none; }
+    .tiles { grid-template-columns: 1fr; grid-auto-rows: auto; gap: 8px; flex: none; max-height: calc(100% - 86px); overflow-y: auto; overflow-x: hidden;
+      padding: 2px 6px 2px 2px; margin-right: -6px; scrollbar-width: thin; scrollbar-color: #2a4878 transparent; }
+    .tiles::-webkit-scrollbar { width: 6px; } .tiles::-webkit-scrollbar-track { background: transparent; }
+    .tiles::-webkit-scrollbar-thumb { background: #2a4878; border-radius: 10px; }
+    .tiles::-webkit-scrollbar-thumb:hover { background: #3a5f9e; }
     /* Calm dark-glass tabs; the palette colour (--pc, from SLOT_COL / SYS_COL) is only an accent: left bar (--bar), icon badge, faint tint */
     .tile, .tile.hero { flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; padding: 8px 34px 8px 16px; min-height: 54px; border-radius: 12px;
       border: 1px solid rgba(148, 163, 184, .16); color: #e8eef7;
@@ -1012,6 +1016,7 @@
 <link rel="stylesheet" href="/static/css/avalanche.css">
 <link rel="stylesheet" href="/static/css/histtour.css">
 <link rel="stylesheet" href="/static/css/climatedata.css">
+<link rel="stylesheet" href="/static/css/alertdash.css">
 </head>
 <body>
 
@@ -1183,6 +1188,7 @@
 <script src="/static/js/snowcap.js"></script>
 <script src="/static/js/histtour.js"></script>
 <script src="/static/js/climatedata.js"></script>
+<script src="/static/js/alertdash.js"></script>
 <script src="/static/js/showreel.js"></script>
 <script>
 "use strict";
@@ -1207,6 +1213,7 @@ const ICON = {
   trust: P('<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>'),
   gallery: P('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="m21 16-5-5-9 9"/>'),
   rocket: P('<path d="M5 19c1-3 3-5 5-5M14 4c3 0 6 3 6 6l-6 6-6-6 6-6z"/><circle cx="15" cy="9" r="1.5"/><path d="M8 13 5 14l-2 4 4-2 1-3M11 16l-1 3-4 2 2-4"/>'),
+  alert: P('<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/>'),
   sat: P('<path d="m13 7 4-4 4 4-4 4zM3 17l4-4 4 4-4 4z"/><path d="m9 15 6-6M14 18a4 4 0 0 0 4-4M14 22a8 8 0 0 0 8-8"/>'),
   brain: P('<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/>'),
   avalanche: P('<path d="m2 20 7-13 4 6 2-3 7 10H2z"/><circle cx="17" cy="6" r="1.4"/><circle cx="20" cy="9.5" r="1"/><circle cx="14.5" cy="9" r="1"/>'),
@@ -1232,6 +1239,8 @@ const M = [
   { id: "outlook", n: "03", t: "15-Day Risk Outlook", s: "Seasonal windows", c: "--violet", ic: "outlook", shot: "outlook",
     d: "The season divided into consecutive 15-day reporting windows, with honest labelling of what the model can and cannot forecast.",
     f: ["Timeline of every window from 15 Dec to 15 Apr", "Model run time, input range, lead time and uncertainty per window", "Class distribution and output table when predictions exist", "Missing windows are shown as missing, never filled in"] },
+  { id: "alertforecast", t: "Avalanche Alert Forecast", s: "ECMWF IFS · daily tile alerts, 15-day lead", c: "--red", ic: "alert", dash: true,
+    d: "Full-screen dashboard (static/js/alertdash.js) of the live forecast engine (forecast/): 150 calibrated 0.25° tiles on 3D terrain, region cards and a 15-day tile deep dive." },
   { id: "hindukush", t: "Hindu Kush", s: "RGI 14-01 · terrain screening & hotspots", c: "--blue", ic: "mountain", go: ["hindukush", "hindu_kush"] },
   { id: "karakoram", t: "Karakoram", s: "RGI 14-02 · hotspots", c: "--red", ic: "mountain", go: ["karakoram", "karakoram"] },
   { id: "himalaya", t: "Western Himalaya", s: "RGI 14-03 · risk map for the region", c: "--emerald", ic: "mountain", go: ["map", "western_himalaya"] },
@@ -1248,7 +1257,7 @@ const M = [
 
 M.filter(m => !m.hero && !m.go).forEach((m, k) => { m.n = String(k + 1).padStart(2, "0"); });
 // Module tab colours: members of SLOT_COL; the mountain-system tabs use exactly their glacier-system colour on the map.
-const TAB_COL = { overview: "#FFFF00", map: "#0047FF", outlook: "#8F00FF", hindukush: SYS_COL["Hindu Kush"], karakoram: SYS_COL["Karakoram"],
+const TAB_COL = { overview: "#FFFF00", map: "#0047FF", outlook: "#8F00FF", alertforecast: "#FFC107", hindukush: SYS_COL["Hindu Kush"], karakoram: SYS_COL["Karakoram"],
   himalaya: SYS_COL["West Himalaya"], history: "#FF00FF", climate: "#00FFFF", exposure: "#FF3D00", reports: "#D00020", launch: "#0047FF" };
 const TAB_BAR = { launch: "linear-gradient(180deg, #00FFFF, #0047FF, #8F00FF)" };
 const tabVars = m => { const c = TAB_COL[m.id] || "#00FFFF";
@@ -1384,7 +1393,7 @@ function content(m) {
 }
 
 /* ---------- Reports & exports: hotspot lists per mountain system (from /api/hotspots/regions) ---------- */
-const REG_COL = { hindu_kush: "#a78bfa", karakoram: "#22d3ee", himalaya: "#34d399" };
+const REG_COL = { hindu_kush: "#3b82f6", karakoram: "#22d3ee", himalaya: "#34d399" };
 function timelineText(r, wins) {
   const idx = String(r.windows || "").split(";").map(x => +x.trim().slice(-2)).filter(Boolean).sort((a, b) => a - b);
   if (!idx.length) return "—";
@@ -1462,6 +1471,7 @@ function historyHTML(m) {
     root.querySelectorAll(".hev, .hx-feat").forEach(b => b.addEventListener("click", () => openEvent(b.dataset.ev)));
     root.querySelector("[data-tour]").onclick = () => HistTour.open({ tour: true });
     root.querySelector(".hx-map").onclick = () => HistTour.open({});
+    HistTour.warm();                                  // builds the 3D tour (map, terrain, tiles) in the background now, so opening it is instant
     HistTour.load().then(d => {                      // the compiled records (scripts/build_history_events.py), listed as supplied
       const DEC = HistTour.DEC || {}, col = x => DEC[x] || "#94a3b8", recs = d.recs.filter(r => !r.model), anim = d.recs.filter(r => r.anim).length;
       const num = { recs: recs.length, map: recs.filter(r => r.geom).length, anim, deaths: recs.reduce((s, r) => s + (+r.deaths || 0), 0) };
@@ -2301,10 +2311,11 @@ function lightbox(src, cap) {
 
 /* ---------- window controller ---------- */
 const win = document.getElementById("win"), scrim = document.getElementById("scrim");
-const WM = M.filter(m => !m.hero && !m.go);
+const WM = M.filter(m => !m.hero && !m.go && !m.dash);
 let curW = -1;
 function openWin(i) {
   const m = M[i]; if (!m || m.hero) return;
+  if (m.dash) { if (curW >= 0) closeWin(); return window.AlertDash && AlertDash.open(); }   // the alert forecast opens as its own full-screen dashboard
   curW = WM.indexOf(m);
   win.style.setProperty("--c", `var(${m.c})`);
   document.getElementById("win-ic").innerHTML = ICON[m.ic];
@@ -2355,6 +2366,7 @@ const DEFAULT_EXAG = 2;   // vertical exaggeration shown at start (1 = true elev
 const GLACIER_COLORS = SYS_COL;
 const INTRO_COLORS = SYS_COL;
 const GLACIER_LIGHT = { "Hindu Kush": "#b3ffff", "Karakoram": "#ff9a9a", "West Himalaya": "#c2ffa8" };   // bright outline tints of the same colours
+const SYS_LABEL_COL = { "Karakoram": "#FF0000" };   // map name label colour where it differs from the system colour (user request)
 const GLACIERS = { data: null, stats: {}, centers: {} };
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // Cinematic intro: once per browser session (always with /#intro); never with reduced motion or another deep link.
@@ -3076,7 +3088,7 @@ const bgMap = (() => {
     GLACIER_ORDER.forEach(n => {
       const c = GLACIERS.centers[n];
       const code = (BND.reg.features.find(f => f.properties.name === n) || { properties: {} }).properties.o2region || "";
-      if (c) label("sys", `<span style="color:${GLACIER_COLORS[n]}">${n}</span><small>RGI region ${code}</small>`, c, "regions");
+      if (c) label("sys", `<span style="color:${SYS_LABEL_COL[n] || GLACIER_COLORS[n]}">${n}</span><small>RGI region ${code}</small>`, c, "regions");
     });
     BND.bnd.features.forEach(f => {
       const p = f.properties;
@@ -3098,6 +3110,7 @@ const bgMap = (() => {
         f.geometry.coordinates, "majors", p.area_km2 >= 400 ? 5.6 : p.area_km2 >= 100 ? 6.4 : 7.4);
       const el = markers.majors[markers.majors.length - 1].getElement();
       el.style.setProperty("--gc", GLACIER_COLORS[p.system]);
+      if (SYS_LABEL_COL[p.system]) el.style.color = SYS_LABEL_COL[p.system];   // Karakoram glacier names in red (user request)
       el.title = "";
       el.addEventListener("mouseenter", ev => { tip.innerHTML = majorHtml(p); tip.style.transform = `translate(${ev.clientX + 16}px, ${ev.clientY + 16}px)`; tip.classList.add("on"); });
       el.addEventListener("mouseleave", hideTip);
@@ -3584,14 +3597,17 @@ const bgMap = (() => {
   }
   // Mapbox only: loads the tiles along a planned flight while the camera is still, so the flight itself does not stall on them.
   // (flyTo stops any running move first, so this is never called mid-move. MapLibre has no preloadOnly and would fly.)
+  // Only while every source is loaded: with a source still loading, Mapbox v3.6 defers the preload to that source's "data"
+  // event and then throws inside _preloadTiles ("reading 'tileZoom'"). Skipping a preload only costs the optimisation.
+  const sourcesReady = () => Object.keys(map.getStyle().sources).every(id => { try { return map.isSourceLoaded(id); } catch { return true; } });
   function preload(o) {
-    if (engine !== "mapbox" || map.isMoving()) return;
+    if (engine !== "mapbox" || map.isMoving() || !sourcesReady()) return;
     try { map.flyTo({ ...o, preloadOnly: true, essential: true }); } catch { /* preloading is optional */ }
   }
   // Mapbox only: loads just the view at each destination (a 1 ms emulated ease = start view + end view), so the full-detail
   // terrain, imagery and contours of every stop are already in the tile cache before the camera gets there.
   function warm(cams) {
-    if (engine !== "mapbox" || map.isMoving()) return;
+    if (engine !== "mapbox" || map.isMoving() || !sourcesReady()) return;
     cams.filter(Boolean).forEach(o => {
       try { map.easeTo({ center: o.center, zoom: o.zoom, pitch: o.pitch, bearing: o.bearing, duration: 1, preloadOnly: true, essential: true }); }
       catch { /* preloading is optional */ }
@@ -4501,6 +4517,13 @@ setTimeout(() => {
   if (k >= 0) setTimeout(() => openWin(k), 500);
   if (location.hash === "#explore") setTimeout(() => setExplore(true), 500);
 }, splashSeen ? 0 : 1400);
+
+// Warm the Historic avalanche tour (map, terrain, tiles) once the page has settled, so it is already built, with no loading
+// screen, the first time anyone opens Historical Overview too (not just on repeat opens). Idle + a delay: never competes with
+// the intro / storm sequence for the main thread or network.
+const idleWarm = window.requestIdleCallback || (f => setTimeout(f, 2500));
+setTimeout(() => idleWarm(() => { if (window.HistTour) HistTour.warm(); }, { timeout: 8000 }), splashSeen ? 2000 : 5000);
+setTimeout(() => idleWarm(() => { if (window.AlertDash) AlertDash.warm(); }, { timeout: 8000 }), splashSeen ? 3500 : 7000);   // same for the alert forecast dashboard
 </script>
 </body>
 </html>

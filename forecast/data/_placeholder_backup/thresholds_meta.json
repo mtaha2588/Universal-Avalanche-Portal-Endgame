@@ -1,0 +1,18 @@
+{
+ "calibrated": false,
+ "tile_count": 377,
+ "tiles_rated": 364,
+ "tiles_not_rated": 13,
+ "min_elev_m": 1200,
+ "note": "PREVIEW thresholds: the same fixed storm / warm-snow trigger values are used for every tile (not the tile's own ERA5 winter percentile, which forecast_core.py's rule is written for). The elevation grid is real, sampled from this portal's own Copernicus GLO-30 DEM. Replace data/tile_thresholds.csv with the analysis team's calibrated per-tile file (same columns) to activate the operational rule -- no code change needed.",
+ "thresholds": {
+  "MODERATE_sf3d_mm": 25,
+  "HIGH_sf3d_mm": 45,
+  "MODERATE_gust3d_ms": 15,
+  "HIGH_gust3d_ms": 20,
+  "MODERATE_tmax_rise3d_c": 6,
+  "HIGH_tmax_rise3d_c": 8,
+  "MODERATE_sf7d_mm": 20,
+  "HIGH_sf7d_mm": 35
+ }
+}

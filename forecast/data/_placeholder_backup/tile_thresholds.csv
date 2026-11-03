@@ -1,0 +1,378 @@
+tile_id,elev_approx_m,region,MODERATE_sf3d_mm,HIGH_sf3d_mm,MODERATE_gust3d_ms,HIGH_gust3d_ms,MODERATE_tmax_rise3d_c,HIGH_tmax_rise3d_c,MODERATE_sf7d_mm,HIGH_sf7d_mm
+N33.875_E70.625,2512,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N33.875_E70.875,1937,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N33.875_E71.125,1235,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N33.875_E73.125,1020,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N33.875_E73.375,1495,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N33.875_E73.625,1203,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E73.875,1899,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E74.125,1434,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E74.375,3318,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E74.625,2251,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E74.875,1671,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E75.125,2214,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E75.375,3476,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E75.625,4454,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E75.875,4331,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E76.125,4676,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E76.375,4819,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E76.625,4270,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E76.875,3493,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E77.125,3938,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E77.375,4431,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N33.875_E77.625,4311,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E70.625,924,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.125_E71.125,970,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.125_E73.125,1160,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.125_E73.375,1971,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.125_E73.625,1593,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E73.875,1171,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E74.125,2061,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E74.375,1945,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E74.625,1581,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E74.875,1582,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E75.125,3983,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E75.375,4129,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E75.625,4541,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E75.875,4849,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E76.125,5224,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E76.375,5004,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E76.625,5283,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E76.875,4330,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E77.125,4123,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E77.375,3898,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.125_E77.625,3453,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E71.125,1041,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.375_E72.625,1053,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.375_E73.375,1058,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.375_E73.625,2705,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E73.875,2364,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E74.125,1924,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E74.375,1588,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E74.625,1577,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E74.875,3953,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E75.125,4268,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E75.375,4622,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E75.625,4525,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E75.875,4653,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E76.125,3988,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E76.375,3282,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E76.625,4715,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E76.875,3875,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E77.125,5133,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E77.375,5478,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.375_E77.625,4457,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E71.125,1889,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.625_E71.375,1125,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.625_E71.625,992,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.625_E72.375,1626,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.625_E72.625,1201,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.625_E72.875,1984,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.625_E73.125,1625,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.625_E73.375,1679,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.625_E73.625,3281,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E73.875,3126,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E74.125,2532,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E74.375,2385,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E74.625,3660,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E74.875,2727,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E75.125,3651,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E75.375,4397,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E75.625,3495,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E75.875,3734,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E76.125,3214,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E76.375,3198,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E76.625,3449,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E76.875,4503,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E77.125,4007,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E77.375,4437,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.625_E77.625,3191,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E70.625,3648,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.875_E70.875,1838,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.875_E71.125,980,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.875_E71.375,1328,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.875_E71.625,1206,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.875_E72.125,2178,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.875_E72.375,1448,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.875_E72.625,1829,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N34.875_E72.875,1146,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.875_E73.125,2645,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.875_E73.375,4176,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N34.875_E73.625,2617,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E73.875,3827,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E74.125,3478,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E74.375,3146,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E74.625,3215,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E74.875,3441,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E75.125,4245,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E75.375,4178,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E75.625,4832,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E75.875,4718,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E76.125,3076,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E76.375,4551,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E76.625,4515,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E76.875,4102,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E77.125,3864,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E77.375,5334,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N34.875_E77.625,5683,Kashmir (Neelum-Leepa-Astore),25,45,15,20,6,8,20,35
+N35.125_E70.625,3137,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E70.875,2588,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E71.125,3977,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E71.375,1197,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E71.625,2503,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E71.875,1552,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E72.125,2401,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E72.375,2428,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E72.625,2299,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.125_E72.875,2384,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.125_E73.125,2588,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.125_E73.375,4569,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.125_E73.625,3864,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E73.875,4261,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E74.125,4126,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E74.375,4496,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E74.625,4710,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E74.875,4402,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E75.125,4539,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E75.375,4487,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E75.625,4657,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E75.875,3477,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E76.125,4599,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E76.375,3334,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E76.625,4900,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E76.875,4226,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E77.125,5709,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E77.375,5038,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.125_E77.625,5716,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E70.625,3624,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E70.875,4033,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E71.125,4069,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E71.375,2973,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E71.625,1292,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E71.875,3950,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E72.125,2235,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E72.375,4070,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E72.625,3110,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.375_E72.875,4017,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.375_E73.125,2942,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.375_E73.375,4424,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.375_E73.625,3760,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E73.875,2337,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E74.125,1975,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E74.375,1848,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E74.625,4745,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E74.875,2364,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E75.125,4826,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E75.375,4338,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E75.625,2864,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E75.875,3870,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E76.125,3347,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E76.375,3092,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E76.625,4251,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E76.875,5692,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E77.125,4569,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E77.375,6724,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.375_E77.625,5268,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E70.625,4003,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E70.875,4899,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E71.125,4190,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E71.375,3951,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E71.625,3388,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E71.875,1534,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E72.125,4287,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E72.375,3651,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E72.625,4446,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.625_E72.875,3940,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.625_E73.125,3313,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.625_E73.375,3685,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.625_E73.625,2036,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E73.875,1676,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E74.125,3560,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E74.375,4042,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E74.625,1354,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E74.875,4667,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E75.125,3235,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E75.375,4145,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E75.625,4580,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E75.875,5068,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E76.125,4798,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E76.375,4860,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E76.625,5827,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E76.875,5335,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E77.125,6267,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E77.375,5516,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.625_E77.625,5128,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E70.625,4152,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E70.875,2868,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E71.125,4931,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E71.375,3682,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E71.625,4257,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E71.875,3230,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E72.125,4088,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E72.375,4844,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E72.625,4748,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N35.875_E72.875,4897,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.875_E73.125,4504,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.875_E73.375,3904,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N35.875_E73.625,4138,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E73.875,4267,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E74.125,4522,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E74.375,2157,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E74.625,3876,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E74.875,3945,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E75.125,5179,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E75.375,3018,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E75.625,4843,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E75.875,5278,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E76.125,5337,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E76.375,5203,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E76.625,5755,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E76.875,4745,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E77.125,5872,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E77.375,5479,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N35.875_E77.625,5119,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E70.625,3392,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E70.875,3449,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E71.125,4800,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E71.375,4331,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E71.625,4051,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E71.875,3616,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E72.125,3073,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E72.375,5321,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E72.625,4508,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.125_E72.875,4372,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.125_E73.125,4403,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.125_E73.375,4625,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.125_E73.625,4551,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E73.875,1798,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E74.125,4570,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E74.375,4174,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E74.625,5092,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E74.875,3968,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E75.125,3952,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E75.375,5075,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E75.625,5620,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E75.875,4598,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E76.125,5136,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E76.375,4210,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E76.625,3959,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E76.875,4376,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E77.125,5303,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E77.375,5160,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.125_E77.625,5051,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E70.625,4571,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E70.875,4158,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E71.125,4822,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E71.375,4815,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E71.625,3830,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E71.875,6841,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E72.125,4749,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E72.375,2455,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E72.625,3188,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.375_E72.875,4743,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.375_E73.125,3576,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.375_E73.375,3877,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.375_E73.625,3598,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E73.875,3357,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E74.125,4234,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E74.375,5331,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E74.625,4801,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E74.875,2654,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E75.125,6327,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E75.375,3566,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E75.625,5538,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E75.875,4660,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E76.125,4251,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E76.375,5827,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E76.625,4911,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E76.875,4419,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E77.125,4911,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E77.375,5202,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.375_E77.625,5081,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E70.625,4082,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E70.875,2213,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E71.125,3364,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E71.375,3203,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E71.625,4277,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E71.875,4251,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E72.125,4624,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E72.375,4137,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E72.625,4015,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.625_E72.875,4544,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.625_E73.125,3773,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.625_E73.375,3489,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.625_E73.625,4114,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E73.875,3986,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E74.125,3220,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E74.375,5790,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E74.625,3953,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E74.875,3046,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E75.125,4415,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E75.375,4383,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E75.625,5215,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E75.875,4191,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E76.125,4446,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E76.375,4232,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E76.625,5083,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E76.875,5020,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E77.125,4548,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E77.375,5474,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.625_E77.625,4961,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E70.625,3058,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E70.875,1766,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E71.125,2311,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E71.375,4641,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E71.625,4054,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E71.875,4642,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E72.125,2802,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E72.375,5296,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E72.625,5702,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N36.875_E72.875,4776,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.875_E73.125,4816,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.875_E73.375,3857,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N36.875_E73.625,4480,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E73.875,5218,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E74.125,4747,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E74.375,5190,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E74.625,4515,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E74.875,4525,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E75.125,4002,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E75.375,5842,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E75.625,5358,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E75.875,4787,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E76.125,4365,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E76.375,3962,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E76.625,4247,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E76.875,3988,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E77.125,3206,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E77.375,3968,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N36.875_E77.625,4551,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E70.625,1679,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E70.875,3152,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E71.125,4043,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E71.375,4254,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E71.625,3743,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E71.875,3668,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E72.125,4409,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E72.375,4858,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E72.625,4764,Hindu Kush (Chitral-Dir-Swat),25,45,15,20,6,8,20,35
+N37.125_E72.875,5037,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N37.125_E73.125,5014,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N37.125_E73.375,5210,Kohistan-Hazara,25,45,15,20,6,8,20,35
+N37.125_E73.625,4298,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E73.875,4614,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E74.125,5014,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E74.375,5264,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E74.625,4364,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E74.875,4346,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E75.125,4317,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E75.375,4642,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E75.625,5132,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E75.875,4871,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E76.125,4875,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E76.375,3195,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E76.625,3110,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E76.875,3260,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E77.125,2682,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E77.375,2881,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35
+N37.125_E77.625,2984,Karakoram (Gilgit-Baltistan),25,45,15,20,6,8,20,35

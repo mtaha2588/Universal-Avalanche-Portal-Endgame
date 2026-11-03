@@ -21,6 +21,10 @@ class Config:
     DATA_DIR = Path(os.getenv("PORTAL_DATA_DIR", BASE_DIR / "data"))
     MODEL_DIR = Path(os.getenv("PORTAL_MODEL_DIR", BASE_DIR / "model"))
     PREDICTIONS_DIR = DATA_DIR / "predictions"
+    # Avalanche alert forecast (forecast/run_forecast.py, forecast/README_PORTAL.md): its own standalone package,
+    # re-run independently of the Flask app (forecast/run_forecast.bat or its scheduled task). The app only reads
+    # forecast/output/latest/* fresh on each request, so a new run shows up without a server restart.
+    FORECAST_DIR = Path(os.getenv("PORTAL_FORECAST_DIR", BASE_DIR / "forecast"))
 
     # Datasets older than this many hours are flagged as stale in the UI.
     STALE_AFTER_HOURS = int(os.getenv("STALE_AFTER_HOURS", "48"))

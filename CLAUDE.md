@@ -375,14 +375,14 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   PK007 Gayari: the record's coordinates are at 5,822 m on the DEM (record says ~4,000 m base), so OSM "Gyari" (3,775 m) is used and the note says why.
 - Paths (`anim`, 21 records): ILLUSTRATIVE. Release cells = 28-55 deg slopes on the local z12 DEM (the peaks / ridges / glacier walls above the place);
   vectorised sliding block (same physics as the engine). `impact`: the run that reaches the documented place at the place's own height (+-150 m) with
-  the largest drop; `band`: release at the record's elevation (K2 Bottleneck, Broad Peak C2-C3, Shispare ~5,700 m, Shounter Pass above 4,420 m).
+  the largest drop; `band`: release at the record's elevation (K2 Bottleneck, Broad Peak C2-C3, Shispar ~5,700 m, Shounter Pass above 4,420 m).
   Not animated: earthquake candidate, "unclear", rain-triggered landslides, glacier movement, summer "doubtful" events, D/E locations.
   Releases start at the peak (user request with sketches: break at the ridge top / summit, fall down the big face below it). `impact`:
   `peak_run` takes peaks within 4 km of the place (higher than everything within ~90 m, >= 300 m above the place), lets sliding blocks run
   from 60 m below each top down the terrain by themselves, and keeps the highest peak whose run comes within 2.5 km of the place (then its
   biggest drop). The run does NOT have to end at the documented place any more: `place_dist_m` (0-2.5 km) says how close it comes. `band`
   events (user: these too from the peak) use `peak_run(..., band=z, through=...)`: the highest peak above whose run comes down through the
-  record's elevation (Shispare 7,587 m through ~5,700 m, K2 8,554 m through the Bottleneck, Broad Peak 7,974 m). Track behind the flow =
+  record's elevation (Shispar 7,587 m through ~5,700 m, K2 8,554 m through the Bottleneck, Broad Peak 7,974 m). Track behind the flow =
   thin, partly transparent snow; deposit = thick raised pile with more, larger blocks. Earlier steps (crest preference `headroom`, `climb`)
   still pick the fallback. `slope_deg` = steepest ~100 m of the first 500 m. The script needs numpy + Pillow (not in the project .venv).
 - Batura 1974 in the tour starts at the peak above the model's release (user request): `batura_extension()` in the build script writes
@@ -403,6 +403,56 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   before the flight, and `vis()` / `eraseHidden()` cut out every stretch the map's own terrain shows to be behind a nearer ridge
   (map.unproject at the path point lands far from it), for the body, trail, cloud and blocks. The run-over track stays white (snow debris,
   static grain), not bare ground.
+## Avalanche Alert Forecast (home module, separate standalone package)
+
+- `forecast/` is a self-contained package (its own install.bat/run_forecast.bat/schedule_task.bat/requirements.txt), supplied by
+  the analysis team, NOT the Flask app's own code: `forecast_core.py` (download ECMWF/Open-Meteo, daily aggregation, avalanche
+  drivers, the alert rule, outputs) + `run_forecast.py` (CLI, live/replay/--check, package vs processed layout). Kept as supplied
+  except one user-requested change: `forecast_core.region()` now reads 3 regions (Hindu Kush, Karakoram, West Himalaya) from
+  `forecast/config/regions.json` (tests: `forecast/test_regions.py`, check map: `forecast/check_region_map.py`).
+  Re-run independently of the portal (`forecast/run_forecast.bat` or its own scheduled task) — app.py only reads
+  `forecast/output/latest/*` fresh off disk each request (`app.py` `/api/alertforecast/*`), so a new run shows up with no
+  server restart. `forecast/output/latest/` is committed (ships working data in a GitHub ZIP, same as the DEM tiles);
+  `forecast/output/archive/` and `forecast/logs/` are gitignored (regenerated, grow without bound).
+- Daily automation: `forecast/.venv` (made by `install.bat`; ignored by `.venv/`) is the forecast's own Python; `run_forecast.bat`
+  prefers it. `schedule_task.bat` → `schedule_task.ps1` registers 3 per-user tasks: 15:00 + 03:00 PKT fresh 15-day runs
+  (after the ECMWF 00/12 UTC cycles) and a logon catch-up with `--if-stale 10`; all have StartWhenAvailable so a missed
+  time runs when the PC is back. `run_forecast.py` takes `output/run.lock` (one run at a time, abandoned after 3 h).
+  The open dashboard re-checks `/latest` every 15 min and on each open, so a new day's run appears with no reload.
+- Data: `forecast/data/` is the analysis team's calibrated package (avalanche_portal_package_2026-10-30): 150 tiles, each with its
+  own 57-winter ERA5 percentile thresholds, plus the student ML model and `pipeline/` (steps 1-7). `thresholds_meta.json`
+  (`calibrated: true`, validation from `final_rule_validation.csv`) is served by `/api/alertforecast/latest`. The earlier
+  uncalibrated preview grid is kept in `forecast/data/_placeholder_backup/` (history: `forecast/data/THRESHOLDS_NOTE.md`).
+  `config/settings.json` has `ensemble: true`; when the ensemble download fails (Open-Meteo rate limits) the run continues
+  deterministic-only and `p_*_ens` are simply absent — the UI shows them as n/a, never estimated.
+- UI: full-screen dashboard `static/js/alertdash.js` (`AlertDash.open/close/warm`) + `static/css/alertdash.css` (`ad-*`), opened
+  by the home tile `alertforecast` (`dash: true` in M; `openWin` hands it to AlertDash, it is not in the modal list WM; deep link
+  `/#alertforecast`). Built once, kept alive, warmed on idle (like HistTour), re-fetches on open when `generated_utc` changes.
+  3D terrain map with the 150 tiles for the chosen day (fill = level; Low #22d3ee, Moderate #f2a93b, High #d7322b; hatched = not
+  rated), region outlines in `SYS_COL`, official boundaries, day scrubber + play, real telemetry HUD (cursor, SRTM elevation, tile);
+  3 region cards (15 days: level pill + strongest 3-day snowfall bar, red >= 25 mm or High, amber >= 10 mm or Moderate);
+  right-edge "15-Day Tile Inspector" tab and tile click -> deep-dive panel (summary sentence, 15-day calendar, snowfall / wind /
+  Tmax-rise SVG charts, ensemble + ML gauges) with "Back to Regional Dashboard" (restores the camera). Footer carries the
+  README_PORTAL.md attribution / disclaimer / next-update texts. On <= 1000 px the home page's fixed overlays are hidden while
+  it is open (they are wider than a phone and widened the layout viewport).
+- Exact place (user: "data of the place when I click"): a map click drops a pin and calls `/api/alertforecast/point?lat&lon`
+  (`portal/services/point_forecast.py`, pure Python): ECMWF IFS for those coordinates without an `elevation` parameter, so
+  Open-Meteo downscales to the place's own height; then the same `hourly_to_daily` / `drivers` / final `apply_rules` as
+  forecast_core (ported line by line; test `test_point_forecast_runs_the_tile_rule_for_the_exact_place`) with the calibrated
+  thresholds of the tile it is in (or the nearest within 0.3 deg); not rated below 1,200 m of the PLACE's elevation. Refused
+  outside the study area / tiles. Cached 3 h per ~500 m, 20 new lookups/min per client, key from OPENMETEO_APIKEY (server only).
+  The panel shows the place's 15 days next to its tile; the gauges stay tile values (ensemble, ML score).
+- The 150 calibrated tiles stop at 36.4 N and leave holes over the high Karakoram ON PURPOSE: the analysis pipeline
+  (`pipeline/step1_prepare_era5.py`) excludes perennial-snow / glacier-capped tiles from the calibration (`use_for_thresholds`
+  False in `forecast/data/tiles.csv`; no rows in `percentile_tables.parquet`). Do NOT add rows to `tile_thresholds.csv` for them
+  (that would be invented thresholds). The dashboard draws these 91 tiles (up to 37.125 N) as "Glacier zone · not calibrated"
+  (`uncalibrated` in tiles_clip.json) and a click there gets the place's weather with `level_kind` "none" (no level) or
+  "indicative" (thresholds borrowed from a calibrated tile within 0.3 deg); `level_kind` "calibrated" only inside a calibrated tile.
+  Fill / line layers are draped on the Mapbox terrain (checked at pitch 72); no extrusion or z-offset is needed.
+- Tiles are drawn clipped to the study area: `static/alertdash/tiles_clip.json` (+ region outlines), built by
+  `scripts/build_forecast_tile_clip.py` (shapely; re-run if the tile grid or forecast/config/regions.json changes). Display only.
+- Mapbox v3.6 throws in `_preloadTiles` ("reading 'tileZoom'") when a `preloadOnly` camera call is deferred to a still-loading
+  source; the home map's `preload()` / `warm()` therefore skip preloading unless every source is loaded (`sourcesReady`).
 - "Intro +" (map bar, beside Intro): `static/js/showreel.js` (`Showreel.start/stop`) plays the portal as a looping film: full intro
   (`bgMap.intro`, waits on `bgMap.introOn`) -> front page 3 s -> HistTour guided tour at 2x until event 6 begins (events 1-5) -> /portal
   #hindukush and #karakoram in preloaded full-screen iframes, 5 s each -> Climate Data pages 0-2, 3 s each -> front page 5 s -> loop.
@@ -457,4 +507,5 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
 
 - `SLOT_COL` (fluorescent set, defined above `M` in home.html; originally the season tabs' colours) is the only palette: module tabs take `TAB_COL[id]`, the three glacier
   systems take `SYS_COL` (Hindu Kush #00FFFF, Karakoram #FF0000, West Himalaya #39FF00), and the mountain-system tabs use exactly those.
+  `SYS_LABEL_COL` overrides the map's system name label and that system's glacier name labels (Karakoram: red #FF0000, user request).
   `GLACIER_COLORS` and `INTRO_COLORS` both point at `SYS_COL`; `GLACIER_LIGHT` holds the bright outline tints.

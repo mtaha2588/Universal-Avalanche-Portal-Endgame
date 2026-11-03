@@ -1,0 +1,10 @@
+{
+  "_comment": "Edit the three numbers below to move a region boundary; forecast_core.region() reads this file (falls back to these same values if the file is missing). Replaces the package's original 4-region split (Hindu Kush, Kohistan-Hazara, Kashmir, Karakoram) with 3 regions.",
+  "names": {"hindu_kush": "Hindu Kush", "karakoram": "Karakoram", "west_himalaya": "West Himalaya"},
+  "lon_hindu_kush_max": 72.8,
+  "_lon_hindu_kush_max_note": "West of this longitude is always Hindu Kush, at any latitude.",
+  "lat_split": 35.1,
+  "_lat_split_note": "At or above this latitude and east of lon_hindu_kush_max: Hindu Kush if also west of lon_karakoram_min (Hindu Raj / Ghizer / Yasin), else Karakoram. Below it: West Himalaya (Hazara, lower Kohistan, Neelum, Leepa, Astore).",
+  "lon_karakoram_min": 73.6,
+  "_lon_karakoram_min_note": "At or above lat_split, this longitude is where Hindu Kush ends and Karakoram begins."
+}

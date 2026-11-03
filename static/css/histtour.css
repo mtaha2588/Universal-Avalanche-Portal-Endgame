@@ -3,6 +3,9 @@
 .ht { --ink: #e8eef7; --dim: #93a4bd; --line: rgba(160, 185, 220, .18); --glass: rgba(7, 13, 24, .78); --acc: #7dd3fc;
   position: fixed; inset: 0; z-index: 90; background: #05080f; color: var(--ink); font: 13px/1.45 Inter, "Segoe UI", system-ui, sans-serif;
   opacity: 0; transition: opacity .5s ease; overflow: hidden; }
+/* Built once and kept alive in the background for instant reopening (static/js/histtour.js): while not open, it sits off-screen
+   at opacity 0, so it must not catch clicks meant for the page behind it. */
+.ht:not(.on) { pointer-events: none; }
 .ht.on { opacity: 1; }
 body.ht-open { overflow: hidden; }
 .ht .ht-map { position: absolute; inset: 0; background: linear-gradient(180deg, #5c789e, #5a5a4c 55%); }   /* sky / ground while the first tiles load, not black */          /* .ht prefix: Mapbox / MapLibre CSS set .mapboxgl-map { position: relative }, which made it 0 px tall */

@@ -1,0 +1,5 @@
+rule,level,events_caught,events,storms_caught,storms,false_alarm_rate,alarm_days_per_winter
+original (step 3),MODERATE,17,22,10,15,0.0392,8.25
+original (step 3),HIGH,11,22,5,15,0.0179,3.76
+final (forecast),MODERATE,17,22,10,15,0.0391,8.23
+final (forecast),HIGH,11,22,5,15,0.0177,3.73

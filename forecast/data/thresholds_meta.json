@@ -1,0 +1,14 @@
+{
+ "calibrated": true,
+ "tile_count": 150,
+ "min_elev_m": 1200,
+ "source": "avalanche_portal_package_2026-10-30 (analysis team), replacing the portal's earlier uncalibrated preview thresholds",
+ "method": "Per-tile MODERATE/HIGH thresholds are each tile's own ERA5 winter percentile (57 winters), from best_rules.csv's STORM / WARM-SNOW rule: MODERATE = 3-day snowfall >=P95 (>=10mm) and 3-day gust >=P95, or 3-day Tmax rise >=P95 and 7-day snowfall >=P90 (>=20mm) with a snowpack; HIGH = 3-day snowfall >=P99 (>=25mm) and 3-day gust >=P90, or the same warm-snow test at HIGH thresholds.",
+ "validation": {
+  "source": "forecast/data/final_rule_validation.csv (documented historical avalanche events and storms, step 7 of the pipeline)",
+  "moderate": {"events_caught": 17, "events": 22, "storms_caught": 10, "storms": 15, "false_alarm_rate": 0.0391, "alarm_days_per_winter": 8.23},
+  "high": {"events_caught": 11, "events": 22, "storms_caught": 5, "storms": 15, "false_alarm_rate": 0.0177, "alarm_days_per_winter": 3.73}
+ },
+ "student_model": "forecast/data/student.joblib + percentile_tables.parquet: an experimental ML risk score (student_risk, 0-1), shown as secondary information only, not the alert level itself.",
+ "note": "Real, calibrated thresholds (not a preview). To update when the analysis team sends a new data/ folder: replace this folder's contents and keep config/ and output/ as they are -- no code change needed."
+}

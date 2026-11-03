@@ -42,7 +42,7 @@ LOWARI_N = {"osm": "way/448975812", "end": "north", "label": "Lowari Tunnel, nor
 # Records left out of the portal entirely (still in the source CSV), at the user's request.
 EXCLUDED = {"PK027": "Pattan earthquake area: no avalanche documented (earthquake candidate)."}
 GEO = {
-    "PK014": dict(tier="C", q="Shispare", want="peak", note="Shispare summit (OpenStreetMap). Camp II is not published; the path is placed near 5,700 m on the peak, as the record says.",
+    "PK014": dict(tier="C", q="Shispare", want="peak", note="Shispar summit (OpenStreetMap, place name recorded there as \"Shispare\"). Camp II is not published; the path is placed near 5,700 m on the peak, as the record says.",
                   sim=dict(mode="band", R=4500, z=(5550, 5900))),
     "PK027": dict(tier="A", note="Epicentral area given in the record. No avalanche is documented for this earthquake.", anim="No avalanche documented (earthquake candidate)."),
     "PK001": dict(tier="A", note="Coordinates from the HiAVAL database (as in the record).", sim=dict(mode="impact", R=5000, tol=350)),

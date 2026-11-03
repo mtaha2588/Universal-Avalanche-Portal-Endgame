@@ -8,6 +8,7 @@ import gzip
 import json
 import logging
 import threading
+import time
 from datetime import date
 from pathlib import Path
 
@@ -362,6 +363,94 @@ def create_app(config: type[Config] = Config) -> Flask:
             abort(404)
         return send_from_directory(config.DATA_DIR / "climate" / "era5_winter", f"{name}.csv", as_attachment=True, mimetype="text/csv")
 
+    # ------------------------------------------------------- avalanche alert forecast (forecast/, forecast/README_PORTAL.md)
+    # A standalone package re-run on its own (forecast/run_forecast.bat or its scheduled task), independent of this app.
+    # Every endpoint reads forecast/output/latest/* fresh off disk, so a new run shows up without a server restart.
+    forecast_out = config.FORECAST_DIR / "output" / "latest"
+    thresholds_meta_path = config.FORECAST_DIR / "data" / "thresholds_meta.json"
+
+    def thresholds_meta():
+        if not thresholds_meta_path.exists():
+            return {"calibrated": False, "note": "No tile_thresholds.csv built yet. Run forecast/data/build_tile_grid.py."}
+        return json.loads(thresholds_meta_path.read_text(encoding="utf-8"))
+
+    @app.get("/api/alertforecast/latest")
+    def api_alertforecast_latest():
+        """Issue metadata, per-region daily table and highlights (forecast/output/latest/alerts_latest.json)."""
+        p = forecast_out / "alerts_latest.json"
+        if not p.exists():
+            return jsonify(available=False, calibrated=False,
+                           message="No alert forecast has been run yet. Run forecast/run_forecast.bat (see forecast/README_PORTAL.md)."), 200
+        body = json.loads(p.read_text(encoding="utf-8"))
+        status_p = forecast_out.parent / "status.json"
+        status = json.loads(status_p.read_text(encoding="utf-8")) if status_p.exists() else {}
+        return jsonify(available=True, **body, thresholds=thresholds_meta(), status=status)
+
+    forecast_tiles_cache: dict = {}
+
+    @app.get("/api/alertforecast/tiles.geojson")
+    def api_alertforecast_tiles():
+        """One 0.25 deg square per tile per forecast day (forecast/output/latest/alerts_tiles_daily.geojson)."""
+        p = forecast_out / "alerts_tiles_daily.geojson"
+        if not p.exists():
+            return jsonify(type="FeatureCollection", available=False, features=[]), 200
+        mt = p.stat().st_mtime_ns
+        if forecast_tiles_cache.get("mt") != mt:
+            raw = p.read_bytes()
+            forecast_tiles_cache.update(mt=mt, raw=raw, gz=gzip.compress(raw, 6))
+        etag = f'"af-{mt}"'
+        if request.headers.get("If-None-Match") == etag:
+            return Response(status=304, headers={"ETag": etag})
+        use_gz = "gzip" in request.headers.get("Accept-Encoding", "")
+        resp = Response(forecast_tiles_cache["gz" if use_gz else "raw"], mimetype="application/geo+json")
+        if use_gz:
+            resp.headers["Content-Encoding"] = "gzip"
+        resp.headers.update({"ETag": etag, "Cache-Control": "no-cache", "Vary": "Accept-Encoding"})
+        return resp
+
+    @app.get("/api/alertforecast/<name>.csv")
+    def api_alertforecast_csv(name):
+        if name not in ("alerts_tiles_daily", "alerts_region_summary"):
+            abort(404)
+        if not (forecast_out / f"{name}.csv").exists():
+            abort(404)
+        return send_from_directory(forecast_out, f"{name}.csv", as_attachment=True, mimetype="text/csv")
+
+    # Exact-place forecast for the dashboard's map click (portal/services/point_forecast.py): ECMWF for the clicked point at its
+    # own elevation, through the same rule as the tiles. Cached 3 h per ~500 m; at most 20 new lookups a minute per client.
+    from portal.services.point_forecast import OutsideArea, PointForecast
+    point_fc = PointForecast(config.FORECAST_DIR, config.DATA_DIR / "boundaries" / "study_area.geojson")
+    point_hits: dict = {}
+
+    @app.get("/api/alertforecast/point")
+    def api_alertforecast_point():
+        try:
+            lat, lon = float(request.args.get("lat", "")), float(request.args.get("lon", ""))
+        except ValueError:
+            return jsonify(available=False, message="lat and lon must be numbers."), 400
+        ip, now = request.remote_addr or "?", time.time()
+        recent = [t for t in point_hits.get(ip, []) if now - t < 60]
+        if len(recent) >= 20:
+            return jsonify(available=False, message="Too many place lookups in a minute; wait a moment."), 429
+        try:
+            res = point_fc.forecast(lat, lon)
+        except OutsideArea as e:
+            return jsonify(available=False, outside=True, message=str(e)), 200
+        except Exception as e:  # Open-Meteo unreachable / busy
+            log.warning("point forecast failed: %s", e)
+            return jsonify(available=False, message="The forecast for this place could not be downloaded right now (Open-Meteo)."), 502
+        if not res.get("cached"):
+            point_hits[ip] = recent + [now]
+        return jsonify(res)
+
+    @app.get("/api/alertforecast/map.png")
+    def api_alertforecast_map():
+        if not (forecast_out / "alert_maps.png").exists():
+            abort(404)
+        resp = send_from_directory(forecast_out, "alert_maps.png", mimetype="image/png")
+        resp.headers["Cache-Control"] = "no-cache"
+        return resp
+
     @app.get("/api/layer/<dataset_id>")
     def api_layer(dataset_id):
         if dataset_id not in {"hazard_zones", "roads", "regions", "glaciers", "boundaries", "glacier_regions", "glacier_extents",
@@ -464,12 +553,6 @@ def create_app(config: type[Config] = Config) -> Flask:
         resp.headers.setdefault("X-Content-Type-Options", "nosniff")
         resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
-        # Pages and the portal's own JS/CSS carry no version in their URLs, so the browser must revalidate them on every load
-        # (a cheap 304 when unchanged). Without this it may keep running old code after an update from GitHub.
-        p = request.path
-        if "Cache-Control" not in resp.headers and (p in ("/", "/portal", "/report") or (
-                p.startswith("/static/") and not p.startswith("/static/vendor/") and p.endswith((".js", ".css", ".html")))):
-            resp.headers["Cache-Control"] = "no-cache"
         return resp
 
     return app

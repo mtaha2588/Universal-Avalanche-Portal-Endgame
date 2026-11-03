@@ -1,0 +1,46 @@
+region,date,max_level,tiles_rated,tiles_moderate_or_high,tiles_high,max_sf3d_mm,max_student_risk,max_level_name
+Hindu Kush,2026-11-03,0,43,0,0,10.7,0.076,Low
+Hindu Kush,2026-11-04,0,43,0,0,10.1,0.055,Low
+Hindu Kush,2026-11-05,0,43,0,0,18.0,0.086,Low
+Hindu Kush,2026-11-06,0,43,0,0,16.5,0.086,Low
+Hindu Kush,2026-11-07,0,43,0,0,12.4,0.063,Low
+Hindu Kush,2026-11-08,0,43,0,0,0.1,0.015,Low
+Hindu Kush,2026-11-09,0,43,0,0,1.7,0.017,Low
+Hindu Kush,2026-11-10,0,43,0,0,12.6,0.039,Low
+Hindu Kush,2026-11-11,0,43,0,0,13.6,0.062,Low
+Hindu Kush,2026-11-12,0,43,0,0,49.4,0.082,Low
+Hindu Kush,2026-11-13,0,43,0,0,96.9,0.122,Low
+Hindu Kush,2026-11-14,0,43,0,0,94.9,0.122,Low
+Hindu Kush,2026-11-15,0,43,0,0,59.6,0.126,Low
+Hindu Kush,2026-11-16,0,43,0,0,6.2,0.05,Low
+Hindu Kush,2026-11-17,0,43,0,0,1.2,0.037,Low
+Karakoram,2026-11-03,0,39,0,0,29.1,0.186,Low
+Karakoram,2026-11-04,0,39,0,0,28.3,0.076,Low
+Karakoram,2026-11-05,0,39,0,0,27.9,0.084,Low
+Karakoram,2026-11-06,0,39,0,0,27.0,0.098,Low
+Karakoram,2026-11-07,0,39,0,0,21.3,0.076,Low
+Karakoram,2026-11-08,0,39,0,0,2.7,0.028,Low
+Karakoram,2026-11-09,0,39,0,0,0.0,0.02,Low
+Karakoram,2026-11-10,0,39,0,0,8.3,0.069,Low
+Karakoram,2026-11-11,0,39,0,0,27.9,0.096,Low
+Karakoram,2026-11-12,0,39,0,0,49.4,0.113,Low
+Karakoram,2026-11-13,0,39,0,0,58.9,0.225,Low
+Karakoram,2026-11-14,0,39,0,0,60.9,0.225,Low
+Karakoram,2026-11-15,0,39,0,0,41.9,0.225,Low
+Karakoram,2026-11-16,0,39,0,0,23.0,0.123,Low
+Karakoram,2026-11-17,0,39,0,0,0.6,0.033,Low
+West Himalaya,2026-11-03,0,37,0,0,7.1,0.023,Low
+West Himalaya,2026-11-04,0,37,0,0,9.4,0.039,Low
+West Himalaya,2026-11-05,0,37,0,0,7.3,0.043,Low
+West Himalaya,2026-11-06,0,37,0,0,5.8,0.027,Low
+West Himalaya,2026-11-07,0,37,0,0,5.0,0.019,Low
+West Himalaya,2026-11-08,0,37,0,0,0.1,0.013,Low
+West Himalaya,2026-11-09,0,37,0,0,0.0,0.009,Low
+West Himalaya,2026-11-10,0,37,0,0,4.2,0.025,Low
+West Himalaya,2026-11-11,0,37,0,0,7.1,0.032,Low
+West Himalaya,2026-11-12,0,37,0,0,18.9,0.094,Low
+West Himalaya,2026-11-13,0,37,0,0,31.6,0.192,Low
+West Himalaya,2026-11-14,0,37,0,0,31.6,0.192,Low
+West Himalaya,2026-11-15,0,37,0,0,16.7,0.2,Low
+West Himalaya,2026-11-16,0,37,0,0,4.2,0.04,Low
+West Himalaya,2026-11-17,0,37,0,0,0.0,0.024,Low

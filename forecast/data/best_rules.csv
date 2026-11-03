@@ -1,0 +1,3 @@
+level,FAR_cap,P_sf3d,P_gust,P_warm,P_sf7d,P_ros,hit_rate_events,hit_rate_storms,FAR_cluster_days,alarm_days_per_winter,rule
+HIGH,0.02,99,90.0,95.0,90.0,,0.5,0.3333333333333333,0.01789479794995061,3.7671451355661882,STORM sf3d>=P99 & gust>=P90 | WARM-SNOW tmax_rise>=P95 & sf7d>=P90 & swe>=30
+MODERATE,0.05,95,95.0,95.0,90.0,,0.7727272727272727,0.6666666666666666,0.03748105718083805,7.890749601275919,STORM sf3d>=P95 & gust>=P95 | WARM-SNOW tmax_rise>=P95 & sf7d>=P90 & swe>=30

@@ -1,0 +1,10 @@
+{
+  "_comment": "Settings for the avalanche alert forecast. See forecast/README_PORTAL.md section 7. ensemble:true adds the 51-member probabilities (p_moderate_ens, p_high_ens) -- slower, more Open-Meteo requests; set false to keep the scheduled run fast if that matters more.",
+  "apikey": "",
+  "ensemble": true,
+  "min_elev_m": 1200,
+  "moderate_sf3d_floor_mm": 10,
+  "high_sf3d_floor_mm": 25,
+  "warm_sf7d_floor_mm": 20,
+  "keep_archive_days": 400
+}

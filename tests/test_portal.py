@@ -279,6 +279,97 @@ def test_home_map_official_view_of_jammu_kashmir(client):
     assert b"/static/geo/official_view.geojson" in home and b"Indian Illegally Occupied" in home
 
 
+def test_home_alert_forecast_dashboard_is_wired(client):
+    home = client.get("/").data
+    assert b'id: "alertforecast"' in home and b"dash: true" in home and b"AlertDash.open()" in home
+    assert b"/static/js/alertdash.js" in home and b"/static/css/alertdash.css" in home and b"AlertDash.warm()" in home
+    js = client.get("/static/js/alertdash.js").data
+    assert b'"/api/alertforecast/"' in js and b'"latest"' in js and b'"tiles.geojson"' in js
+    # the texts README_PORTAL.md section 6 asks the portal to show
+    assert b"ECMWF IFS open data (CC BY 4.0), delivered by Open-Meteo.com." in js
+    assert b"It does not assess individual slopes and is not an official avalanche danger rating." in js
+    assert b"Next update about 15:00 / 03:00 PKT" in js and b"Back to Regional Dashboard" in js
+
+
+def test_alertforecast_api_serves_calibrated_three_region_run(client):
+    # forecast/data/ now holds the analysis team's calibrated per-tile thresholds (thresholds_meta.json says so);
+    # the regions come from forecast/config/regions.json (Hindu Kush, Karakoram, West Himalaya).
+    r = client.get("/api/alertforecast/latest").get_json()
+    assert r["available"] is True
+    assert r["thresholds"]["calibrated"] is True and r["thresholds"]["validation"]["high"]["events"] > 0
+    assert r["days"] and r["regions"] and "rule" in r
+    assert {g["region"] for g in r["regions"]} <= {"Hindu Kush", "Karakoram", "West Himalaya"}
+    geo = client.get("/api/alertforecast/tiles.geojson").get_json()
+    assert geo["type"] == "FeatureCollection" and len(geo["features"]) > 0
+    f0 = geo["features"][0]["properties"]
+    assert "tile_id" in f0 and "level" in f0 and "date" in f0 and "sf_3d_mm" in f0
+    assert len({f["properties"]["tile_id"] for f in geo["features"]}) * len(r["days"]) == len(geo["features"])
+    assert client.get("/api/alertforecast/alerts_tiles_daily.csv").status_code == 200
+    assert client.get("/api/alertforecast/alerts_region_summary.csv").status_code == 200
+    assert client.get("/api/alertforecast/secret.csv").status_code == 404
+
+
+def _fake_open_meteo(elev, storm_days):
+    """An Open-Meteo hourly answer: dry except `storm_days` (offsets from today) of heavy snow and strong gusts."""
+    from datetime import datetime, timezone
+    base = datetime.now(timezone.utc).date() - timedelta(days=7)
+    times, pr, ra, sn, tm, gu = [], [], [], [], [], []
+    for d in range(22):
+        day = base + timedelta(days=d)
+        storm = (d - 7) in storm_days
+        for h in range(24):
+            times.append(f"{day.isoformat()}T{h:02d}:00")
+            pr.append(3.0 if storm else 0.0); ra.append(0.0); sn.append(2.1 if storm else 0.0)
+            tm.append(-6.0); gu.append(30.0 if storm else 5.0)
+    n = len(times)
+    return {"elevation": elev, "hourly": {"time": times, "precipitation": pr, "rain": ra, "snowfall": sn, "temperature_2m": tm,
+            "wind_gusts_10m": gu, "snow_depth": [0.5] * n, "pressure_msl": [1010.0] * n, "freezing_level_height": [None] * n}}
+
+
+def test_point_forecast_runs_the_tile_rule_for_the_exact_place():
+    from portal.services.point_forecast import OutsideArea, PointForecast
+    root = Path(__file__).resolve().parent.parent
+    calls = []
+    def fake(params):
+        calls.append(params); return _fake_open_meteo(fake.elev, {4, 5, 6})
+    pf = PointForecast(root / "forecast", root / "data" / "boundaries" / "study_area.geojson", fetch=fake)
+    fake.elev = 4300.0
+    r = pf.forecast(35.6, 74.4)                                 # inside tile N35.625_E74.375
+    assert r["tile"]["id"] == "N35.625_E74.375" and r["tile"]["relation"] == "inside" and r["region"] == "Karakoram"
+    assert len(r["days"]) == 15 and r["elevation_m"] == 4300.0
+    assert "elevation" not in calls[0] and calls[0]["latitude"] == "35.6000"   # Open-Meteo adjusts to the place's own height
+    lv = [d["level"] for d in r["days"]]
+    assert lv[:4] == [0, 0, 0, 0] and max(lv[4:9]) == 2         # 3 days x 72 mm w.e. with 30 m/s gusts -> High
+    assert r["days"][4]["snowfall_mm"] == pytest.approx(72.0) and r["days"][6]["sf_3d_mm"] == pytest.approx(216.0)
+    assert pf.forecast(35.6, 74.4)["cached"] is True and len(calls) == 1
+    fake.elev = 1000.0                                          # same weather below the 1,200 m avalanche-terrain limit
+    assert {d["level"] for d in pf.forecast(35.62, 74.38)["days"]} == {-1}
+    assert r["level_kind"] == "calibrated"
+    fake.elev = 4400.0                                          # glacier tile N36.875_E75.125 (perennial snow, not calibrated)
+    g = pf.forecast(36.85, 75.1)
+    assert g["level_kind"] == "none" and g["tile"] is None and g["grid_tile"]["id"] == "N36.875_E75.125"
+    assert {d["level"] for d in g["days"]} == {None} and max(d["sf_3d_mm"] for d in g["days"]) > 100   # weather, no level
+    k = pf.forecast(36.32, 74.65)                               # Karimabad: perennial-snow tile, calibrated tile 33 km away
+    assert k["level_kind"] == "indicative" and k["tile"]["relation"] == "borrowed" and k["grid_tile"]["id"] == "N36.375_E74.625"
+    with pytest.raises(OutsideArea):
+        pf.forecast(31.55, 74.34)                               # Lahore: no forecast tile anywhere near
+    assert len(calls) == 4
+
+
+def test_point_forecast_endpoint_validates_input(client):
+    assert client.get("/api/alertforecast/point?lat=abc&lon=74").status_code == 400
+    r = client.get("/api/alertforecast/point?lat=31.55&lon=74.34").get_json()
+    assert r["available"] is False and r["outside"] is True
+    home_js = client.get("/static/js/alertdash.js").data
+    assert b"point?lat=" in home_js and b"/static/alertdash/tiles_clip.json" in home_js
+    clip = client.get("/static/alertdash/tiles_clip.json").get_json()
+    assert clip["tiles"] and set(clip["regions"]) == {"Hindu Kush", "Karakoram", "West Himalaya"}
+    unc = clip["uncalibrated"]["features"]                      # glacier / perennial-snow tiles up to 37.125 N, no thresholds
+    assert len(unc) > 80 and max(float(f["properties"]["tile_id"][1:7]) for f in unc) >= 37.0
+    cal = {line.split(",")[0] for line in (Path(__file__).resolve().parent.parent / "forecast/data/tile_thresholds.csv").read_text().splitlines()[1:]}
+    assert not cal & {f["properties"]["tile_id"] for f in unc}
+
+
 def test_home_intro_plus_showreel_is_wired(client):
     home = client.get("/").data
     assert b'data-act="reel"' in home and b"/static/js/showreel.js" in home and b"stopIntro" in home
