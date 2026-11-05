@@ -388,7 +388,10 @@ def test_home_climate_data_module_is_wired(client):
     assert b'special: "climate"' in home and b"/static/js/climatedata.js" in home and b"/static/css/climatedata.css" in home
     js = client.get("/static/js/climatedata.js").data
     assert b"/api/climate/era5_winter" in js and b"/api/forecast/snow" in js and b"not in the supplied run" in js
-    assert b"1_Pakistan_6maps_5yrs_per_second.mp4" in js and b'target="_blank"' not in js   # run's video first; nothing opens a new tab
+    assert b"<video" not in js and b'target="_blank"' not in js          # no embedded player; nothing opens a new tab
+    assert b"/static/js/climateworkspace.js" in home
+    ws = client.get("/static/js/climateworkspace.js").data               # first page: six live maps drawn from the run's per-tile values
+    assert b"/api/layer/boundaries" in ws and b"<video" not in ws and b"not in the supplied run" in ws and ws.count(b'"t2m", "snowd", "cover", "snowf", "precip", "melt"') == 1
 
 
 def test_hk_snow_zones_and_tiles(client):
@@ -434,3 +437,32 @@ def test_region_hotspot_register_and_exports(client):
         r = client.get(f"/api/export/region_hotspots.{fmt}?region=himalaya")
         assert r.status_code == 200 and "attachment" in r.headers["Content-Disposition"]
     assert client.get("/api/export/region_hotspots.csv?region=nowhere").status_code == 400
+
+
+def test_climate_projections_serve_the_package_unchanged(client):
+    r = client.get("/api/climate/projections").get_json()
+    assert r["available"] is True and r["baseline_period"] == "1995-2014" and sorted(r["scenarios"]) == ["ssp245", "ssp585"]
+    assert len(r["periods_5yr"]) == 16 and r["periods_20yr"] == ["2021-2040", "2041-2060", "2061-2080", "2081-2100"]
+    assert {g["group_type"] for g in r["groups"]} == {"all", "region", "band"} and len(r["groups"]) == 8
+    allp = next(g for g in r["groups"] if g["group_type"] == "all")
+    assert allp["baseline"]["alarm_days_moderate"] == 5.12 and allp["baseline"]["snow_share_pct"] == 35.15
+    c = allp["series"]["ssp585"]["2081-2100"]["alarm_days_moderate"]
+    assert c["value"] == 3.24 and c["change_pct"] == -38.7 and c["models_more"] + c["models_less"] == 3
+    t = client.get("/api/climate/projections/tiles.geojson").get_json()
+    assert len(t["features"]) == 119 and t["metadata"]["periods"] == ["2041-2060", "2050", "2081-2100", "2100"]
+    assert client.get("/api/climate/projections/projections_by_region.csv").status_code == 200
+    full = client.get("/static/projections/tiles_full.json").get_json()   # tiles without values: geometry and a reason only, never a value
+    with_values = {f["properties"]["tile_id"] for f in t["features"]}
+    ctx = full["context"]["features"]
+    assert len(ctx) > 100 and max(f["properties"]["lat"] for f in ctx) >= 37 and not with_values & {f["properties"]["tile_id"] for f in ctx}
+    assert all(set(f["properties"]) == {"tile_id", "lat", "lon", "elev_m", "why"} for f in ctx)
+    assert client.get("/api/climate/projections/secret.csv").status_code == 404
+
+
+def test_climate_module_has_both_views_and_required_wording(client):
+    home = client.get("/").data
+    assert b"/static/js/climateprojections.js" in home and b"/static/css/climateprojections.css" in home
+    js = client.get("/static/js/climatedata.js").data.decode("utf-8")
+    assert "Historical Climate Records Since 1970" in js and "Projection Till 2100" in js and "ClimateWS.html()" in js   # the workspace stays in the first view
+    cp = client.get("/static/js/climateprojections.js").data.decode("utf-8")
+    assert "not of avalanche numbers or losses" in cp and "use the 20-year periods for trends" in cp   # the package's required text

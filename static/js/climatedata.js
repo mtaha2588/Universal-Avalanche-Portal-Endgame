@@ -1,4 +1,6 @@
 /* Climate Data module of the home page (window tab "Climate Data", styles static/css/climatedata.css, classes cd-*).
+   Page 1 is the live climate workspace (static/js/climateworkspace.js, classes cw-*); pages 2-3 are the run's original figures and the
+   interactive numbers below.
    Winter (Dec-Feb) climate 1970-2010 from the imported ERA5-Land run (/api/climate/era5_winter, scripts/build_era5_winter.py)
    plus the 2026-27 seasonal snow outlook (/api/forecast/snow). The run has no winters 2011-2025: that span is drawn empty and
    labelled, never filled. 1974 is flagged estimated by the run: hatched, left out of means, running means and trends. */
@@ -29,10 +31,8 @@ window.ClimateData = (function () {
     return `rgb(${a.map((x, k) => Math.round(x + (b[k] - x) * f)).join(",")})`; };
   const grad = stops => `linear-gradient(90deg, ${stops.join(",")})`;
 
-  // the run's own animations and figures (static/img/era5_winter/), shown first and unchanged
+  // the run's own figures (static/img/era5_winter/), shown unchanged on the second page
   const IMG = "/static/img/era5_winter/";
-  const VIDS = [{ f: "1_Pakistan_6maps_5yrs_per_second.mp4", t: "Six maps, 1970 → 2010", d: "Temperature, snow depth, snowfall and more, five winters per second" },
-                { f: "2_Pakistan_snow_vs_temperature.mp4", t: "Snow against temperature", d: "How snow depth follows winter temperature, winter by winter" }];
   const FIGS = [{ f: "A_snapshots_every_5_years.png", t: "Every 5 winters", d: "Temperature, snow depth and snowfall maps every five winters, 1970–2010" },
                 { f: "D_regional_timeseries.png", t: "Regional means", d: "Winter means of each mountain system, every winter 1970–2010" },
                 { f: "B_trend_per_decade.png", t: "Trend per decade", d: "Change per decade 1970–2010 for six variables, tile by tile" },
@@ -42,7 +42,7 @@ window.ClimateData = (function () {
   // Three pages inside the tab, switched with icon buttons (no long scroll): animations, original figures, interactive numbers.
   const ICO = p => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   const PAGES = [
-    { t: "Animations", d: "The run's videos", ic: ICO('<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor" stroke="none"/>') },
+    { t: "Climate workspace", d: "Six live maps, timeline and trends", ic: ICO('<rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="7" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><path d="M13 19l3-3.5 2.5 2 2.5-4"/>') },
     { t: "Original figures", d: "Maps and charts of the run", ic: ICO('<rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 16l-5.2-5.2L6 20"/>') },
     { t: "Explore the numbers", d: "Interactive charts and tile map", ic: ICO('<path d="M4 19V5"/><path d="M4 19h16"/><path d="M7.5 15l3.5-4.5 3 2.5 5-6.5"/>') },
   ];
@@ -50,28 +50,33 @@ window.ClimateData = (function () {
   // views inside "Explore the numbers", each fitting the screen; the variable / region chips drive the first four
   const SUBS = ["Time series", "Decades", "Regions", "Tile map", "Snow & temperature", "Data & notes"];
 
+  // top bar: the portal's real modules, each opening as usual
+  const NAV = [["climate", "Climate Data"], ["history", "Historical Overview"], ["alertforecast", "Avalanche Alert Forecast"], ["exposure", "Settlements"], ["reports", "Reports"]];
+
+  // two views in the module's banner: the existing dashboard, unchanged, and the projections to 2100 (static/js/climateprojections.js)
+  const VIEWS = [{ k: "forecast", t: "Historical Climate Records Since 1970", s: "Climate workspace · data 1970–2010" }, { k: "proj", t: "Projection Till 2100", s: "2 scenarios · baseline 1995–2014" }];
+  let VIEW = "forecast";   // remembered while the page is open
+
   let S = null;   // state of the open window
   function html(m) {
     setTimeout(init);
     const yrs = Array.from({ length: 57 }, (_, i) => 1970 + i);
-    return `<section class="cd" id="cd">
-    <div class="cd-top"><button type="button" class="cd-back" data-back>← Back to modules</button>
-      <div class="cd-top-t"><small>ERA5-Land reanalysis · winter (Dec–Feb) · 1970–2010 · 2026–27 outlook</small><h4>Winter snow &amp; climate of the north</h4></div>
+    return `<section class="cd ws" id="cd">
+    <header class="cx-top"><div class="cx-brand"><img src="/static/img/ndma-logo.png" alt="NDMA"><img src="/static/img/ngt-logo.jpg" alt="NGT"><span><b>Snow Avalanche Prediction Using AI</b><small>NDMA · NGT avalanche portal</small></span></div>
+      <nav class="cx-nav" aria-label="Portal modules">${NAV.map(n => `<button type="button" data-mod="${n[0]}" class="${n[0] === "climate" ? "on" : ""}"${n[0] === "climate" ? ' aria-current="page"' : ""}>${n[1]}</button>`).join("")}</nav>
+      <span class="cx-badge">Module 06 : Winter Snow &amp; Climate<i data-bd>Data 1970 – 2010</i></span>
+      ${window.HOME_BTN || ""}<button type="button" class="cx-x" data-back aria-label="Back to modules" title="Back to modules">✕</button></header>
+    <div class="cx-hero"><div class="cx-ht"><h4 data-ht>Winter Snow &amp; Climate of the North</h4><p data-hs>Explore historical climate patterns across Northern Pakistan</p></div>
+      <div class="cx-vtabs" role="tablist" aria-label="Climate views">${VIEWS.map(v => `<button type="button" role="tab" data-view="${v.k}" aria-selected="false"><b>${v.t}</b><small>${v.s}</small></button>`).join("")}</div>
+      <span class="cx-src" data-src hidden><b>Data: NASA NEX-GDDP-CMIP6</b>Downscaled, bias-corrected · CC0</span>
       <div class="cd-mini"><div><b data-k="win">—</b><span>winters</span></div><div><b data-k="tiles">—</b><span>tiles</span></div>
         <div class="w"><b data-k="warm">—</b><span>°C / decade</span></div><div class="c"><b data-k="cov">—</b><span>cover pts / decade</span></div></div></div>
 
+    <div class="cd-view" data-v-pane="forecast">
     <nav class="cd-nav" aria-label="Climate data pages">${PAGES.map((p, i) => `<button type="button" data-pg="${i}" class="${i ? "" : "on"}" aria-pressed="${!i}">
       <i aria-hidden="true">${p.ic}</i><span><b>${p.t}</b><em>${p.d}</em></span></button>`).join("")}</nav>
 
-    <div class="cd-page" data-page="0">
-    <div class="cd-stage">
-      <div class="cd-player"><video data-vid src="${IMG + VIDS[0].f}" autoplay muted loop playsinline controls preload="auto"></video>
-        <div class="cd-vcap"><b data-vt>${esc(VIDS[0].t)}</b><span data-vd>${esc(VIDS[0].d)}</span></div></div>
-      <div class="cd-vlist">${VIDS.map((v, i) => `<button type="button" class="cd-vbtn${i ? "" : " on"}" data-vi="${i}"><video src="${IMG + v.f}#t=2" muted playsinline preload="metadata"></video>
-        <span><b>${esc(v.t)}</b><em>${esc(v.d)}</em></span></button>`).join("")}
-        <p class="cd-vnote">Animations supplied with the run, played here unchanged. Use the player's controls to pause, scrub or go full screen.</p></div>
-    </div>
-    </div>
+    <div class="cd-page" data-page="0">${window.ClimateWS ? ClimateWS.html() : '<p class="desc">The climate workspace did not load.</p>'}</div>
 
     <div class="cd-page" data-page="1" hidden>
     <div class="hx-sh"><h5>Original figures</h5><span>From the run, unchanged · click a figure to enlarge</span></div>
@@ -121,18 +126,38 @@ window.ClimateData = (function () {
         <a href="/api/climate/era5_winter/regional_means_winter.csv" download>⇩ Regional means · CSV</a><a href="/api/climate/era5_winter/tile_year_values_winter.csv" download>⇩ Every tile, every winter · CSV</a></div>
       <p class="rfoot cd-notes">—</p>
     </div>
-    </div>  </section>`;
+    </div>
+    </div>
+    <div class="cd-view" data-v-pane="proj" hidden>${window.ClimateProjections ? ClimateProjections.html() : '<p class="desc">The projections did not load.</p>'}</div></section>`;
   }
 
   function init() {
     const root = document.getElementById("cd"); if (!root) return;
     root.querySelector("[data-back]").onclick = () => window.closeWin && closeWin();
-    const vid = root.querySelector("[data-vid]");
+    const heroT = root.querySelector("[data-ht]").innerHTML, heroS = root.querySelector("[data-hs]").textContent;
+    const setView = v => {
+      if (v === "forecast" && window.ClimateWS) setTimeout(() => ClimateWS.resume());
+      VIEW = v; const proj = v === "proj";
+      root.querySelectorAll("[data-view]").forEach(b => { const on = b.dataset.view === v; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
+      root.querySelectorAll("[data-v-pane]").forEach(p => { p.hidden = p.dataset.vPane !== v; });
+      root.classList.toggle("pv", proj); root.querySelector("[data-src]").hidden = !proj;
+      root.querySelector("[data-bd]").textContent = proj ? "Projections to 2100" : "Data 1970 – 2010";
+      root.querySelector("[data-ht]").innerHTML = proj ? "Northern Pakistan Climate &amp; Risk Projections" : heroT;
+      root.querySelector("[data-hs]").textContent = proj ? "Downscaled projections based on NASA NEX-GDDP-CMIP6 data" : heroS;
+      const body = document.getElementById("win-body"); if (body) body.scrollTop = 0;
+      if (proj && window.ClimateProjections) ClimateProjections.open(root.querySelector("#prj"));
+    };
+    root.querySelectorAll("[data-view]").forEach(b => {
+      b.onclick = () => setView(b.dataset.view);
+      b.onkeydown = e => { if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return; e.preventDefault(); e.stopPropagation(); const n = VIEWS[(VIEWS.findIndex(v => v.k === b.dataset.view) + 1) % VIEWS.length].k; setView(n); root.querySelector(`[data-view="${n}"]`).focus(); };
+    });
+    setView(VIEW);
+    root.querySelectorAll("[data-mod]").forEach(b => b.onclick = () => { const i = M.findIndex(m => m.id === b.dataset.mod); if (b.dataset.mod !== "climate" && i >= 0) openWin(i); else { root.querySelector('[data-view="forecast"]').click(); root.querySelector('[data-pg="0"]').click(); } });
     root.querySelectorAll("[data-pg]").forEach(b => b.onclick = () => {
       const k = b.dataset.pg;
       root.querySelectorAll("[data-pg]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); });
-      root.querySelectorAll(".cd-page").forEach(p => { p.hidden = p.dataset.page !== k; });
-      if (k === "0") vid.play().catch(() => {}); else vid.pause();
+      root.querySelectorAll(".cd-page").forEach(p => { p.hidden = p.dataset.page !== k; });   // the workspace pauses itself when its page is hidden
+      root.classList.toggle("ws", k === "0");
       if (k === "2" && S) drawAll();                     // charts measure their box: draw them once the page is visible
       const body = document.getElementById("win-body"); if (body) body.scrollTop = 0;
     });
@@ -144,10 +169,6 @@ window.ClimateData = (function () {
       if (S) drawAll();
       const body = document.getElementById("win-body"); if (body) body.scrollTop = 0;
     });
-    root.querySelectorAll("[data-vi]").forEach(b => b.onclick = () => { const v = VIDS[+b.dataset.vi];
-      root.querySelectorAll("[data-vi]").forEach(x => x.classList.toggle("on", x === b));
-      vid.src = IMG + v.f; vid.play().catch(() => {}); root.querySelector("[data-vt]").textContent = v.t; root.querySelector("[data-vd]").textContent = v.d; });
-    vid.play().catch(() => {});
     const of = root.querySelector("[data-of]");
     root.querySelectorAll("[data-fi]").forEach(b => b.onclick = () => { const g = FIGS[+b.dataset.fi];
       root.querySelectorAll("[data-fi]").forEach(x => x.classList.toggle("on", x === b));
@@ -155,8 +176,8 @@ window.ClimateData = (function () {
     const zoom = (src, cap) => window.lightbox ? lightbox(src, cap) : null;   // the home page's own in-page viewer, never a new tab
     of.onclick = () => zoom(of.src, root.querySelector("[data-oc]").textContent);
     root.querySelectorAll("[data-zoom]").forEach(b => b.onclick = () => zoom(IMG + b.dataset.zoom, b.textContent.trim()));
-    Promise.all([load(), loadFc()]).then(([d, fc]) => { if (document.getElementById("cd") === root) start(root, d, fc); })
-      .catch(e => { root.querySelector(".cd-svg").innerHTML = `<p class="desc">The winter climate run needs the portal server and an imported run (scripts/build_era5_winter.py). ${esc(e.message || "")}</p>`; });
+    Promise.all([load(), loadFc()]).then(([d, fc]) => { if (document.getElementById("cd") === root) { if (window.ClimateWS) ClimateWS.start(root, d); start(root, d, fc); } })
+      .catch(e => { if (window.ClimateWS) ClimateWS.fail(root, e.message); root.querySelector(".cd-svg").innerHTML = `<p class="desc">The winter climate run needs the portal server and an imported run (scripts/build_era5_winter.py). ${esc(e.message || "")}</p>`; });
   }
 
   function start(root, d, fc) {

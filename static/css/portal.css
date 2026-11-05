@@ -149,7 +149,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
   transition: transform .2s, box-shadow .2s;
 }
 .home-btn:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124, 58, 237, .5); }
-.home-btn svg { width: 17px; height: 17px; }
+.home-btn svg { width: 15px; height: 15px; }
+.home-btn { width: 28px; height: 28px; padding: 0; justify-content: center; border-radius: 7px; color: #cbd5e1; background: rgba(255,255,255,.04); border: 1px solid rgba(148,163,184,.32); box-shadow: none; } .home-btn span { display: none; }
+.home-btn:hover { transform: none; color: #fff; border-color: #7dd3fc; background: rgba(125,211,252,.12); box-shadow: none; }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .brand-logo { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: #fff; box-shadow: 0 0 0 1px var(--line-2); }
 .brand-logo.ndma-img { object-fit: contain; padding: 3px; }

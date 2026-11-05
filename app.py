@@ -363,6 +363,47 @@ def create_app(config: type[Config] = Config) -> Flask:
             abort(404)
         return send_from_directory(config.DATA_DIR / "climate" / "era5_winter", f"{name}.csv", as_attachment=True, mimetype="text/csv")
 
+    # ------------------------------------------------------- climate projections to 2100 (data/climate/projections, analysis team's fixed results)
+    proj_cache = {}
+
+    def projections_file(path, flag):
+        """Serve one supplied JSON / GeoJSON file gzipped with an ETag; `flag` adds available:true for the summary."""
+        if not path.exists():
+            return jsonify(available=False, message="No projection package imported (data/climate/projections)."), 200
+        mt = path.stat().st_mtime_ns
+        hit = proj_cache.get(path.name)
+        if not hit or hit["mt"] != mt:
+            body = path.read_bytes()
+            if flag:
+                body = b'{"available":true,' + body.lstrip()[1:]
+            hit = proj_cache[path.name] = {"mt": mt, "raw": body, "gz": gzip.compress(body, 6)}
+        etag = f'"proj-{path.stem}-{mt}"'
+        if request.headers.get("If-None-Match") == etag:
+            return Response(status=304, headers={"ETag": etag})
+        use_gz = "gzip" in request.headers.get("Accept-Encoding", "")
+        resp = Response(hit["gz" if use_gz else "raw"], mimetype="application/json")
+        if use_gz:
+            resp.headers["Content-Encoding"] = "gzip"
+        resp.headers.update({"ETag": etag, "Cache-Control": "no-cache", "Vary": "Accept-Encoding"})
+        return resp
+
+    @app.get("/api/climate/projections")
+    def api_climate_projections():
+        """NASA NEX-GDDP-CMIP6 projections to 2100 by region and elevation band, unchanged (projections_summary.json)."""
+        return projections_file(config.DATA_DIR / "climate" / "projections" / "projections_summary.json", True)
+
+    @app.get("/api/climate/projections/tiles.geojson")
+    def api_climate_projections_tiles():
+        """119 rated 0.25 degree tiles; change per scenario for the four periods the package supplies."""
+        return projections_file(config.DATA_DIR / "climate" / "projections" / "projections_tiles.geojson", False)
+
+    @app.get("/api/climate/projections/<name>.csv")
+    def api_climate_projections_csv(name):
+        """The supplied flat table, unchanged."""
+        if name != "projections_by_region":
+            abort(404)
+        return send_from_directory(config.DATA_DIR / "climate" / "projections", f"{name}.csv", as_attachment=True, mimetype="text/csv")
+
     # ------------------------------------------------------- avalanche alert forecast (forecast/, forecast/README_PORTAL.md)
     # A standalone package re-run on its own (forecast/run_forecast.bat or its scheduled task), independent of this app.
     # Every endpoint reads forecast/output/latest/* fresh off disk, so a new run shows up without a server restart.

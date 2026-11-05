@@ -139,7 +139,7 @@ const AlertDash = (() => {
       el = document.createElement("div"); el.className = "ad"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Avalanche Alert Forecast dashboard");
       el.innerHTML = `
         <header class="ad-top ad-glass">
-          <button type="button" class="ad-exit" title="Back to the command modules (Esc)">${IC.back}Command modules</button>
+          ${window.HOME_BTN || ""}<button type="button" class="ad-exit" title="Back to the command modules (Esc)">${IC.back}Command modules</button>
           <h2 class="ad-title">AVALANCHE ALERT FORECAST<small data-r="sub">Northern Pakistan · 0.25° tiles · ECMWF IFS</small></h2>
           <div class="ad-pills"><span class="ad-pill live" data-r="live"><i></i><span>LIVE · ECMWF FORECAST</span></span>
             <span class="ad-pill" data-r="upd">Last update: —</span><button type="button" class="ad-info" aria-expanded="false">ⓘ Method</button></div>

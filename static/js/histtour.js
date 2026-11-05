@@ -105,7 +105,7 @@ const HistTour = (() => {
       <div class="ht-map" id="ht-map"></div><canvas class="ht-wx" aria-hidden="true"></canvas><div class="ht-vig" aria-hidden="true"></div>
       <div class="ht-bars" aria-hidden="true"><i></i><i></i></div>
       <header class="ht-top">
-        <button type="button" class="ht-exit" title="Close the tour (Esc)">← Historical Overview</button>
+        ${window.HOME_BTN || ""}<button type="button" class="ht-exit" title="Close the tour (Esc)">← Historical Overview</button>
         <div class="ht-brand"><b>Historic avalanche tour</b><span>Pakistan · compiled records 1974–2026 · illustrative scenarios on real terrain</span></div>
         <div class="ht-tools"><button type="button" class="ht-overview" title="Show every record on the map">Event map</button>
           <button type="button" class="ht-listbtn" aria-pressed="true">Records</button><button type="button" class="ht-fs" title="Full screen">⛶</button></div>

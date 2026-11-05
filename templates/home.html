@@ -331,13 +331,17 @@
     box-shadow: 0 40px 120px rgba(0, 0, 0, .65), 0 0 0 1px rgba(255, 255, 255, .04), 0 0 80px color-mix(in srgb, var(--c, #22d3ee) 18%, transparent);
     transform: translate(-50%, -46%) scale(.94); opacity: 0; pointer-events: none; transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .3s; overflow: hidden; }
   .win.open { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+  /* small "front page" icon, the same in every tab (goHome below) */
+  html button.home-ic, html a.home-ic { flex: none; display: inline-grid; place-items: center; width: 28px; height: 28px; padding: 0; border-radius: 7px; cursor: pointer; color: #cbd5e1; border: 1px solid rgba(148,163,184,.32); background: rgba(255,255,255,.04); transition: color .15s, border-color .15s, background .15s; }
+  html body button.home-ic:hover, html body a.home-ic:hover { color: #fff; border-color: #7dd3fc; background: rgba(125,211,252,.12); }
+  html body button.home-ic:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 2px; }
   .win-bar { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--line);
     background: linear-gradient(90deg, color-mix(in srgb, var(--c, #22d3ee) 22%, transparent), transparent 70%); }
   .win-bar .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 18%, transparent); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
   .win-bar .ic svg { width: 22px; height: 22px; }
   .win-bar h2 { margin: 0; font-size: 20px; letter-spacing: -.01em; }
   .win-bar small { display: block; color: var(--muted); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
-  .win-bar .acts { margin-left: auto; display: flex; gap: 8px; }
+  .win-bar .acts { margin-left: auto; display: flex; align-items: center; gap: 8px; }
   .icon-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, .05); cursor: pointer; display: grid; place-items: center; color: var(--text-2); transition: all .2s; }
   .icon-btn:hover { color: #fff; border-color: var(--c, var(--cyan)); background: rgba(255, 255, 255, .1); }
   .icon-btn svg { width: 18px; height: 18px; }
@@ -1016,6 +1020,7 @@
 <link rel="stylesheet" href="/static/css/avalanche.css">
 <link rel="stylesheet" href="/static/css/histtour.css">
 <link rel="stylesheet" href="/static/css/climatedata.css">
+<link rel="stylesheet" href="/static/css/climateprojections.css">
 <link rel="stylesheet" href="/static/css/alertdash.css">
 </head>
 <body>
@@ -1077,6 +1082,7 @@
   <div class="xt"><b>Glacier systems · 3D</b>RGI v7.0 outlines · drag to rotate · scroll to zoom · hover a glacier</div>
   <div class="gchips" id="xchips"></div>
   <select class="gsel" aria-label="Fly to a major glacier"><option value="">Fly to a glacier…</option></select>
+  <button type="button" class="home-ic" data-gohome title="Front page" aria-label="Back to the front page"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10M10 20v-5h4v5"/></svg></button>
   <button type="button" class="back" id="explore-exit">← Back to modules</button>
 </div>
 
@@ -1174,6 +1180,7 @@
     <div class="ic" id="win-ic"></div>
     <div><small id="win-kicker"></small><h2 id="win-title"></h2></div>
     <div class="acts">
+      <button type="button" class="home-ic" data-gohome title="Front page" aria-label="Back to the front page"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10M10 20v-5h4v5"/></svg></button>
       <button class="icon-btn" id="prev" title="Previous (←)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
       <button class="icon-btn" id="next" title="Next (→)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="icon-btn" id="close" title="Close (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -1183,10 +1190,13 @@
   <div class="win-foot"><span id="win-pos"></span><div class="dots" id="win-dots"></div><span id="win-live"></span></div>
 </div>
 
+<script>window.HOME_BTN = '<button type="button" class="home-ic" data-gohome title="Front page" aria-label="Back to the front page"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10M10 20v-5h4v5"/></svg></button>';</script>
 <script src="/static/js/mapcache.js"></script>
 <script src="/static/js/avalanche.js"></script>
 <script src="/static/js/snowcap.js"></script>
 <script src="/static/js/histtour.js"></script>
+<script src="/static/js/climateworkspace.js"></script>
+<script src="/static/js/climateprojections.js"></script>
 <script src="/static/js/climatedata.js"></script>
 <script src="/static/js/alertdash.js"></script>
 <script src="/static/js/showreel.js"></script>
@@ -1993,7 +2003,7 @@ const bxOpen = () => !!(bxEl && !bxEl.hidden);
 function openExperience(e) {
   if (!bxEl) {
     bxEl = document.createElement("div"); bxEl.className = "bx"; bxEl.hidden = true;
-    bxEl.innerHTML = `<div class="bx-top"><button type="button" class="bx-back">← Back to the reconstruction</button>
+    bxEl.innerHTML = `<div class="bx-top"><button type="button" class="home-ic" data-gohome title="Front page" aria-label="Back to the front page"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10M10 20v-5h4v5"/></svg></button><button type="button" class="bx-back">← Back to the reconstruction</button>
         <div class="bx-title"><b></b><span class="hb-badge warn">MODELLED / NOT INDEPENDENTLY VERIFIED</span></div>
         <div class="bx-tools"><button type="button" data-m="map" class="on">On the map</button><button type="button" data-m="story">3D story</button><button type="button" data-m="video">Video</button><button type="button" class="bx-fs">⛶ Full screen</button></div></div>
       <div class="bx-stage"></div>
@@ -2878,6 +2888,14 @@ function setExplore(on) {
   if (on) bgMap.focus("ALL");
 }
 document.getElementById("explore-exit").addEventListener("click", () => setExplore(false));
+// the small icon in every tab: whatever is open closes and the front page shows
+function goHome() {
+  if (window.HistTour && HistTour.isOpen()) HistTour.close();
+  if (window.AlertDash && AlertDash.isOpen()) AlertDash.close();
+  if (curW >= 0) closeWin();
+  if (document.body.classList.contains("explore")) setExplore(false);
+}
+document.addEventListener("click", e => { if (e.target.closest && e.target.closest("[data-gohome]")) goHome(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("explore")) setExplore(false); });
 
 const bgMap = (() => {

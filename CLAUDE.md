@@ -141,6 +141,8 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   of view, requested by NDMA). Always show Jammu & Kashmir as disputed and the Line of Control as dashed, with the
   note in the home page's Layers panel. Never invent or hand-draw boundaries.
 
+- Every tab carries the same small front-page icon: `window.HOME_BTN` + `goHome()` in home.html (windows, Climate Data, Alert Forecast, tour, 3D experience, explore bar); portal `.home-btn` and report.html link to `/#home`.
+
 ## Gotchas
 
 - The map container id is `map-canvas`. An element with id `map` would make the browser scroll to it on `#map`.
@@ -322,9 +324,31 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
 ## Climate Data (home module)
 
 - Home module "Climate Data" (`special: "climate"` in home.html, after Historical Overview; UI `static/js/climatedata.js` → `ClimateData.html(m)`,
-  styles `static/css/climatedata.css`). Reads `/api/climate/era5_winter` and `/api/forecast/snow` only. Opens full page (`openWin` adds `.win.full`)
-  with a "Back to modules" button. Order: the run's own mp4 (`static/img/era5_winter/`) as the main player, then the original PNG figures large,
-  then the interactive charts. Everything stays in the portal: figures enlarge in the home `lightbox()`, no `target="_blank"` links.
+  styles `static/css/climatedata.css`). Reads `/api/climate/era5_winter`, `/api/forecast/snow` and `/api/layer/boundaries` only. Opens full page
+  (`openWin` adds `.win.full`; the climatedata.css hides the window's own bar and footer, the module draws a top bar with real module links and ✕).
+  Three pages: **Climate workspace** (default, `.cd.ws`), Original figures (the run's PNGs, enlarge in the home `lightbox()`), Explore the numbers (the
+  older interactive charts); the two others are reached from the workspace's Data Explorer tab and show the `.cd-nav` switch. Nothing opens a new tab.
+  No video player any more: the run's two mp4s in `static/img/era5_winter/` are left on disk but unused.
+- Climate workspace = `static/js/climateworkspace.js` (`ClimateWS`, classes `cw-*`, styles at the end of climatedata.css), one screen from 1181 px wide.
+  Layout follows the user's mockup: Data Control panel, one satellite GL map (home `bgMap.lib()` engine, MapLibre fallback, plain canvas if no base map
+  loads) with layer tabs, Yearly Summary + computed Key Insights, lower tabs (six trend charts, Spatial Analysis, Statistics, Data Explorer), playback bar.
+  The climate layer is a 600x280 `canvas` source (rows spaced in Mercator so tiles land exactly), masked to the Pakistan outline, hillshade above it;
+  Smooth = bilinear between tile centres (display only, labelled), Tiles = the raw grid; colours also cross-fade between winters while playing. Tooltips,
+  charts and statistics always use a tile's / winter's own value. "All six" draws six small canvas maps with cached static layers. Scales fixed over
+  all winters (1-99 % of observed winters; snow depth range excludes glacier-store cells >= 3,300 cm, which are dotted). The map is removed when the
+  window closes or changes module. Do NOT add `data-v` / `data-r` / `data-k` / `data-t` attributes in the workspace: climatedata.js binds those across
+  the whole module root. Deliberately NOT copied from the mockup: a NetCDF path / Load Data control (no such function), data after 2010, invented figures,
+  the "Aether" name, heat colours outside the 305 tiles.
+- Workspace map (owner's request): colour scales run light = little, dark = a lot, except temperature. Around the study area the rest of Pakistan is lightly dimmed and neighbours more (`static/geo/official_view.geojson`, same official view as the front page: J&K inside the solid outline, LoC dashed); those areas only name what is under the cursor. Playback loops until paused.
+- Two views in the module banner (`VIEWS` in climatedata.js, class `.pv` on `.cd` for the second): "Historical Climate Records Since 1970" holds the whole existing dashboard unchanged,
+  "Projection Till 2100" = `static/js/climateprojections.js` (`ClimateProjections`, classes `prj-*`, not `cp-*`: the home compass owns that prefix, `static/css/climateprojections.css`). The first label is the user's wording;
+  its contents are the historical 1970-2010 workspace, so the tab's second line states that (the real 15-day forecast is the Avalanche Alert Forecast module).
+- Projections: analysis team's fixed results copied unchanged to `data/climate/projections/` (summary JSON, flat CSV, tile GeoJSON, README) and `static/img/projections/` (figures);
+  API `/api/climate/projections`, `/tiles.geojson`, `/projections_by_region.csv`. Replace the files when the team sends an update; nothing is scheduled. Filters (`P`) live in the module
+  and survive switching views. Same page as the Historical Climate workspace (owner's request): reuses its `.cw-*` classes, layout, chart drawing and looping playback; only the map (the package's tiles) and values are its own. Plain figures: "was X", change as ▲▼ amounts; % and model ranges live in Statistics. Notes, figures and downloads live in Data Explorer.
+  The tile layer has only 4 periods (2041-2060, 2050, 2081-2100, 2100): other periods show the nearest layer, labelled. Tiles with zero baseline have no % change. The package has values for 119 of the 305 grid
+  tiles; `static/projections/tiles_full.json` (`scripts/build_projection_tiles.py`, needs shapely) draws the rest as a grey "No data" class clipped to the Pakistan outline so the north is covered. Never colour those tiles: they have no data.
+  Map regions use the package's own 4-region rule (`regionOf`, Hindu Kush / Kohistan-Hazara / Kashmir / Karakoram), separate from the forecast's 3 regions. No NASA logo or "verified" badge: data source text only.
 - Shows a 1970–2026 axis, but the supplied run ends at winter 2010: 2011–2025 is drawn as an empty hatched band ("not in the supplied run"), never filled.
   2026–27 is the separate seasonal snow outlook (% of normal snowfall), labelled "not this scale". 1974 is estimated: hatched, left out of trends,
   decade means and the scatter. Snow depth / SWE glacier caps (3,333 cm / 10,000 mm) are flagged in the map tooltip.
@@ -404,6 +428,8 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   (map.unproject at the path point lands far from it), for the body, trail, cloud and blocks. The run-over track stays white (snow debris,
   static grain), not bare ground.
 ## Avalanche Alert Forecast (home module, separate standalone package)
+
+- Owner's rule: changes requested for Climate Data stay inside Climate Data; do not restyle this dashboard unless asked by name. "Forecast page" in Climate Data requests has meant the Projection Till 2100 tab.
 
 - `forecast/` is a self-contained package (its own install.bat/run_forecast.bat/schedule_task.bat/requirements.txt), supplied by
   the analysis team, NOT the Flask app's own code: `forecast_core.py` (download ECMWF/Open-Meteo, daily aggregation, avalanche
