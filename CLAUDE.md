@@ -429,7 +429,7 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   static grain), not bare ground.
 ## Avalanche Alert Forecast (home module, separate standalone package)
 
-- Owner's rule: changes requested for Climate Data stay inside Climate Data; do not restyle this dashboard unless asked by name. "Forecast page" in Climate Data requests has meant the Projection Till 2100 tab.
+- Owner's rule: changes requested for Climate Data stay inside Climate Data; change this dashboard only when asked by name (the owner asked by name for the layout below). "Forecast page" in Climate Data requests has meant the Projection Till 2100 tab.
 
 - `forecast/` is a self-contained package (its own install.bat/run_forecast.bat/schedule_task.bat/requirements.txt), supplied by
   the analysis team, NOT the Flask app's own code: `forecast_core.py` (download ECMWF/Open-Meteo, daily aggregation, avalanche
@@ -461,6 +461,7 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   Tmax-rise SVG charts, ensemble + ML gauges) with "Back to Regional Dashboard" (restores the camera). Footer carries the
   README_PORTAL.md attribution / disclaimer / next-update texts. On <= 1000 px the home page's fixed overlays are hidden while
   it is open (they are wider than a phone and widened the layout viewport).
+- Page layout (owner's request, "exactly the same" as the Historical Climate page): the dashboard reuses that page's `.cw-*` classes and chart / ticker animation; `.ad-cw` is the wrapper. Own map layers (`MET`: alert level + 5 run values), six own charts (`CH`, highest value in any rated tile of the chosen area). Both pages start playing on open and loop until paused (not with reduced motion). Inspector, method and README texts unchanged.
 - Exact place (user: "data of the place when I click"): a map click drops a pin and calls `/api/alertforecast/point?lat&lon`
   (`portal/services/point_forecast.py`, pure Python): ECMWF IFS for those coordinates without an `elevation` parameter, so
   Open-Meteo downscales to the place's own height; then the same `hourly_to_daily` / `drivers` / final `apply_rules` as

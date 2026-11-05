@@ -43,6 +43,20 @@ const AlertDash = (() => {
     pause: SVG('<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/>'),
     chart: SVG('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>') };
 
+  const ic = (p, s = 18) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+  const I = { alert: '<path d="M12 3L2.500 20h19z"/><path d="M12 10v4M12 17h.01"/>', snow: '<path d="M7 15a4 4 0 0 1 .500-8 5.500 5.500 0 0 1 10.500 1.500A3.300 3.300 0 0 1 17.500 15z"/><path d="M8 19h.01M12 21h.01M16 19h.01"/>', week: '<path d="M12 2v20M3.300 7l17.400 10M20.700 7L3.300 17"/>', wind: '<path d="M4 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M5 19h5"/>', warm: '<path d="M14 14.800V5a2 2 0 1 0-4 0v9.800a4 4 0 1 0 4 0z"/>', depth: '<path d="M3 20l6-11 4 6 3-4 5 9z"/>', rain: '<path d="M12 3s6.500 7 6.500 11.500a6.500 6.500 0 0 1-13 0C5.500 10 12 3 12 3z"/>' };
+  // map layers: the alert level, then the run's own values. Light = little, dark = a lot, as on the climate page; warming runs cooling to warming.
+  const MET = [{ k: "level", t: "Alert Level", n: "Alert level", ic: I.alert },
+    { k: "sf_3d_mm", t: "3-Day Snow", n: "3-day snowfall", u: "mm", ic: I.snow, min: 5, note: "Water equivalent", ramp: ["#f2fbff", "#a5dbff", "#4b9bf5", "#2159bd", "#15305c"] },
+    { k: "sf_7d_mm", t: "7-Day Snow", n: "7-day snowfall", u: "mm", ic: I.week, min: 5, note: "Water equivalent", ramp: ["#faf7ff", "#cdb8ff", "#8f5cf0", "#5b2bb0", "#1e1245"] },
+    { k: "gust_max_3d_ms", t: "Wind Gust", n: "3-day maximum wind gust", u: "m/s", ic: I.wind, min: 5, note: "10 m above ground", ramp: ["#f0fdff", "#7fe3f0", "#1aa3c7", "#0e5a73", "#0b2433"] },
+    { k: "tmax_rise_3d_c", t: "Warming", n: "3-day rise in daily maximum temperature", u: "°C", ic: I.warm, div: true, note: "Blue cooling, red warming", ramp: ["#1a3fe0", "#0aa5e8", "#f1f5f9", "#ff8a12", "#8f0a0a"] },
+    { k: "snow_depth_m", t: "Snow Depth", n: "Snow depth", u: "m", ic: I.depth, min: .2, note: "On the ground", ramp: ["#f2fbff", "#a5dbff", "#4b9bf5", "#2159bd", "#15305c"] }];
+  const CH = [{ k: "sf_3d_mm", t: "3-Day Snowfall", u: "mm", c: "#84cc16", d: 1, ic: I.snow }, { k: "sf_7d_mm", t: "7-Day Snowfall", u: "mm", c: "#a78bfa", d: 1, ic: I.week }, { k: "gust_max_3d_ms", t: "Wind Gust", u: "m/s", c: "#22d3ee", d: 1, ic: I.wind },
+    { k: "tmax_rise_3d_c", t: "Warming", u: "°C", c: "#fb923c", d: 1, ic: I.warm, div: true }, { k: "snow_depth_m", t: "Snow Depth", u: "m", c: "#38bdf8", d: 2, ic: I.depth }, { k: "ros_3d_mm", t: "Rain on Snow", u: "mm", c: "#f472b6", d: 1, ic: I.rain }];
+  const MET_KEYS = CH.map(c => c.k);
+  let area = "all", metric = "level", pos = 0, speed = 1, hold = 0, lastTs = 0, tapeI = null, autoOk = true, CS = {}, AX = {}, SC = {};
+
   let el = null, map = null, gl = null, engine = "", L = null, T = new Map(), days = [], FC = {}, AG = {}, GMAX = {}, REG = REGIONS.slice();
   let CLIP = { tiles: {}, regions: {}, uncal: { type: "FeatureCollection", features: [] } }, UNC = new Map();   // uncalibrated grid tiles
   let dayIdx = 0, sel = null, hov = null, playT = 0, panelOn = false, cam0 = null, selRaf = 0, marks = [], bounds = null, firstShow = true, toastT = 0;
@@ -81,7 +95,7 @@ const AlertDash = (() => {
     if (!days.length) days = [...new Set(g.features.map(f => f.properties.date))].sort();
     const known = new Set(REGIONS.map(r => r.key)), extra = [...new Set([...T.values()].map(t => t.region))].filter(k => !known.has(k));
     REG = REGIONS.filter(r => [...T.values()].some(t => t.region === r.key)).concat(extra.map(k => ({ key: k, name: k, sub: "", col: "#e2e8f0" })));
-    AG = {}; GMAX = {};
+    AG = {}; GMAX = {}; AX = {}; SC = {};
     for (const r of REG) AG[r.key] = days.map(d => {
       let max = -1, rated = 0, nm = 0, sum = 0, peak = 0, gust = 0, peakId = null;
       for (const t of T.values()) {
@@ -138,28 +152,56 @@ const AlertDash = (() => {
     buildPromise = (async () => {
       el = document.createElement("div"); el.className = "ad"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Avalanche Alert Forecast dashboard");
       el.innerHTML = `
-        <header class="ad-top ad-glass">
-          ${window.HOME_BTN || ""}<button type="button" class="ad-exit" title="Back to the command modules (Esc)">${IC.back}Command modules</button>
-          <h2 class="ad-title">AVALANCHE ALERT FORECAST<small data-r="sub">Northern Pakistan · 0.25° tiles · ECMWF IFS</small></h2>
+        <header class="cx-top ad-hd"><div class="cx-brand"><img src="/static/img/ndma-logo.png" alt="NDMA"><img src="/static/img/ngt-logo.jpg" alt="NGT"><span><b>Snow Avalanche Prediction Using AI</b><small>NDMA · NGT avalanche portal</small></span></div>
           <div class="ad-pills"><span class="ad-pill live" data-r="live"><i></i><span>LIVE · ECMWF FORECAST</span></span>
             <span class="ad-pill" data-r="upd">Last update: —</span><button type="button" class="ad-info" aria-expanded="false">ⓘ Method</button></div>
-        </header>
+          ${window.HOME_BTN || ""}<button type="button" class="cx-x ad-exit" aria-label="Back to the command modules" title="Back to the command modules (Esc)">✕</button></header>
+        <div class="cx-hero ad-hero"><div class="cx-ht"><h4>Avalanche Alert Forecast</h4><p data-r="sub">Northern Pakistan · 0.25° tiles · ECMWF IFS</p></div>
+          <span class="cx-src"><b>Data: ECMWF IFS 0.25°</b>Open data · CC BY 4.0 · via Open-Meteo</span></div>
         <div class="ad-banner" data-r="banner" hidden></div>
-        <section class="ad-mapw" aria-label="3D terrain map of the forecast tiles">
-          <div class="ad-map" id="ad-map"></div>
-          <div class="ad-mtag"><span>Click any place for its own 15-day forecast</span><button type="button" data-a="reset" title="Back to the whole forecast area">⟲ Reset view</button>
-            <button type="button" data-a="tilt" aria-pressed="true" title="Toggle 3D tilt">3D</button></div>
-          <div class="ad-hud" data-r="hud"><em>TELEMETRY</em><br>Move the cursor over the map</div>
-          <div class="ad-legend" data-r="legend"></div>
-          <div class="ad-days"><button type="button" class="ad-play" aria-label="Play the forecast days" title="Play the 15 days (Space)">${IC.play}</button>
-            <div class="ad-dlabel" data-r="dlabel"></div><div class="ad-dlist" role="group" aria-label="Forecast day"></div></div>
-          <div class="ad-toast ad-glass" data-r="toast"></div>
-        </section>
-        <section class="ad-cards" aria-label="Regional overview"></section>
-        <footer class="ad-foot"><p data-r="foot"></p><nav>
-          <a href="${API}alerts_tiles_daily.csv" download>⇩ Tiles CSV</a><a href="${API}alerts_region_summary.csv" download>⇩ Regions CSV</a>
-          <a href="${API}tiles.geojson" download="alerts_tiles_daily.geojson">⇩ GeoJSON</a><a href="${API}map.png" target="_blank" rel="noopener">Map PNG ↗</a></nav></footer>
-        <button type="button" class="ad-fab" title="Open the 15-day inspector">${IC.chart}15-Day Place Inspector &amp; Detailed Graphs</button>
+        <div class="cw ad-cw">
+          <aside class="cw-ctl" aria-label="Forecast control">
+            <h3>${ic('<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.700 3.600 3 8 3s8-1.300 8-3V6M4 12v6c0 1.700 3.600 3 8 3s8-1.300 8-3v-6"/>', 22)}Forecast Control</h3>
+            <div class="cw-f"><label>Dataset</label><div class="cw-ro">${ic('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', 16)}<span>ECMWF IFS forecast run</span></div><p class="cw-ok"><i></i><span data-r="loaded"></span></p></div>
+            <div class="cw-f"><label>${ic('<path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/>', 15)}Variable selection</label><select data-r="msel" aria-label="Map variable">${MET.map(m => `<option value="${m.k}">${esc(m.n)}</option>`).join("")}</select></div>
+            <div class="cw-f"><label>${ic('<path d="M3 20l6-11 4 6 3-4 5 9z"/>', 15)}Statistics for</label><select data-r="asel" aria-label="Statistics area"></select></div>
+            <div class="cw-f ad-dimf"><label>${ic('<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/>', 15)}Dimensions</label><div class="cw-dims" data-r="dims"></div></div>
+            <div class="cw-f"><label>${ic('<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>', 15)}Map display</label><div class="cw-seg" role="group" aria-label="Map display"><button type="button" data-tilt="1" class="on">3D terrain</button><button type="button" data-tilt="0">Flat</button></div></div>
+            <div class="cw-f"><label>${ic('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.500 2M9 2h6"/>', 15)}Time slider</label><div class="cw-rng"><input type="range" class="ad-sl" min="0" step="any" value="0" aria-label="Forecast day"></div><div class="cw-ends"><span data-r="e0"></span><span data-r="e1"></span></div></div>
+            <button type="button" class="cw-playbig ad-play2"><span data-pi>▶</span><b data-pl>Play Animation</b></button>
+            <div class="cw-f"><label>${ic('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', 15)}Quick select dates</label><div class="cw-rowa"><select data-r="dsel" aria-label="Forecast date"></select><button type="button" class="cw-apply" data-a="today">Today</button></div></div>
+            <p class="ad-src" data-r="foot"></p>
+          </aside>
+          <section class="cw-mapcol">
+            <div class="cw-tabs" role="tablist" aria-label="Map layer">${MET.map(m => `<button type="button" role="tab" data-m="${m.k}">${ic(m.ic, 17)}${m.t}</button>`).join("")}
+              <button type="button" class="cw-full-b" data-a="reset"><span>Reset View</span>${ic('<path d="M3 12a9 9 0 1 0 3-6.700M3 4v5h5"/>', 15)}</button></div>
+            <div class="cw-mapwrap" aria-label="3D terrain map of the forecast tiles"><div class="ad-map" id="ad-map"></div>
+              <div class="cw-mtag"><b data-r="mt"></b><span data-r="mn"></span></div>
+              <div class="cw-lgv" data-r="lgv" hidden><b data-r="lgt"></b><i data-r="lgb"></i><div data-r="lgl"></div></div>
+              <div class="ad-legend" data-r="legend"></div><div class="ad-hud" data-r="hud" hidden></div><div class="ad-toast ad-glass" data-r="toast"></div></div>
+          </section>
+          <aside class="cw-sum">
+            <div class="cw-card cw-ys"><header><h3>${ic('<path d="M5 20v-8M12 20V5M19 20v-5"/>', 22)}Day Summary</h3><div class="cw-step"><button type="button" data-st="-1" aria-label="Previous day">‹</button><b data-r="now2"></b><button type="button" data-st="1" aria-label="Next day">›</button></div></header><div class="cw-rows" data-r="rows"></div></div>
+            <div class="cw-card cw-ins"><h4>${ic('<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.500 10.900c.6.500 1 1.200 1 2.100h5c0-.900.400-1.600 1-2.100A6 6 0 0 0 12 3z"/>', 17)}Key Insights</h4><p data-r="ins"></p></div>
+            <button type="button" class="ad-fab" title="Open the 15-day inspector">${IC.chart}15-Day Place Inspector</button>
+          </aside>
+          <section class="cw-low">
+            <div class="cw-ltabs" role="tablist">${[["trends", "Forecast Trends", '<path d="M4 19V5M4 19h16M7.500 15l3.500-4.500 3 2.500 5-6.500"/>'], ["regions", "Regions", '<path d="M3 20l6-11 4 6 3-4 5 9z"/>'], ["stats", "Statistics", '<path d="M5 20v-8M12 20V5M19 20v-5"/>'], ["data", "Data Explorer", '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/>']].map(t => `<button type="button" role="tab" data-lt="${t[0]}" class="${t[0] === "trends" ? "on" : ""}">${ic(t[2], 16)}${t[1]}</button>`).join("")}
+              <div class="cw-tape" aria-hidden="true"><span class="lv"><i></i><b data-r="ty"></b><small>change from the previous day</small></span><div class="tw"><div class="tr" data-r="tr"></div></div></div><span class="cw-ltnote" data-r="ltn"></span></div>
+            <div class="cw-lp" data-lp="trends"><div class="cw-charts">${CH.map(c => `<article class="cw-ch" data-cv="${c.k}" style="--lc:${c.c}"><header>${ic(c.ic, 15)}<b>${c.t}</b><em>${c.u}</em></header><div class="cw-chs"><div class="cw-tip" hidden></div></div></article>`).join("")}</div></div>
+            <div class="cw-lp" data-lp="regions" hidden><section class="ad-cards" aria-label="Regional overview"></section></div>
+            <div class="cw-lp" data-lp="stats" hidden></div>
+            <div class="cw-lp" data-lp="data" hidden><div class="cw-dxb"><a href="${API}alerts_tiles_daily.csv" download><b>⇩ Tiles CSV</b><span>Every tile, every day</span></a><a href="${API}alerts_region_summary.csv" download><b>⇩ Regions CSV</b><span>Region summary per day</span></a><a href="${API}tiles.geojson" download="alerts_tiles_daily.geojson"><b>⇩ GeoJSON</b><span>The tile layer</span></a><a href="${API}map.png" target="_blank" rel="noopener"><b>Map PNG ↗</b><span>The run's own map</span></a></div><p class="ad-attr" data-r="attr"></p></div>
+          </section>
+          <div class="cw-pb" role="group" aria-label="Playback">
+            <button type="button" class="cw-rb" data-st="-1" aria-label="Previous day" title="Previous day (←)">${ic('<path d="M11 6l-7 6 7 6zM20 6l-7 6 7 6z" fill="currentColor"/>')}</button>
+            <button type="button" class="cw-rb pp ad-play" aria-label="Play" title="Play / pause (space)"><span data-pi>▶</span></button>
+            <button type="button" class="cw-rb" data-st="1" aria-label="Next day" title="Next day (→)">${ic('<path d="M13 6l7 6-7 6zM4 6l7 6-7 6z" fill="currentColor"/>')}</button>
+            <label class="cw-spd">Speed <select data-r="speed" aria-label="Days per second"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+            <div class="cw-pbt"><div class="cw-rng"><input type="range" class="ad-sl" min="0" step="any" value="0" aria-label="Forecast day"></div><div class="cw-ticks ad-tks"></div></div>
+            <div class="cw-now"><b><span data-r="now"></span> <em data-r="nowy"></em></b><small data-r="nows"></small></div>
+          </div>
+        </div>
         <aside class="ad-panel" aria-label="15-day deep-dive for the selected place" aria-hidden="true">
           <div class="ad-ptop"><button type="button" class="ad-back">${IC.back}Back to Regional Dashboard</button><span>Esc</span></div>
           <div class="ad-pbody"></div>
@@ -195,13 +237,13 @@ const AlertDash = (() => {
   function show() {
     visible = true;
     document.body.classList.add("ad-open");
-    requestAnimationFrame(() => { el.classList.add("on"); if (map) map.resize(); if (firstShow && map) { fit(false); firstShow = false; } });
+    requestAnimationFrame(() => { el.classList.add("on"); if (map) map.resize(); if (firstShow && map) { fit(false); firstShow = false; } if (visible && autoOk && !panelOn && !reduce()) startPlay(); });
     if (sel) pulse(true);
     el.querySelector(".ad-exit").focus({ preventScroll: true });
   }
   function close() {
     if (!el || !visible) return;
-    stopPlay(); pulse(false); popup(false); hideTip();
+    const was = !!playT; stopPlay(true); if (!was && !autoOk) autoOk = false; pulse(false); popup(false); hideTip();
     visible = false;
     el.classList.remove("on");
     document.body.classList.remove("ad-open");
@@ -220,7 +262,17 @@ const AlertDash = (() => {
   }
 
   // ------------------------------------------------------------ static parts (header, cards, day list, legend, footer)
-  function renderStatic() { header(); cards(); dayList(); legend(); foot(); }
+  function renderStatic() { header(); cards(); dayList(); legend(); foot(); controls(); buildCharts(); }
+  function controls() {
+    const r = s => el.querySelector(`[data-r="${s}"]`);
+    r("loaded").textContent = `Loaded · ${T.size} tiles × ${days.length} days`;
+    r("dims").innerHTML = [["Tiles", T.size], ["Glacier", UNC.size], ["Days", days.length], ["Cell", "0.25°"]].map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join("");
+    r("asel").innerHTML = `<option value="all">Northern Pakistan</option>` + REG.map(x => `<option value="${esc(x.key)}">${esc(x.name)}</option>`).join(""); r("asel").value = area;
+    r("dsel").innerHTML = days.map(d => `<option value="${d}">${wd(d)} ${fdate(d)}</option>`).join("");
+    r("e0").textContent = fdate(days[0]); r("e1").textContent = fdate(days[days.length - 1]);
+    r("ltn").textContent = `${areaName()} · highest value in any rated tile · click a chart to jump to that day`;
+    setMetric(metric); statsTab();
+  }
 
   function header() {
     const g = L.generated_utc ? new Date(L.generated_utc) : null, live = el.querySelector('[data-r="live"]'), ban = el.querySelector('[data-r="banner"]');
@@ -262,19 +314,19 @@ const AlertDash = (() => {
 
   function dayList() {
     const td = today();
-    el.querySelector(".ad-dlist").innerHTML = days.map((d, i) => `<button type="button" class="ad-dbtn${d === td ? " today" : ""}" data-i="${i}" style="--pc:${GMAX[d] >= 1 ? LC[GMAX[d]] : "transparent"}"
-      title="${esc(ldate(d))}${d === td ? " (today)" : ""}${GMAX[d] >= 1 ? ` · ${LN[GMAX[d]]} somewhere in the area` : ""}"><small>${d === td ? "Today" : i === 0 || dd(d) === "01" ? mo(d) : wd(d)}</small><b>${dd(d)}</b></button>`).join("");
+    const n = days.length - 1;
+    el.querySelector(".ad-tks").innerHTML = days.map((d, i) => `<button type="button" class="ad-tk${i % 2 ? " yd" : ""}${d === td ? " today" : ""}" data-i="${i}" style="left:${i / n * 100}%${GMAX[d] >= 1 ? `;--pc:${LC[GMAX[d]]}` : ""}"
+      title="${esc(ldate(d))}${d === td ? " (today)" : ""}${GMAX[d] >= 1 ? ` · ${LN[GMAX[d]]} somewhere in the area` : ""}" aria-label="${esc(ldate(d))}">${i % 2 ? "" : d === td ? "Today" : fdate(d)}</button>`).join("");
   }
   function legend() {
     el.querySelector('[data-r="legend"]').innerHTML = `<b>Legend</b><span><i style="background:${LC[0]};opacity:.6"></i>Low</span><span><i style="background:${LC[1]}"></i>Moderate</span>
       <span><i style="background:${LC[2]}"></i>High</span><span><i class="ad-sw-nr"></i>Not rated (below ${MIN_ELEV.toLocaleString("en-GB")} m)</span>
-      <span><i class="ad-sw-ice"></i>Glacier zone · not calibrated</span>`
-      + REG.map(r => `<span><i style="background:none;border:2px solid ${regCol(r)};box-shadow:0 0 6px ${regCol(r)}"></i>${esc(r.name)}</span>`).join("")
-      + `<span><i class="ad-sw-pin"></i>Selected place</span>`;
+      <span><i class="ad-sw-ice"></i>Glacier zone · not calibrated</span>`;
   }
   function foot() {
     el.querySelector('[data-r="foot"]').innerHTML = `Experimental alert based on forecast snowfall, wind and temperature for 25 km areas. It does not assess individual slopes and is not an official avalanche danger rating.
-      Follow local authorities and NDMA/PDMA advisories. · Weather forecast: ECMWF IFS open data (CC BY 4.0), delivered by Open-Meteo.com. · Next update about 15:00 / 03:00 PKT.`;
+      Follow local authorities and NDMA/PDMA advisories.`;
+    el.querySelector('[data-r="attr"]').textContent = "Weather forecast: ECMWF IFS open data (CC BY 4.0), delivered by Open-Meteo.com. · Next update about 15:00 / 03:00 PKT.";
   }
 
   // ------------------------------------------------------------ map
@@ -297,9 +349,9 @@ const AlertDash = (() => {
     const o = { container: "ad-map", style, center: [73.6, 35.1], zoom: 6.3, pitch: 56, bearing: -8, maxPitch: 78, minZoom: 4.6,
       maxBounds: [[66.5, 30.5], [81, 39.5]], attributionControl: false, fadeDuration: 0 };
     map = new gl.Map(Object.assign(window.MapPerf ? MapPerf.opts(o) : o, { pixelRatio: Math.min(window.devicePixelRatio || 1, 2) }));
-    map.addControl(new gl.AttributionControl({ compact: true }), "bottom-left");
-    map.addControl(new gl.NavigationControl({ visualizePitch: true }), "top-right");
-    map.addControl(new gl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-right");
+    map.addControl(new gl.NavigationControl({ visualizePitch: true }), "top-left");
+    map.addControl(new gl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-left");
+    map.addControl(new gl.AttributionControl({ compact: true }), "bottom-right");
     const get = u => fetch(u).then(r => r.ok ? r.json() : null).catch(() => null);
     const [bnd, study] = await Promise.all([get("/api/layer/boundaries"), get("/api/layer/study_area"),
       new Promise((res, rej) => { map.once("load", res); map.on("error", ev => { const s = ev.error && ev.error.status; if (!map.loaded() && (s === 401 || s === 403)) rej(ev.error); }); })]);
@@ -356,6 +408,7 @@ const AlertDash = (() => {
     map.addLayer({ id: "ad-hatch", type: "fill", source: "ad-tiles", filter: ["<", L0, 0], paint: { "fill-pattern": "ad-hatch", "fill-opacity": 0.42 } });
     map.addLayer({ id: "ad-fill", type: "fill", source: "ad-tiles", filter: [">=", L0, 0], paint: {
       "fill-color": ["match", L0, 2, LC[2], 1, LC[1], LC[0]], "fill-opacity": ["match", L0, 2, 0.6, 1, 0.48, 0.14], "fill-opacity-transition": { duration: 350 } } });
+    map.addLayer({ id: "ad-met", type: "fill", source: "ad-tiles", layout: { visibility: "none" }, paint: { "fill-color": "#000", "fill-opacity": .8 } });
     // tile edges: faint at the overview so the terrain reads through, clearer when zoomed in; alert tiles always outlined
     map.addLayer({ id: "ad-tline", type: "line", source: "ad-tiles", paint: { "line-color": ["match", L0, 2, "#ff8a80", 1, "#ffd27a", 0, "#cffafe", "#e2e8f0"],
       "line-opacity": ["match", L0, 2, 0.95, 1, 0.9, Z(0.12, 0.42)], "line-width": ["match", L0, 2, 1.6, 1, 1.4, Z(0.5, 1)] } });
@@ -376,7 +429,7 @@ const AlertDash = (() => {
     map.addLayer({ id: "ad-sel-glow", type: "line", source: "ad-sel", paint: { "line-color": "#ffffff", "line-width": 8, "line-blur": 6, "line-opacity": 0.4 } });
     map.addLayer({ id: "ad-sel", type: "line", source: "ad-sel", paint: { "line-color": "#ffffff", "line-width": 1.8, "line-dasharray": [2, 1.5] } });
 
-    const PICK = ["ad-fill", "ad-dark", "ad-glac-fill"];
+    const PICK = ["ad-fill", "ad-dark", "ad-met", "ad-glac-fill"];
     map.on("mousemove", ev => { lastMove = ev; if (!moveRaf) moveRaf = requestAnimationFrame(onMove); });
     map.getCanvas().addEventListener("mouseleave", () => { setHover(null); hideTip(); });
     map.on("click", ev => {
@@ -406,6 +459,7 @@ const AlertDash = (() => {
       showTip(ev.originalEvent.clientX, ev.originalEvent.clientY, `<b>${ll(ev.lngLat.lat, ev.lngLat.lng)}</b>${h.dataset.elev ? ` · ${h.dataset.elev} m` : ""}`
         + `<br><span class="k">Tile ${esc(id)} · ${esc(t.region)} · ${fdate(days[dayIdx])}:</span> <b style="color:${LC[v]}">${LN[v]}</b>${v < 0 ? " (below avalanche terrain)" : ""}`
         + `<br><span class="k">Tile 3-day snowfall</span> ${mm(p.sf_3d_mm)} mm · <span class="k">gust</span> ${f1(p.gust_max_3d_ms)} m/s`
+        + (["tmax_rise_3d_c", "snow_depth_m"].includes(metric) ? `<br><span class="k">${esc(MET.find(m => m.k === metric).t)}</span> ${f(p[metric], metric === "snow_depth_m" ? 2 : 1, MET.find(m => m.k === metric).u)}` : "")
         + `<br><span class="k">Click for this exact place's 15-day forecast</span>`);
     }
   }
@@ -469,12 +523,12 @@ const AlertDash = (() => {
       + `<br>Tile <b>${t ? esc(hov) : "—"}</b>${t ? ` · ${f0(t.elev != null ? t.elev : t.elev_m)} m mean${T.has(hov) ? "" : " · glacier"}` : ""}<br>Zoom <b>${map.getZoom().toFixed(1)}</b> · Pitch <b>${Math.round(map.getPitch())}°</b> · Brg <b>${Math.round(map.getBearing())}°</b>`;
   }
 
-  const pad = () => innerWidth > 1000 ? { top: 70, bottom: 80, left: 40, right: panelOn ? 600 : 60 } : { top: 40, bottom: 120, left: 20, right: 20 };
+  const pad = () => innerWidth > 1180 ? { top: 14, bottom: 0, left: 8, right: panelOn ? 270 : 24 } : { top: 30, bottom: 30, left: 16, right: 16 };
   const cam = () => ({ center: map.getCenter(), zoom: map.getZoom(), pitch: map.getPitch(), bearing: map.getBearing() });
   function fit(anim) {
     if (!map || !bounds) return;
     const c = map.cameraForBounds(bounds, { padding: pad(), bearing: -8 });
-    if (c) map[anim ? "flyTo" : "jumpTo"](Object.assign(c, { pitch: el.querySelector('[data-a="tilt"]').getAttribute("aria-pressed") === "true" ? 56 : 0, bearing: -8, padding: { top: 0, bottom: 0, left: 0, right: 0 } }, anim ? { duration: 1500, essential: true } : {}));
+    if (c) map[anim ? "flyTo" : "jumpTo"](Object.assign(c, { pitch: el.querySelector('[data-tilt="1"]').classList.contains("on") ? 56 : 0, bearing: -8, padding: { top: 0, bottom: 0, left: 0, right: 0 } }, anim ? { duration: 1500, essential: true } : {}));
   }
   function flyRegion(key) {
     const ts = [...T.values()].filter(t => t.region === key); if (!ts.length) return;
@@ -483,26 +537,172 @@ const AlertDash = (() => {
     if (c) map.flyTo(Object.assign(c, { pitch: 60, bearing: map.getBearing(), padding: { top: 0, bottom: 0, left: 0, right: 0 }, duration: 1500, essential: true }));
   }
 
-  // ------------------------------------------------------------ day selection and playback
-  function setDay(i, quiet) {
+  // ------------------------------------------------------------ day selection and playback (loops; the pause icon stops it)
+  function setDay(i, quiet, playing) {
     if (!days.length) return;
     dayIdx = (i + days.length) % days.length;
     const d = days[dayIdx];
     pDate = d;
+    if (!playing) pos = dayIdx;
     if (map && map.getSource("ad-tiles")) map.getSource("ad-tiles").setData(dayFC(d));
-    el.querySelectorAll(".ad-dbtn").forEach(b => b.classList.toggle("on", +b.dataset.i === dayIdx));
+    el.querySelectorAll(".ad-tk").forEach(b => b.classList.toggle("on", +b.dataset.i === dayIdx));
     el.querySelectorAll(".ad-col").forEach(b => b.classList.toggle("on", +b.dataset.i === dayIdx));
-    const on = el.querySelector(".ad-dbtn.on"); if (on && !quiet) on.scrollIntoView({ block: "nearest", inline: "nearest" });
-    el.querySelector('[data-r="dlabel"]').innerHTML = `Map day<b>${wd(d)} ${fdate(d)}${d === today() ? " · today" : ""}</b>`;
+    dayUI(); syncSlider();
     if (panelOn) panelDay();
     if (lastMove && hov && moveFn && !moveRaf) moveRaf = requestAnimationFrame(moveFn);     // keep the hover tooltip on the new day
   }
+  function syncSlider() { const n = Math.max(1, days.length - 1); el.querySelectorAll(".ad-sl").forEach(s => { s.max = n; s.value = pos; s.style.setProperty("--p", (pos / n * 100) + "%"); }); }
   function togglePlay() { if (playT) stopPlay(); else startPlay(); }
   function startPlay() {
-    stopPlay(); const b = el.querySelector(".ad-play"); b.innerHTML = IC.pause; b.setAttribute("aria-label", "Pause");
-    playT = setInterval(() => setDay(dayIdx + 1), reduce() ? 1600 : 950);
+    if (playT || !days.length) return;
+    hold = 0; lastTs = performance.now(); tapeI = null; pos = dayIdx;
+    el.querySelector(".ad-cw").classList.add("live"); setPlayIcons(true); markCharts();
+    playT = requestAnimationFrame(playTick);
   }
-  function stopPlay() { if (playT) clearInterval(playT); playT = 0; const b = el && el.querySelector(".ad-play"); if (b) { b.innerHTML = IC.play; b.setAttribute("aria-label", "Play the forecast days"); } }
+  function playTick(ts) {
+    if (!visible) { playT = 0; return; }
+    const dt = Math.min(100, ts - lastTs) / 1000, n = days.length - 1; lastTs = ts;
+    if (hold > 0) { hold -= dt; if (hold <= 0) { hold = 0; pos = 0; setDay(0, true, true); } }
+    else { pos += speed * dt; if (pos >= n) { pos = n; hold = 1; } const r = Math.round(pos); if (r !== dayIdx) setDay(r, true, true); }
+    syncSlider(); liveCharts();
+    playT = requestAnimationFrame(playTick);
+  }
+  function stopPlay(keepAuto) {
+    if (!keepAuto) autoOk = false;
+    if (playT) cancelAnimationFrame(playT); playT = 0;
+    const c = el && el.querySelector(".ad-cw"); if (!c) return;
+    c.classList.remove("live"); setPlayIcons(false);
+    Object.values(CS).forEach(x => x.svg.querySelector(".clp").setAttribute("width", x.Wd));
+    pos = dayIdx; syncSlider(); markCharts();
+  }
+  function setPlayIcons(on) {
+    el.querySelectorAll("[data-pi]").forEach(i => { i.textContent = on ? "❚❚" : "▶"; });
+    el.querySelector("[data-pl]").textContent = on ? "Pause Animation" : "Play Animation";
+    const b = el.querySelector(".ad-play"); b.classList.toggle("on", on); b.setAttribute("aria-label", on ? "Pause" : "Play");
+  }
+
+  // ------------------------------------------------------------ what the page summarises: all tiles or one region, rated tiles only
+  const areaName = () => area === "all" ? "Northern Pakistan" : (REG.find(r => r.key === area) || { name: area }).name;
+  function agg(d) {
+    const key = area + "|" + d; if (AX[key]) return AX[key];
+    const o = { max: -1, rated: 0, nm: 0, peakId: null }; MET_KEYS.forEach(k => { o[k] = null; });
+    for (const t of T.values()) {
+      if (area !== "all" && t.region !== area) continue;
+      const p = t.by[d], v = lvl(p); if (v < 0) continue;
+      o.rated++; o.max = Math.max(o.max, v); if (v >= 1) o.nm++;
+      MET_KEYS.forEach(k => { const x = num(p[k]); if (x != null && (o[k] == null || x > o[k])) { o[k] = x; if (k === "sf_3d_mm") o.peakId = t.id; } });
+    }
+    return AX[key] = o;
+  }
+  const f = (v, d, u) => num(v) == null ? "n/a" : `${(+v).toFixed(d)}${u ? " " + u : ""}`;
+  function dayUI() {
+    if (!days.length || !el.querySelector('[data-r="rows"]')) return;
+    const d = days[dayIdx], A = agg(d), P = dayIdx > 0 ? agg(days[dayIdx - 1]) : null, setT = (r, t) => { el.querySelector(`[data-r="${r}"]`).textContent = t; };
+    setT("now", `${wd(d)} ${+dd(d)} ${mo(d)}`); setT("nowy", `/ ${fdate(days[days.length - 1])}`); setT("now2", fdate(d));
+    setT("nows", `Day ${dayIdx + 1} of ${days.length}${d === today() ? " · today" : ""}`);
+    el.querySelector('[data-r="dsel"]').value = d;
+    const chip = k => { if (!P || num(A[k]) == null || num(P[k]) == null) return ""; const x = A[k] - P[k], c = CH.find(q => q.k === k); if (+Math.abs(x).toFixed(c.d) === 0) return ""; return `<span class="cw-d" style="color:${x > 0 ? "#2dd4bf" : "#d8b365"}" title="Change from the previous day">${x > 0 ? "▲" : "▼"} ${Math.abs(x).toFixed(c.d)}</span>`; };
+    const row = (m, l, big, u, ch, c, ico, style) => `<button type="button" class="cw-r${metric === m ? " on" : ""}" data-m="${m}" style="--lc:${c}"><i>${ic(ico, 26)}</i><span><small>${esc(l)}</small><b${style ? ` style="${style}"` : ""}>${big} <em>${esc(u)}</em>${ch}</b></span></button>`;
+    const K = q => CH.find(c => c.k === q);
+    el.querySelector('[data-r="rows"]').innerHTML = row("level", "Highest alert level", A.max < 0 ? "Not rated" : LN[A.max], A.rated ? `${A.nm} of ${A.rated} tiles raised` : "", "", LC[Math.max(A.max, 0)], MET[0].ic, A.max > 0 ? `color:${LC[A.max]}` : "")
+      + row("sf_3d_mm", "Strongest 3-day snowfall", f(A.sf_3d_mm, 1), "mm w.e.", chip("sf_3d_mm"), K("sf_3d_mm").c, K("sf_3d_mm").ic)
+      + row("gust_max_3d_ms", "Strongest wind gust", f(A.gust_max_3d_ms, 1), "m/s", chip("gust_max_3d_ms"), K("gust_max_3d_ms").c, K("gust_max_3d_ms").ic)
+      + row("snow_depth_m", "Deepest snow on the ground", f(A.snow_depth_m, 2), "m", chip("snow_depth_m"), K("snow_depth_m").c, K("snow_depth_m").ic);
+    el.querySelectorAll('[data-r="rows"] [data-m]').forEach(b => b.onclick = () => setMetric(b.dataset.m));
+    const raised = days.filter(x => agg(x).max >= 1), first = days.find((x, i) => i >= dayIdx && agg(x).max >= 1);
+    el.querySelector('[data-r="ins"]').innerHTML = `${esc(areaName())}, ${wd(d)} ${fdate(d)}: highest alert ${A.max < 0 ? "not rated" : LN[A.max]}, with up to ${f(A.sf_3d_mm, 1, "mm")} of snow in 3 days and gusts to ${f(A.gust_max_3d_ms, 1, "m/s")}. `
+      + (raised.length ? `${raised.length} of ${days.length} days reach Moderate or High${first ? `; next: ${fdate(first)}` : ""}.` : `No Moderate or High alert in the ${days.length} days.`);
+    markCharts();
+    const st = el.querySelector('[data-lp="stats"] tbody'); if (st) st.querySelectorAll("tr").forEach((r, i) => r.classList.toggle("on", i === dayIdx));
+  }
+  function statsTab() {
+    el.querySelector('[data-lp="stats"]').innerHTML = `<div class="cw-tw"><table class="cw-tb"><thead><tr><th>Day</th><th>Highest level</th><th>Tiles raised</th>${CH.map(c => `<th>${c.t} (${c.u})</th>`).join("")}</tr></thead><tbody>${days.map((d, i) => { const A = agg(d);
+      return `<tr data-i="${i}" class="${i === dayIdx ? "on" : ""}"><th>${wd(d)} ${fdate(d)}</th><td><span class="ad-lv ${A.max < 0 ? "ln" : "l" + A.max}">${LS[A.max]}</span></td><td>${A.nm} of ${A.rated}</td>${CH.map(c => `<td>${f(A[c.k], c.d)}</td>`).join("")}</tr>`; }).join("")}</tbody></table></div>`;
+    el.querySelectorAll('[data-lp="stats"] tbody tr').forEach(r => r.onclick = () => { stopPlay(); setDay(+r.dataset.i); });
+  }
+  function setArea(a) { area = a; el.querySelector('[data-r="asel"]').value = a; if (a === "all") fit(true); else flyRegion(a); buildCharts(); statsTab(); dayUI(); el.querySelector('[data-r="ltn"]').textContent = `${areaName()} · highest value in any rated tile · click a chart to jump to that day`; }
+  function setTab(t) { el.querySelectorAll("[data-lt]").forEach(b => b.classList.toggle("on", b.dataset.lt === t)); el.querySelectorAll("[data-lp]").forEach(p => { p.hidden = p.dataset.lp !== t; }); if (t === "stats") statsTab(); }
+
+  // ------------------------------------------------------------ map variable: the alert level, or one of the run's own values
+  function metScale(m) {
+    if (SC[m.k]) return SC[m.k];
+    const xs = []; for (const t of T.values()) for (const d of days) { const x = t.by[d] && num(t.by[d][m.k]); if (x != null) xs.push(x); }
+    xs.sort((a, b) => a - b); const q = xs.length ? xs[Math.min(xs.length - 1, Math.floor(.99 * xs.length))] : 1;
+    let lo = 0, hi = Math.max(q, m.min || .1); if (m.div) { hi = Math.max(1, Math.abs(xs[0] || 0), Math.abs(q)); lo = -hi; }
+    return SC[m.k] = { lo, hi };
+  }
+  function setMetric(k) {
+    metric = k; const m = MET.find(x => x.k === k), alert = k === "level", q = s => el.querySelector(s);
+    el.querySelectorAll(".cw-tabs [data-m]").forEach(b => { const on = b.dataset.m === k; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
+    el.querySelectorAll(".cw-r[data-m]").forEach(b => b.classList.toggle("on", b.dataset.m === k));
+    q('[data-r="msel"]').value = k; q('[data-r="mt"]').textContent = m.n;
+    q('[data-r="mn"]').textContent = alert ? "Click any place for its own 15-day forecast" : `${m.note} · click any place for its own 15-day forecast`;
+    q('[data-r="legend"]').hidden = !alert; q('[data-r="lgv"]').hidden = alert;
+    el.querySelectorAll(".cw-ch").forEach(c => c.classList.toggle("sel", c.dataset.cv === k));
+    if (!alert) { const sc = metScale(m), st = (sc.hi - sc.lo) / 4, stops = m.ramp;
+      q('[data-r="lgt"]').textContent = m.u; q('[data-r="lgb"]').style.background = `linear-gradient(0deg,${stops.join(",")})`;
+      q('[data-r="lgl"]').innerHTML = [0, 1, 2, 3, 4].map(i => { const v = sc.lo + st * i; return `<span style="bottom:${i * 25}%">${(Math.abs(v) < 1e-9 ? 0 : v).toFixed(sc.hi < 10 ? 1 : 0)}</span>`; }).join(""); }
+    if (!map || !map.getLayer("ad-met")) return;
+    ["ad-fill", "ad-dark", "ad-hatch"].forEach(l => map.setLayoutProperty(l, "visibility", alert ? "visible" : "none"));
+    map.setLayoutProperty("ad-met", "visibility", alert ? "none" : "visible");
+    if (!alert) { const sc = metScale(m), v = ["coalesce", ["get", m.k], m.div ? 0 : sc.lo], n = m.ramp.length - 1;
+      map.setPaintProperty("ad-met", "fill-color", ["interpolate", ["linear"], v, ...m.ramp.flatMap((c, i) => [sc.lo + (sc.hi - sc.lo) * i / n, c])]);
+      map.setPaintProperty("ad-met", "fill-opacity", m.div ? .82 : ["interpolate", ["linear"], v, sc.lo, .12, sc.lo + (sc.hi - sc.lo) * .12, .78, sc.hi, .92]); }
+  }
+
+  // ------------------------------------------------------------ six charts, same drawing and animation as the climate page
+  const niceStep = s => { const p = Math.pow(10, Math.floor(Math.log10(s))), v = s / p; return (v < 1.5 ? 1 : v < 3 ? 2 : v < 7 ? 5 : 10) * p; };
+  function buildCharts() {
+    if (!days.length || !el.querySelector(".cw-chs")) return;
+    const Wd = 250, Ht = 150, ML = 30, MR = 10, MT = 22, MB = 20, n = days.length, X = i => ML + i / (n - 1) * (Wd - ML - MR);
+    CS = {};
+    CH.forEach(c => {
+      const host = el.querySelector(`.cw-ch[data-cv="${c.k}"] .cw-chs`), vals = days.map(d => { const x = agg(d)[c.k]; return x == null ? 0 : x; });
+      let lo = Math.min(...vals), hi = Math.max(...vals); if (!c.div) lo = Math.min(lo, 0); const pad = (hi - lo || 1) * .1; hi += pad; if (c.div) lo -= pad;
+      const step = niceStep((hi - lo) / 3), Yp = x => MT + (hi - x) / (hi - lo) * (Ht - MT - MB);
+      let g = ""; for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) g += `<line x1="${ML}" x2="${Wd - MR}" y1="${Yp(t)}" y2="${Yp(t)}" class="gr"/><text x="${ML - 4}" y="${Yp(t) + 3}" class="ay" text-anchor="end">${(Math.abs(t) < 1e-9 ? 0 : t).toFixed(step < 1 ? 1 : 0).replace("-", "−")}</text>`;
+      [0, 7, n - 1].forEach((i, q) => { g += `<text x="${X(i)}" y="${Ht - 6}" class="ay" text-anchor="${q === 0 ? "start" : q === 2 ? "end" : "middle"}">${fdate(days[i])}</text>`; });
+      const line = vals.map((x, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Yp(x).toFixed(1)}`).join("");
+      g += `<defs><linearGradient id="adg-${c.k}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${c.c}" stop-opacity=".32"/><stop offset="1" stop-color="${c.c}" stop-opacity="0"/></linearGradient><clipPath id="adc-${c.k}"><rect class="clp" x="0" y="0" width="${Wd}" height="${Ht}"/></clipPath></defs>`;
+      g += `<path d="${line}" class="cl gh" stroke="${c.c}"/><g clip-path="url(#adc-${c.k})"><path d="${line}L${X(n - 1)},${Ht - MB}L${X(0)},${Ht - MB}Z" fill="url(#adg-${c.k})"/><path d="${line}" class="cl" stroke="${c.c}"/></g>`;
+      g += `<line class="lvl" x1="${ML}" stroke="${c.c}"/><line class="cur" y1="${MT}" y2="${Ht - MB}"/><circle class="rng" r="4" fill="${c.c}"/><circle class="cdot" r="4" fill="${c.c}"/><g class="call"><rect rx="5" height="17" y="1"/><text y="13" text-anchor="middle"></text></g><line class="xh" y1="${MT}" y2="${Ht - MB}" style="display:none"/><rect class="hit" x="${ML}" y="${MT}" width="${Wd - ML - MR}" height="${Ht - MT - MB}"/>`;
+      const old = host.querySelector("svg"); if (old) old.remove();
+      host.insertAdjacentHTML("afterbegin", `<svg viewBox="0 0 ${Wd} ${Ht}" role="img" aria-label="${esc(c.t)}, ${esc(areaName())}, ${n} forecast days">${g}</svg>`);
+      const svg = host.querySelector("svg"), tip = host.querySelector(".cw-tip"), xh = svg.querySelector(".xh"), hit = svg.querySelector(".hit");
+      CS[c.k] = { c, X, Yp, svg, vals, Wd, L0: ML };
+      const dayAt = e => { const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const p = pt.matrixTransform(svg.getScreenCTM().inverse()); return Math.max(0, Math.min(n - 1, Math.round((p.x - ML) / (Wd - ML - MR) * (n - 1)))); };
+      hit.onmousemove = e => { const i = dayAt(e), A = agg(days[i]); xh.setAttribute("x1", X(i)); xh.setAttribute("x2", X(i)); xh.style.display = "";
+        tip.innerHTML = `<b>${wd(days[i])} ${fdate(days[i])}</b><span>${esc(areaName())}<strong>${f(A[c.k], c.d, c.u)}</strong></span><span>Highest level<strong>${A.max < 0 ? "not rated" : LN[A.max]}</strong></span>`; tip.hidden = false;
+        const r = host.getBoundingClientRect(); tip.style.left = Math.max(0, Math.min((X(i) / Wd) * r.width + 10, Math.max(0, r.width - 170))) + "px"; tip.style.bottom = "100%"; tip.style.top = "auto"; };
+      hit.onmouseleave = () => { tip.hidden = true; xh.style.display = "none"; };
+      hit.onclick = e => { stopPlay(); if (MET.some(m => m.k === c.k)) setMetric(c.k); setDay(dayAt(e)); };
+    });
+    markCharts();
+  }
+  function markCharts() {
+    Object.values(CS).forEach(o => { const val = o.vals[dayIdx], x = o.X(dayIdx), y = o.Yp(val), S = q => o.svg.querySelector(q), c = o.c;
+      S(".cur").setAttribute("x1", x); S(".cur").setAttribute("x2", x); S(".cdot").setAttribute("cx", x); S(".cdot").setAttribute("cy", y);
+      const prev = playT && dayIdx > 0 ? o.vals[dayIdx - 1] : null, dir = prev == null ? "" : val > prev ? "up" : val < prev ? "dn" : "";
+      S(".call").setAttribute("class", "call " + dir);
+      const txt = `${dir === "up" ? "▲ " : dir === "dn" ? "▼ " : ""}${val.toFixed(c.d).replace("-", "−")} ${c.u}`, bw = txt.length * 5.7 + 12, bx = Math.max(26, Math.min(x - bw / 2, o.Wd - bw - 2)); o.bw = bw;
+      S(".call rect").setAttribute("x", bx); S(".call rect").setAttribute("width", bw); S(".call text").setAttribute("x", bx + bw / 2); S(".call text").textContent = txt; });
+    if (playT && tapeI !== dayIdx) updateTape();
+  }
+  function liveCharts() {
+    const n = days.length, i = Math.min(Math.floor(pos), n - 2), t = pos - i;
+    Object.values(CS).forEach(o => { const a = o.vals[i], b = o.vals[i + 1], x = o.X(i + t), y = o.Yp(a + (b - a) * t), S = q => o.svg.querySelector(q);
+      S(".clp").setAttribute("width", x); S(".cur").setAttribute("x1", x); S(".cur").setAttribute("x2", x); S(".lvl").setAttribute("x2", x); S(".lvl").setAttribute("y1", y); S(".lvl").setAttribute("y2", y);
+      [".cdot", ".rng"].forEach(q => { S(q).setAttribute("cx", x); S(q).setAttribute("cy", y); });
+      const bx = Math.max(26, Math.min(x - o.bw / 2, o.Wd - o.bw - 2)); S(".call rect").setAttribute("x", bx); S(".call text").setAttribute("x", bx + o.bw / 2); });
+  }
+  function updateTape() {
+    tapeI = dayIdx; const d = days[dayIdx];
+    el.querySelector('[data-r="ty"]').textContent = `${wd(d)} ${fdate(d)}`;
+    const items = CH.map(c => { const o = CS[c.k]; if (!o) return ""; const v = o.vals[dayIdx], ch = dayIdx > 0 ? v - o.vals[dayIdx - 1] : null, same = ch != null && +Math.abs(ch).toFixed(c.d) === 0, cls = same ? "" : ch > 0 ? "up" : ch < 0 ? "dn" : "";
+      return `<span><b>${esc(c.t)}</b> ${v.toFixed(c.d).replace("-", "−")} ${esc(c.u)}${ch == null ? "" : ` <em class="${cls}">${same ? "=" : (ch > 0 ? "▲ " : "▼ ") + Math.abs(ch).toFixed(c.d)}</em>`}</span>`; }).join("");
+    el.querySelector('[data-r="tr"]').innerHTML = items + items;
+    const n = el.querySelector('[data-r="now"]'); n.classList.remove("tk"); void n.getBoundingClientRect(); n.classList.add("tk");
+  }
 
   // ------------------------------------------------------------ the clicked place: exact-place forecast + its tile
   function defaultTile() {
@@ -753,7 +953,17 @@ const AlertDash = (() => {
     const q = s => el.querySelector(s);
     q(".ad-exit").onclick = close;
     q(".ad-info").onclick = e => { e.stopPropagation(); popup(q('[data-r="pop"]').hidden); };
-    q(".ad-play").onclick = togglePlay;
+    q(".ad-play").onclick = togglePlay; q(".ad-play2").onclick = togglePlay;
+    el.querySelectorAll("[data-st]").forEach(b => b.onclick = () => { stopPlay(); setDay(dayIdx + +b.dataset.st); });
+    el.querySelectorAll(".ad-sl").forEach(s => s.oninput = e => { stopPlay(); pos = +e.target.value; setDay(Math.round(pos), true, true); syncSlider(); });
+    el.querySelectorAll(".cw-tabs [data-m]").forEach(b => b.onclick = () => setMetric(b.dataset.m));
+    el.querySelectorAll("[data-lt]").forEach(b => b.onclick = () => setTab(b.dataset.lt));
+    q('[data-r="msel"]').onchange = e => setMetric(e.target.value);
+    q('[data-r="asel"]').onchange = e => setArea(e.target.value);
+    q('[data-r="dsel"]').onchange = e => { stopPlay(); setDay(days.indexOf(e.target.value)); };
+    q('[data-r="speed"]').onchange = e => { speed = +e.target.value; };
+    q('[data-a="today"]').onclick = () => { const i = days.indexOf(today()); if (i >= 0) { stopPlay(); setDay(i); } else toast("Today is not in this forecast run."); };
+    el.querySelectorAll("[data-tilt]").forEach(b => b.onclick = () => { el.querySelectorAll("[data-tilt]").forEach(x => x.classList.toggle("on", x === b)); map.easeTo({ pitch: b.dataset.tilt === "1" ? 56 : 0, duration: 900 }); });
     q(".ad-fab").onclick = () => {
       stopPlay();
       if (place || sel) { if (!panelOn) cam0 = cam(); openPanel(); renderPanel(); return; }
@@ -761,9 +971,7 @@ const AlertDash = (() => {
     };
     q(".ad-back").onclick = closePanel;
     q('[data-a="reset"]').onclick = () => fit(true);
-    q('[data-a="tilt"]').onclick = e => { const on = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", on); e.currentTarget.textContent = on ? "3D" : "2D";
-      map.easeTo({ pitch: on ? 56 : 0, duration: 900 }); };
-    q(".ad-dlist").addEventListener("click", e => { const b = e.target.closest(".ad-dbtn"); if (b) { stopPlay(); setDay(+b.dataset.i); } });
+    q(".ad-tks").addEventListener("click", e => { const b = e.target.closest(".ad-tk"); if (b) { stopPlay(); setDay(+b.dataset.i); } });
     q(".ad-cards").addEventListener("click", e => {
       const c = e.target.closest(".ad-col"); if (c) { stopPlay(); setDay(+c.dataset.i); return; }
       const h = e.target.closest(".ad-ch"); if (h) flyRegion(h.dataset.reg);
