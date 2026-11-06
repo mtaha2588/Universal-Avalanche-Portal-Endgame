@@ -24,7 +24,8 @@ window.ClimateWS = (function () {
   const RAMPS = {
     t2m: ["#2b0a8f", "#1a3fe0", "#0aa5e8", "#12c98a", "#8fdc2a", "#ffe11a", "#ff8a12", "#e01a12", "#8f0a0a"],
     // low to high: light = little, dark = a lot (owner's request; temperature keeps its cold-to-hot scale)
-    snowd: ["#f2fbff", "#a5dbff", "#4b9bf5", "#2159bd", "#15305c"], cover: ["#f0fdff", "#7fe3f0", "#1aa3c7", "#0e5a73", "#0b2433"],
+    // snow cover stops at a mid blue, not near-black: most winters sit near the top of its scale and the terrain must stay readable (owner's request)
+    snowd: ["#f2fbff", "#a5dbff", "#4b9bf5", "#2159bd", "#15305c"], cover: ["#f0fdff", "#b4eff6", "#62d0e8", "#2fa8dc", "#2a86cc"],
     snowf: ["#faf7ff", "#cdb8ff", "#8f5cf0", "#5b2bb0", "#1e1245"], precip: ["#f3fff6", "#a3ecb8", "#22b573", "#0f6b52", "#0b2a22"],
     melt: ["#fff4df", "#ffbd6b", "#e0701a", "#8a3a0a", "#2a1406"],
   };
@@ -59,10 +60,44 @@ window.ClimateWS = (function () {
   function html() { return `<div class="cw" id="cw" tabindex="-1"><p class="desc cw-load">Loading the winter climate run…</p></div>`; }
   function fail(root, msg) { const el = root && $(root, "#cw"); if (el) el.innerHTML = `<p class="desc cw-load">The climate workspace needs the portal server and an imported run (scripts/build_era5_winter.py). ${esc(msg || "")}</p>`; }
 
+  /* ------------------------------------------------------------------ snow cover as supplied (owner's request)
+     The run's two CSVs hold snow cover on a 0-10,000 scale. The portal's JSON divides it by 100 and rounds it to one decimal, so the original numbers are read from the
+     CSVs themselves, for this page only: the Explore page and the JSON keep 0-100. If the CSVs cannot be read the page stays on the JSON's figures and says "%". */
+  const COVER_UNIT = "units", COVER_MAX = 10000;
+  let rawCover = null, rawLoad = null;
+  const csvCols = t => { const L = t.trim().split(/\r?\n/), h = L[0].split(","); return { rows: L.slice(1).map(l => l.split(",")), c: k => h.indexOf(k) }; };
+  function loadRaw() {
+    if (rawLoad) return rawLoad;
+    const get = n => fetch(`/api/climate/era5_winter/${n}.csv`).then(r => { if (!r.ok) throw new Error(r.status); return r.text(); });
+    rawLoad = Promise.all([get("tile_year_values_winter"), get("regional_means_winter")]).then(([tt, rt]) => {
+      const T = csvCols(tt), R = csvCols(rt), iY = T.c("year"), iT = T.c("tile_id"), iC = T.c("cover_%"), tiles = new Map();
+      if (iY < 0 || iT < 0 || iC < 0) throw new Error("columns");
+      T.rows.forEach(r => { if (!tiles.has(r[iT])) tiles.set(r[iT], new Map()); tiles.get(r[iT]).set(+r[iY], +r[iC]); });
+      const yr = R.c("year"), reg = {};
+      ["pakistan", "Hindu_Kush", "Karakoram", "Western_Himalaya"].forEach(k => { const c = R.c(`cover_${k}`); if (c < 0) throw new Error("columns"); reg[k] = new Map(R.rows.map(r => [+r[yr], +r[c]])); });
+      rawCover = { tiles, reg };
+    }).catch(e => { console.warn("snow cover as supplied:", e.message); rawCover = null; });
+    return rawLoad;
+  }
+  // a copy of the run for this page, with snow cover as supplied; anything missing leaves the page on the JSON's figures
+  function asSupplied(d) {
+    if (!rawCover) return d;
+    const Y = d.meta.years, EST = d.meta.estimated, tiles = [];
+    for (const t of d.tiles) { const m = rawCover.tiles.get(t.id); if (!m || !Y.every(y => m.has(y))) return d;
+      tiles.push({ ...t, v: { ...t.v, cover: Y.map(y => m.get(y)) }, tr: t.tr ? { ...t.tr, cover: t.tr.cover == null ? null : t.tr.cover * 100 } : t.tr }); }
+    const cover = {};
+    for (const k of Object.keys(d.regional.cover)) { const m = rawCover.reg[k]; if (!m || !Y.every(y => m.has(y))) return d;
+      const values = Y.map(y => m.get(y)), ob = values.filter((_, i) => !EST[i]), o = d.regional.cover[k];
+      cover[k] = { ...o, values, mean_observed: ob.reduce((a, b) => a + b, 0) / ob.length, trend_per_decade: o.trend_per_decade * 100 }; }
+    return { ...d, tiles, regional: { ...d.regional, cover }, meta: { ...d.meta, vars: d.meta.vars.map(v => v.key === "cover" ? { ...v, unit: COVER_UNIT, decimals: 0 } : v),
+      cover_note: "Snow cover is shown here as the run supplies it, 0-10,000. The run's files label this column %, but a percentage cannot pass 100, so it is labelled units here; the Explore the numbers page divides it by 100." } };
+  }
+
   /* ------------------------------------------------------------------ start / stop */
   function start(root, d) {
     const el = $(root, "#cw"); if (!el) return;
     destroy();
+    d = asSupplied(d);
     const Y = d.meta.years, N = Y.length, EST = d.meta.estimated, tiles = d.tiles, VARS = Object.fromEntries(d.meta.vars.map(v => [v.key, v]));
     W = { root, el, d, Y, N, EST, tiles, VARS, pos: 0, yi: 0, playing: false, speed: 1, v: "t2m", r: "pakistan", hover: -1, pin: -1, lo: 0, hi: N - 1, mode: "smooth", six: false, tab: "trends",
           panels: {}, vals: {}, sc: {}, geo: null, raf: 0, last: 0, charts: {}, ro: null, mo: [], map: null, gl: null, heatKey: "", fb: null };
@@ -98,7 +133,7 @@ window.ClimateWS = (function () {
     xs.sort((p, q) => p - q);
     const q = p => xs[Math.min(xs.length - 1, Math.floor(p * xs.length))];
     let lo = q(.01), hi = q(.99);
-    if (v === "cover") { lo = 0; hi = 100; } else if (v !== "t2m") lo = Math.min(lo, 0);
+    if (v === "cover") { lo = 0; hi = W.VARS.cover.unit === COVER_UNIT ? COVER_MAX : 100; } else if (v !== "t2m") lo = Math.min(lo, 0);
     if (hi <= lo) hi = lo + 1;
     const L = lut(RAMPS[v]), k = 255 / (hi - lo);
     return { lo, hi, stops: RAMPS[v], u32: L.u32, k, at: x => L.css[Math.round(clamp((x - lo) * k, 0, 255))] };
@@ -196,7 +231,7 @@ window.ClimateWS = (function () {
     $(el, "[data-lgb]").style.background = `linear-gradient(0deg,${sc.stops.join(",")})`;
     $(el, "[data-lgl]").innerHTML = lab.map(t => `<span style="bottom:${(t - sc.lo) / (sc.hi - sc.lo) * 100}%">${nf(t, step < 1 ? 1 : 0)}</span>`).join("");
     $(el, "[data-mt]").textContent = NAME[v];
-    $(el, "[data-mn]").textContent = (CAP[v] ? "Dotted: glacier store, not measured snow · " : "") + (W.mode === "smooth" ? "Smoothed between 25 km tiles for display · hover for a tile's value" : "The run's own 25 km tiles");
+    $(el, "[data-mn]").textContent = (v === "cover" && m.unit === COVER_UNIT ? "Original run values, 0–10,000 · " : "") + (CAP[v] ? "Dotted: glacier store, not measured snow · " : "") + (W.mode === "smooth" ? "Smoothed between 25 km tiles for display · hover for a tile's value" : "The run's own 25 km tiles");
     $(el, "[data-sv]").value = v;
     $$(el, "[data-ly]").forEach(b => { b.classList.toggle("on", b.dataset.ly === v); b.setAttribute("aria-selected", b.dataset.ly === v); });
     $$(el, ".cw-p").forEach(p => p.classList.toggle("sel", p.dataset.p === v));
@@ -360,7 +395,7 @@ window.ClimateWS = (function () {
     try {
       const { gl, engine } = await loadEngine(); if (W !== me) return;
       if (window.MapPerf) MapPerf.tune(gl);
-      const grade = { "raster-saturation": -0.45, "raster-brightness-max": 0.62, "raster-contrast": 0.08 };
+      const grade = { "raster-saturation": -0.05, "raster-brightness-max": 1, "raster-contrast": 0.05 };
       const style = engine === "mapbox" ? "mapbox://styles/mapbox/satellite-v9" : { version: 8,
         sources: { sat: { type: "raster", tileSize: 256, maxzoom: 18, attribution: "Imagery © Esri, Maxar, Earthstar Geographics", tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"] } },
         layers: [{ id: "cw-ground", type: "background", paint: { "background-color": "#0a1424" } }, { id: "sat", type: "raster", source: "sat", paint: grade }] };
@@ -385,10 +420,10 @@ window.ClimateWS = (function () {
         map.addSource("cw-bnd", { type: "geojson", data: { type: "FeatureCollection", features: W.geo.fc } });
         const isL = v => ["==", ["get", "layer"], v];
         // context only, quieter the further from the study: the rest of Pakistan a little, neighbouring countries more (same official view as the front page)
-        map.addLayer({ id: "cw-dim", type: "fill", source: "cw-bnd", filter: isL("pakistan"), paint: { "fill-color": "#020617", "fill-opacity": .34 } }, "cw-heat");
+        map.addLayer({ id: "cw-dim", type: "fill", source: "cw-bnd", filter: isL("pakistan"), paint: { "fill-color": "#020617", "fill-opacity": 0 } }, "cw-heat");
         const off = await fetch("/static/geo/official_view.geojson").then(r => r.ok ? r.json() : null).catch(() => null);
         if (W !== me) return;
-        if (off) { map.addSource("cw-off", { type: "geojson", data: off }); map.addLayer({ id: "cw-mask", type: "fill", source: "cw-off", filter: isL("mask"), paint: { "fill-color": "#020617", "fill-opacity": .66 } });
+        if (off) { map.addSource("cw-off", { type: "geojson", data: off }); map.addLayer({ id: "cw-mask", type: "fill", source: "cw-off", filter: isL("mask"), paint: { "fill-color": "#020617", "fill-opacity": .12 } });
           map.addLayer({ id: "cw-iiojk", type: "fill", source: "cw-off", filter: isL("iiojk"), paint: { "fill-opacity": 0 } }); }
         map.addLayer({ id: "cw-ctx", type: "fill", source: "cw-bnd", filter: isL("province"), paint: { "fill-opacity": 0 } });
         map.addLayer({ id: "cw-ctxhl", type: "line", source: "cw-bnd", filter: ["==", ["get", "name"], ""], paint: { "line-color": "#bae6fd", "line-width": 1.6, "line-opacity": .8 } });
@@ -617,5 +652,5 @@ window.ClimateWS = (function () {
     const n = $(el, "[data-year]"); n.classList.remove("tk"); void n.getBoundingClientRect(); n.classList.add("tk");
   }
 
-  return { html, start, fail, resume, map: () => W && W.map };
+  return { html, start, fail, resume, loadRaw, map: () => W && W.map, coverUnit: () => (rawCover ? COVER_UNIT : null) };
 })();

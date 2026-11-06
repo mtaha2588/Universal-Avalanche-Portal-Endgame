@@ -40,7 +40,7 @@ const HistTour = (() => {
       + '<circle cx="12" cy="11" r="2" fill="currentColor" stroke="none"/>'),
   };
 
-  let el = null, map = null, gl = null, engine = "", data = null, stops = [], cur = -1, ctl = null, tok = 0, paused = false, touring = false;
+  let el = null, map = null, gl = null, engine = "", data = null, stops = [], allStops = null, cur = -1, ctl = null, tok = 0, paused = false, touring = false;
   let adv = null, markers = [], wx = null, keyH = null, downH = null, ended = false, speed = 1;
   let pinsOn = false, evMarks = [], focusRec = null, dcRaf = 0;
   // Built once, kept alive and only ever hidden/shown after that (user: no loading time): the DOM, the MapLibre/Mapbox map, its
@@ -189,6 +189,7 @@ const HistTour = (() => {
       return;
     }
     if (!el) return;
+    if (opt.only) { allStops = stops; stops = opt.only.map(id => stops.find(r => r.event_id === id)).filter(Boolean); }   // a chosen few (the showreel), until close()
     visible = true;
     document.body.classList.add("ht-open");
     requestAnimationFrame(() => el.classList.add("on"));
@@ -215,6 +216,7 @@ const HistTour = (() => {
     const pb = el.querySelector(".ht-pins"); if (pb) { pb.setAttribute("aria-pressed", false); pb.setAttribute("aria-label", "Show event pins"); }
     evMarks.forEach(m => m.mk.remove()); evMarks = []; pinsOn = false; focusRec = null;
     cur = -1; paused = false; touring = false;
+    if (allStops) { stops = allStops; allStops = null; }
     visible = false;
     el.classList.remove("on");
     document.body.classList.remove("ht-open");

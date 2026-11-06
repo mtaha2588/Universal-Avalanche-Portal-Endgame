@@ -3407,10 +3407,12 @@ const bgMap = (() => {
       bearing: overview ? -20 : map.getBearing() + 30, speed: 0.6, curve: 1.5, essential: true });
   }
 
+  // The historical tour and the alert forecast cover this map completely: it must not redraw a second 3D scene behind them (that halved the tour's frame rate).
+  const covered = () => document.body.classList.contains("ht-open") || document.body.classList.contains("ad-open");
   function tour() {
     const name = GLACIER_ORDER[tourIdx++ % GLACIER_ORDER.length];
     const c = GLACIERS.centers[name];
-    if (!map || !c || performance.now() < pausedUntil) return;
+    if (!map || !c || covered() || performance.now() < pausedUntil) return;
     map.flyTo({ center: c, zoom: 6.4, pitch: 64, bearing: map.getBearing() + 45, speed: 0.45, curve: 1.6, essential: true });
   }
 
@@ -3422,7 +3424,8 @@ const bgMap = (() => {
   // and stops while a module window covers the map.
   let orbitFrame = 0;
   function orbit() {
-    if (map && !reducedMotion && (++orbitFrame & 1) === 0 && curW < 0 && performance.now() > pausedUntil && !map.isMoving()) {
+    if (map && document.body.classList.contains("ht-open") && map.isMoving()) map.stop();
+    if (map && !reducedMotion && (++orbitFrame & 1) === 0 && curW < 0 && !covered() && performance.now() > pausedUntil && !map.isMoving()) {
       map.setBearing((map.getBearing() + 0.04) % 360);
     }
     requestAnimationFrame(orbit);

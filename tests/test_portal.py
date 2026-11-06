@@ -374,7 +374,7 @@ def test_home_intro_plus_showreel_is_wired(client):
     home = client.get("/").data
     assert b'data-act="reel"' in home and b"/static/js/showreel.js" in home and b"stopIntro" in home
     js = client.get("/static/js/showreel.js").data
-    assert b"HistTour.open" in js and b"/portal#" in js and b'data-pg="' in js and b"Escape" in js
+    assert b"HistTour.open" in js and b"/portal#" in js and b'data-pg="' in js and b"Escape" in js and b"FilmClock" in js and b"sr-pp" in js
 
 
 def test_own_scripts_are_revalidated(client):

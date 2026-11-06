@@ -328,7 +328,7 @@ window.ClimateProjections = (function () {
       if (!Lb) { if (!window.maplibregl) { const c = document.createElement("link"); c.rel = "stylesheet"; c.href = "/static/vendor/maplibre-gl.css"; document.head.appendChild(c); await new Promise((res, rej) => { const s = document.createElement("script"); s.src = "/static/vendor/maplibre-gl.js"; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); } Lb = { gl: window.maplibregl, engine: "maplibre" }; }
       if (V !== me) return;
       const { gl, engine } = Lb; if (window.MapPerf) MapPerf.tune(gl);
-      const grade = { "raster-saturation": -0.45, "raster-brightness-max": 0.62, "raster-contrast": 0.08 };   // same ground as the Historical page
+      const grade = { "raster-saturation": -0.05, "raster-brightness-max": 1, "raster-contrast": 0.05 };   // same ground as the Historical page
       const style = engine === "mapbox" ? "mapbox://styles/mapbox/satellite-v9" : { version: 8, sources: { sat: { type: "raster", tileSize: 256, maxzoom: 18, attribution: "Imagery © Esri, Maxar, Earthstar Geographics", tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"] } }, layers: [{ id: "prj-ground", type: "background", paint: { "background-color": "#0a1424" } }, { id: "sat", type: "raster", source: "sat", paint: grade }] };
       const o = { container: "prj-gl", style, bounds: VIEW_N, minZoom: 3.4, maxZoom: 10.5, maxBounds: [[50, 16], [92, 44]], dragRotate: false, pitchWithRotate: false, attributionControl: false, fadeDuration: 0 };
       const map = new gl.Map(Object.assign(window.MapPerf ? MapPerf.opts(o) : o, { pixelRatio: Math.min(window.devicePixelRatio || 1, 2) }));
@@ -340,14 +340,14 @@ window.ClimateProjections = (function () {
       const [bnd, off] = await Promise.all(["/api/layer/boundaries", "/static/geo/official_view.geojson"].map(u => fetch(u).then(r => r.ok ? r.json() : null).catch(() => null)));
       if (V !== me) return;
       const isL = v => ["==", ["get", "layer"], v];
-      if (bnd) { map.addSource("prj-b", { type: "geojson", data: bnd }); map.addLayer({ id: "prj-dim", type: "fill", source: "prj-b", filter: isL("pakistan"), paint: { "fill-color": "#020617", "fill-opacity": .34 } }); }
+      if (bnd) { map.addSource("prj-b", { type: "geojson", data: bnd }); map.addLayer({ id: "prj-dim", type: "fill", source: "prj-b", filter: isL("pakistan"), paint: { "fill-color": "#020617", "fill-opacity": 0 } }); }
       map.addSource("prj-c", { type: "geojson", data: contextFC() });
       map.addLayer({ id: "prj-cfill", type: "fill", source: "prj-c", paint: { "fill-color": NODATA, "fill-opacity": ["case", ["get", "on"], .5, .12] } });
       map.addSource("prj-t", { type: "geojson", data: mapFC() });
       map.addLayer({ id: "prj-fill", type: "fill", source: "prj-t", paint: { "fill-color": fillExpr(P.tm), "fill-opacity": ["case", ["get", "on"], .9, .15], "fill-opacity-transition": { duration: 300 }, "fill-color-transition": { duration: 300 } } });
       try { map.addSource("prj-sh", window.MapPerf ? MapPerf.dem() : { type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: 12, tiles: [location.origin + "/api/dem/{z}/{x}/{y}.png?v=cop1"] });
         map.addLayer({ id: "prj-rel", type: "hillshade", source: "prj-sh", paint: { "hillshade-exaggeration": .55, "hillshade-illumination-direction": 315, "hillshade-shadow-color": "rgba(0,0,0,.62)", "hillshade-highlight-color": "rgba(255,255,255,.2)", "hillshade-accent-color": "rgba(0,0,0,.28)" } }); } catch { /* engine without hillshade */ }
-      if (off) { map.addSource("prj-off", { type: "geojson", data: off }); map.addLayer({ id: "prj-mask", type: "fill", source: "prj-off", filter: isL("mask"), paint: { "fill-color": "#020617", "fill-opacity": .66 } }); map.addLayer({ id: "prj-iiojk", type: "fill", source: "prj-off", filter: isL("iiojk"), paint: { "fill-opacity": 0 } }); }
+      if (off) { map.addSource("prj-off", { type: "geojson", data: off }); map.addLayer({ id: "prj-mask", type: "fill", source: "prj-off", filter: isL("mask"), paint: { "fill-color": "#020617", "fill-opacity": .12 } }); map.addLayer({ id: "prj-iiojk", type: "fill", source: "prj-off", filter: isL("iiojk"), paint: { "fill-opacity": 0 } }); }
       map.addLayer({ id: "prj-edge", type: "line", source: "prj-t", paint: { "line-color": "#0a1424", "line-opacity": ["case", ["get", "on"], .35, .05], "line-width": .5 } });
       map.addLayer({ id: "prj-cedge", type: "line", source: "prj-c", paint: { "line-color": "#0a1424", "line-opacity": ["case", ["get", "on"], .28, .05], "line-width": .5 } });
       if (bnd) { map.addLayer({ id: "prj-ctx", type: "fill", source: "prj-b", filter: isL("province"), paint: { "fill-opacity": 0 } });

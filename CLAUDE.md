@@ -143,6 +143,8 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
 
 - Every tab carries the same small front-page icon: `window.HOME_BTN` + `goHome()` in home.html (windows, Climate Data, Alert Forecast, tour, 3D experience, explore bar); portal `.home-btn` and report.html link to `/#home`.
 
+- The home map stops redrawing and flying while the tour or the alert dashboard covers it (`covered()` in home.html): measured on an RTX 5050, the tour went from 37 to 59 fps. Never let a hidden 3D map keep moving.
+
 ## Gotchas
 
 - The map container id is `map-canvas`. An element with id `map` would make the browser scroll to it on `#map`.
@@ -183,7 +185,7 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   (305 tiles x 41 winters x 9 variables, regional series, per-tile trends and temp-snow r), the two CSVs copied unchanged to `data/climate/era5_winter/`,
   figures + MP4s to `static/img/era5_winter/`. API `/api/climate/era5_winter` (gzipped), CSVs at `/api/climate/era5_winter/<name>.csv` (whitelisted).
 - Honesty: reanalysis, not observations, not validated. 1974 is flagged estimated by the run: hatched, excluded from every trend / correlation.
-  Snow cover was supplied 0-10,000 under a % label: divided by 100. Glacier cells sit at ERA5-Land's fixed store (depth 3,333 cm, SWE 10,000 mm),
+  Snow cover was supplied 0-10,000 under a % label: divided by 100. The Historical workspace (climateworkspace.js `loadRaw` / `asSupplied`) shows the original 0-10,000 values, read from the two CSVs, labelled "units" (owner's request; a % cannot pass 100); the JSON and the Explore the numbers page stay 0-100. Glacier cells sit at ERA5-Land's fixed store (depth 3,333 cm, SWE 10,000 mm),
   which inflates Karakoram depth / SWE; the tile inspector says so. Trends are OLS per decade, no significance test. Computed r = -0.11 (all tiles,
   observed winters) vs the run's figure C -0.12 (its own year set).
 - Palettes: diverging blue-red (temperature), blues (snow), violets (snowfall), greens (melt), sand (wind), brown-teal (non-temperature trends):
@@ -339,7 +341,7 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   window closes or changes module. Do NOT add `data-v` / `data-r` / `data-k` / `data-t` attributes in the workspace: climatedata.js binds those across
   the whole module root. Deliberately NOT copied from the mockup: a NetCDF path / Load Data control (no such function), data after 2010, invented figures,
   the "Aether" name, heat colours outside the 305 tiles.
-- Workspace map (owner's request): colour scales run light = little, dark = a lot, except temperature. Around the study area the rest of Pakistan is lightly dimmed and neighbours more (`static/geo/official_view.geojson`, same official view as the front page: J&K inside the solid outline, LoC dashed); those areas only name what is under the cursor. Playback loops until paused.
+- Workspace map (owner's request): colour scales run light = little, dark = a lot, except temperature. Around the study area the map is natural, bright satellite imagery with neighbours only very lightly dimmed (owner's request; both Climate Data pages) (`static/geo/official_view.geojson`, same official view as the front page: J&K inside the solid outline, LoC dashed); those areas only name what is under the cursor. Playback loops until paused.
 - Two views in the module banner (`VIEWS` in climatedata.js, class `.pv` on `.cd` for the second): "Historical Climate Records Since 1970" holds the whole existing dashboard unchanged,
   "Projection Till 2100" = `static/js/climateprojections.js` (`ClimateProjections`, classes `prj-*`, not `cp-*`: the home compass owns that prefix, `static/css/climateprojections.css`). The first label is the user's wording;
   its contents are the historical 1970-2010 workspace, so the tab's second line states that (the real 15-day forecast is the Avalanche Alert Forecast module).
@@ -481,9 +483,9 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
 - Mapbox v3.6 throws in `_preloadTiles` ("reading 'tileZoom'") when a `preloadOnly` camera call is deferred to a still-loading
   source; the home map's `preload()` / `warm()` therefore skip preloading unless every source is loaded (`sourcesReady`).
 - "Intro +" (map bar, beside Intro): `static/js/showreel.js` (`Showreel.start/stop`) plays the portal as a looping film: full intro
-  (`bgMap.intro`, waits on `bgMap.introOn`) -> front page 3 s -> HistTour guided tour at 2x until event 6 begins (events 1-5) -> /portal
-  #hindukush and #karakoram in preloaded full-screen iframes, 5 s each -> Climate Data pages 0-2, 3 s each -> front page 5 s -> loop.
-  Dip-to-black cuts, chapter lower-thirds, chapter progress line, auto-hidden cursor. Home button / Esc (captured first) stops it.
+  (`bgMap.intro`, waits on `bgMap.introOn`) -> front page 3 s -> HistTour guided tour at 2x with three events only (`BEST`: Batura 1974, Kohistan 2010, Gayari 2012, chosen by looking at them; K2 was dropped for stretched terrain and overlapping labels; `HistTour.open({only})`) -> /portal
+  #hindukush and #karakoram in preloaded full-screen iframes, 5 s each -> Climate Data: Historical Climate Records 5 s, Projection Till 2100 5 s -> Avalanche Alert Forecast 6 s (Climate pages and the alert dashboard load after the last avalanche, behind its card and the frames, so nothing loads during an avalanche: `prepare()`). Letterbox strips are hidden during the film, edge to edge -> front page 5 s -> loop.
+  Crossfades with no black between scenes (owner: run it as a video, no loading screens), chapter lower-thirds, chapter progress line, auto-hidden cursor. Home button / Esc (captured first) stops it. Pause / resume: round button beside Home or Space (`togglePause`): `FilmClock` in showreel.js freezes performance.now, animation frames, timers and CSS animations for the whole page, because the map libraries, the intro and the tour have no common pause. performance.now is replaced when the file loads (the libraries bind it when they load, so showreel.js must load before them); frames and timers are replaced on the first film and pass straight through unless frozen.
 - Front-page map, official view (user request): `scripts/build_official_view.py` (shapely) writes `static/geo/official_view.geojson`:
   the study-area mask minus Indian Illegally Occupied Jammu & Kashmir + Siachen, and the IIOJK polygon. home.html swaps in that mask,
   draws the J&K outer edge solid like the rest of the boundary, drops the amber tint on J&K and labels it "Indian Illegally Occupied

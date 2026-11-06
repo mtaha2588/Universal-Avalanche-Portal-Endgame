@@ -24,7 +24,7 @@
 .prj .prj-lg { width: 88px; } .prj .prj-lg span { font-size: 10.5px; }
 .prj-fb { position: absolute; inset: 0; display: grid; place-items: center; padding: 10px 100px 40px 10px; } .prj-fb[hidden] { display: none; } .prj-fb svg { width: 100%; height: 100%; } .prj-fb rect { cursor: pointer; } .prj svg .prj-fbl { cursor: pointer; fill: #fff; font: 700 14px var(--font); paint-order: stroke; stroke: #0a1424; stroke-width: 4px; } .prj svg .prj-fbl.on { fill: #7dd3fc; }
 .prj-rl { display: inline-grid; justify-items: start; gap: 0; padding: 2px 8px; border-radius: 7px; cursor: pointer; font: 600 11px/1.25 var(--font); color: #dbe7f5; border: 1px solid rgba(255, 255, 255, .28); background: rgba(6, 16, 34, .88); white-space: nowrap; } .prj-rl b { font-size: 12px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; } .prj-rl:hover { border-color: #7dd3fc; } .prj-rl.on { border-color: #7dd3fc; box-shadow: 0 0 0 1px #7dd3fc; }
-.low .prj-rl { padding: 1px 5px; font-size: 9.5px; } .low .prj-rl b { font-size: 10px; }
+.low .prj-rl { display: none; }   /* zoomed out the north is too small for them */
 .prj svg .prj-base { stroke: rgba(226, 232, 240, .5); stroke-width: 1; stroke-dasharray: 4 3; }
 .prj .cw-r small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .prj .cw-tb tbody tr[data-pgr] { cursor: pointer; }

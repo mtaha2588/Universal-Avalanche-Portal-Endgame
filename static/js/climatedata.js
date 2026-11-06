@@ -176,7 +176,7 @@ window.ClimateData = (function () {
     const zoom = (src, cap) => window.lightbox ? lightbox(src, cap) : null;   // the home page's own in-page viewer, never a new tab
     of.onclick = () => zoom(of.src, root.querySelector("[data-oc]").textContent);
     root.querySelectorAll("[data-zoom]").forEach(b => b.onclick = () => zoom(IMG + b.dataset.zoom, b.textContent.trim()));
-    Promise.all([load(), loadFc()]).then(([d, fc]) => { if (document.getElementById("cd") === root) { if (window.ClimateWS) ClimateWS.start(root, d); start(root, d, fc); } })
+    Promise.all([load(), loadFc(), window.ClimateWS ? ClimateWS.loadRaw() : null]).then(([d, fc]) => { if (document.getElementById("cd") === root) { if (window.ClimateWS) ClimateWS.start(root, d); start(root, d, fc); } })
       .catch(e => { if (window.ClimateWS) ClimateWS.fail(root, e.message); root.querySelector(".cd-svg").innerHTML = `<p class="desc">The winter climate run needs the portal server and an imported run (scripts/build_era5_winter.py). ${esc(e.message || "")}</p>`; });
   }
 
@@ -185,7 +185,7 @@ window.ClimateData = (function () {
     S = { root, d, fc, v: "t2m", r: "compare", mm: "year", year: Y.length - 1, play: 0 };
     const set = (k, v) => { const b = root.querySelector(`[data-k="${k}"]`); if (b) b.textContent = v; };
     set("win", Y.filter((_, i) => obs(i)).length + 1); set("tiles", d.meta.tiles);
-    set("warm", sgn(d.regional.t2m.pakistan.trend_per_decade, 2)); set("cov", sgn(d.regional.cover.pakistan.trend_per_decade, 2));
+    set("warm", sgn(d.regional.t2m.pakistan.trend_per_decade, 2)); { const raw = window.ClimateWS && ClimateWS.coverUnit(); set("cov", raw ? sgn(d.regional.cover.pakistan.trend_per_decade * 100, 0) : sgn(d.regional.cover.pakistan.trend_per_decade, 2)); if (raw) root.querySelector('.cd-mini [data-k="cov"] + span').textContent = `cover ${raw} / decade`; }
     root.querySelector('[data-k="win"]').parentNode.title = "41 winters, 1970–2010; 1974 is flagged estimated and left out of every trend";
 
     root.querySelector('[data-role="var"]').innerHTML = VARS.map(v => `<button type="button" data-v="${v.key}" style="--vc:${RAMP[VF[v.key]][VF[v.key] === "temp" ? 4 : 3]}"><i></i>${esc(SHORT[v.key] || v.label)}</button>`).join("");
