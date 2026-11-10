@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settlement &amp; Infrastructure · Karakoram Highway</title>
+<link rel="icon" href="/static/img/ndma-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css">
+<link rel="stylesheet" href="/static/kkh/kkh.css?v={{ v }}">
+<!-- configuration from the server (.env), read by kkh.js; nothing is put on window -->
+<script type="application/json" id="kkh-cfg">{{ cfg | tojson }}</script>
+</head>
+<body class="kkh-body">
+<div class="kkh-app" id="kkh-app"><div class="kkh-map" id="kkh-map"></div></div>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+<script type="module" src="/static/kkh/kkh.js?v={{ v }}"></script>
+</body>
+</html>

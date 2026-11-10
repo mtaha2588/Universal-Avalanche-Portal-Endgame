@@ -32,6 +32,8 @@ function route(url) {
     if (p.startsWith("/events") || p.startsWith("/map-sessions")) return null;   // telemetry / billing calls: never touch
     return TILES;
   }
+  if (h === "cdn.jsdelivr.net" && p.startsWith("/npm/cesium@1.")) return LIB;       // the 3D tour's pinned CesiumJS
+  if (h === "assets.ion.cesium.com" || h.endsWith(".virtualearth.net")) return TILES;  // Cesium World Terrain and ion imagery: kept as long as their headers allow
   if (h === "s3.amazonaws.com" && p.startsWith("/elevation-tiles-prod/")) return OPEN;
   if (h === "demotiles.maplibre.org") return OPEN;
   if (url.origin === self.location.origin && p.startsWith("/static/vendor/")) return LIB;
@@ -44,6 +46,7 @@ function route(url) {
 function keyOf(url) {
   const u = new URL(url);
   u.searchParams.delete("sku");
+  u.searchParams.delete("access_token");   // Cesium ion's short-lived session token: the tile is the same without it
   return u.toString();
 }
 
@@ -63,8 +66,10 @@ async function store(cacheName, key, res) {
   const body = await res.blob();
   const cache = await caches.open(cacheName);
   await cache.put(key, new Response(body, { status: res.status, statusText: res.statusText, headers }));
-  trim(cacheName);
+  stores[cacheName] = (stores[cacheName] || 0) + 1;
+  if (stores[cacheName] % 500 === 1) trim(cacheName);   // listing every stored tile is slow: once per 500 new tiles, not after each one
 }
+let stores = {};
 
 const fresh = r => {
   const t = +r.headers.get(STAMP), ttl = +r.headers.get("sw-ttl");

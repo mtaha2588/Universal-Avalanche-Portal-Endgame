@@ -1,16 +1,11 @@
 {
- "issued_for_date": "2026-11-05",
- "generated_utc": "2026-11-05T11:10:56Z",
+ "issued_for_date": "2026-11-10",
+ "generated_utc": "2026-11-10T04:25:26Z",
  "run_type": "live",
  "source": "ECMWF IFS 0.25 deg (open data) via Open-Meteo",
  "ensemble_members": 0,
  "rule": "MODERATE: 3-day snowfall >= tile P95 (and >= 10 mm) with 3-day max gust >= tile P95, or 3-day Tmax rise >= tile P95 after 7-day snowfall >= tile P90 (and >= 20 mm) on a snowpack. HIGH: 3-day snowfall >= tile P99 (and >= 25 mm) with gust >= tile P90, or the warm-snow part at HIGH thresholds. Tiles below 1200 m mean elevation are not rated.",
  "days": [
-  "2026-11-05",
-  "2026-11-06",
-  "2026-11-07",
-  "2026-11-08",
-  "2026-11-09",
   "2026-11-10",
   "2026-11-11",
   "2026-11-12",
@@ -20,7 +15,12 @@
   "2026-11-16",
   "2026-11-17",
   "2026-11-18",
-  "2026-11-19"
+  "2026-11-19",
+  "2026-11-20",
+  "2026-11-21",
+  "2026-11-22",
+  "2026-11-23",
+  "2026-11-24"
  ],
  "levels": {
   "0": "Low",
@@ -39,63 +39,13 @@
    "region": "Hindu Kush",
    "days": [
     {
-     "date": "2026-11-05",
-     "max_level": 0,
-     "tiles_rated": 43,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 12.6,
-     "max_student_risk": 0.051,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-06",
-     "max_level": 0,
-     "tiles_rated": 43,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 10.5,
-     "max_student_risk": 0.055,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-07",
-     "max_level": 0,
-     "tiles_rated": 43,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 9.3,
-     "max_student_risk": 0.038,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-08",
-     "max_level": 0,
-     "tiles_rated": 43,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 0.6,
-     "max_student_risk": 0.013,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-09",
-     "max_level": 0,
-     "tiles_rated": 43,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 0.5,
-     "max_student_risk": 0.013,
-     "max_level_name": "Low"
-    },
-    {
      "date": "2026-11-10",
      "max_level": 0,
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 6.7,
-     "max_student_risk": 0.049,
+     "max_sf3d_mm": 11.5,
+     "max_student_risk": 0.051,
      "max_level_name": "Low"
     },
     {
@@ -104,8 +54,8 @@
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 9.9,
-     "max_student_risk": 0.087,
+     "max_sf3d_mm": 22.9,
+     "max_student_risk": 0.075,
      "max_level_name": "Low"
     },
     {
@@ -114,8 +64,8 @@
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 62.5,
-     "max_student_risk": 0.122,
+     "max_sf3d_mm": 55.3,
+     "max_student_risk": 0.113,
      "max_level_name": "Low"
     },
     {
@@ -124,8 +74,8 @@
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 62.6,
-     "max_student_risk": 0.088,
+     "max_sf3d_mm": 84.1,
+     "max_student_risk": 0.253,
      "max_level_name": "Low"
     },
     {
@@ -134,8 +84,8 @@
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 56.4,
-     "max_student_risk": 0.078,
+     "max_sf3d_mm": 80.7,
+     "max_student_risk": 0.253,
      "max_level_name": "Low"
     },
     {
@@ -144,8 +94,8 @@
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 31.1,
-     "max_student_risk": 0.113,
+     "max_sf3d_mm": 43.4,
+     "max_student_risk": 0.251,
      "max_level_name": "Low"
     },
     {
@@ -154,8 +104,8 @@
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 28.2,
-     "max_student_risk": 0.102,
+     "max_sf3d_mm": 10.0,
+     "max_student_risk": 0.062,
      "max_level_name": "Low"
     },
     {
@@ -164,8 +114,8 @@
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 28.2,
-     "max_student_risk": 0.113,
+     "max_sf3d_mm": 0.4,
+     "max_student_risk": 0.024,
      "max_level_name": "Low"
     },
     {
@@ -174,8 +124,8 @@
      "tiles_rated": 43,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 2.0,
-     "max_student_risk": 0.033,
+     "max_sf3d_mm": 0.0,
+     "max_student_risk": 0.012,
      "max_level_name": "Low"
     },
     {
@@ -185,7 +135,57 @@
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
      "max_sf3d_mm": 0.0,
-     "max_student_risk": 0.026,
+     "max_student_risk": 0.012,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-20",
+     "max_level": 0,
+     "tiles_rated": 43,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.0,
+     "max_student_risk": 0.006,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-21",
+     "max_level": 0,
+     "tiles_rated": 43,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.0,
+     "max_student_risk": 0.006,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-22",
+     "max_level": 0,
+     "tiles_rated": 43,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.6,
+     "max_student_risk": 0.006,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-23",
+     "max_level": 0,
+     "tiles_rated": 43,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.6,
+     "max_student_risk": 0.007,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-24",
+     "max_level": 0,
+     "tiles_rated": 43,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.6,
+     "max_student_risk": 0.007,
      "max_level_name": "Low"
     }
    ]
@@ -194,63 +194,13 @@
    "region": "Karakoram",
    "days": [
     {
-     "date": "2026-11-05",
-     "max_level": 0,
-     "tiles_rated": 39,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 31.8,
-     "max_student_risk": 0.1,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-06",
-     "max_level": 0,
-     "tiles_rated": 39,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 30.3,
-     "max_student_risk": 0.092,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-07",
-     "max_level": 0,
-     "tiles_rated": 39,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 26.0,
-     "max_student_risk": 0.059,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-08",
-     "max_level": 0,
-     "tiles_rated": 39,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 1.8,
-     "max_student_risk": 0.021,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-09",
-     "max_level": 0,
-     "tiles_rated": 39,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 0.0,
-     "max_student_risk": 0.017,
-     "max_level_name": "Low"
-    },
-    {
      "date": "2026-11-10",
      "max_level": 0,
      "tiles_rated": 39,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 6.9,
-     "max_student_risk": 0.038,
+     "max_sf3d_mm": 5.9,
+     "max_student_risk": 0.028,
      "max_level_name": "Low"
     },
     {
@@ -259,8 +209,8 @@
      "tiles_rated": 39,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 10.9,
-     "max_student_risk": 0.055,
+     "max_sf3d_mm": 32.6,
+     "max_student_risk": 0.078,
      "max_level_name": "Low"
     },
     {
@@ -269,8 +219,8 @@
      "tiles_rated": 39,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 46.9,
-     "max_student_risk": 0.158,
+     "max_sf3d_mm": 59.4,
+     "max_student_risk": 0.1,
      "max_level_name": "Low"
     },
     {
@@ -279,29 +229,29 @@
      "tiles_rated": 39,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 65.3,
-     "max_student_risk": 0.171,
+     "max_sf3d_mm": 81.5,
+     "max_student_risk": 0.225,
      "max_level_name": "Low"
     },
     {
      "date": "2026-11-14",
-     "max_level": 0,
+     "max_level": 1,
      "tiles_rated": 39,
-     "tiles_moderate_or_high": 0,
+     "tiles_moderate_or_high": 1,
      "tiles_high": 0,
-     "max_sf3d_mm": 55.6,
-     "max_student_risk": 0.11,
-     "max_level_name": "Low"
+     "max_sf3d_mm": 68.5,
+     "max_student_risk": 0.225,
+     "max_level_name": "Moderate"
     },
     {
      "date": "2026-11-15",
-     "max_level": 0,
+     "max_level": 1,
      "tiles_rated": 39,
-     "tiles_moderate_or_high": 0,
+     "tiles_moderate_or_high": 1,
      "tiles_high": 0,
-     "max_sf3d_mm": 42.0,
-     "max_student_risk": 0.12,
-     "max_level_name": "Low"
+     "max_sf3d_mm": 41.7,
+     "max_student_risk": 0.237,
+     "max_level_name": "Moderate"
     },
     {
      "date": "2026-11-16",
@@ -309,8 +259,8 @@
      "tiles_rated": 39,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 29.6,
-     "max_student_risk": 0.126,
+     "max_sf3d_mm": 17.7,
+     "max_student_risk": 0.112,
      "max_level_name": "Low"
     },
     {
@@ -319,8 +269,8 @@
      "tiles_rated": 39,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 28.9,
-     "max_student_risk": 0.112,
+     "max_sf3d_mm": 5.9,
+     "max_student_risk": 0.062,
      "max_level_name": "Low"
     },
     {
@@ -329,8 +279,8 @@
      "tiles_rated": 39,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 7.5,
-     "max_student_risk": 0.077,
+     "max_sf3d_mm": 0.0,
+     "max_student_risk": 0.02,
      "max_level_name": "Low"
     },
     {
@@ -340,7 +290,57 @@
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
      "max_sf3d_mm": 0.0,
-     "max_student_risk": 0.02,
+     "max_student_risk": 0.023,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-20",
+     "max_level": 0,
+     "tiles_rated": 39,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.0,
+     "max_student_risk": 0.012,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-21",
+     "max_level": 0,
+     "tiles_rated": 39,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.0,
+     "max_student_risk": 0.01,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-22",
+     "max_level": 0,
+     "tiles_rated": 39,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 2.4,
+     "max_student_risk": 0.017,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-23",
+     "max_level": 0,
+     "tiles_rated": 39,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 2.4,
+     "max_student_risk": 0.01,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-24",
+     "max_level": 0,
+     "tiles_rated": 39,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 2.4,
+     "max_student_risk": 0.01,
      "max_level_name": "Low"
     }
    ]
@@ -349,63 +349,13 @@
    "region": "West Himalaya",
    "days": [
     {
-     "date": "2026-11-05",
-     "max_level": 0,
-     "tiles_rated": 37,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 9.5,
-     "max_student_risk": 0.039,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-06",
-     "max_level": 0,
-     "tiles_rated": 37,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 9.1,
-     "max_student_risk": 0.039,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-07",
-     "max_level": 0,
-     "tiles_rated": 37,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 5.1,
-     "max_student_risk": 0.015,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-08",
-     "max_level": 0,
-     "tiles_rated": 37,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 1.1,
-     "max_student_risk": 0.009,
-     "max_level_name": "Low"
-    },
-    {
-     "date": "2026-11-09",
-     "max_level": 0,
-     "tiles_rated": 37,
-     "tiles_moderate_or_high": 0,
-     "tiles_high": 0,
-     "max_sf3d_mm": 0.0,
-     "max_student_risk": 0.007,
-     "max_level_name": "Low"
-    },
-    {
      "date": "2026-11-10",
      "max_level": 0,
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 1.5,
-     "max_student_risk": 0.008,
+     "max_sf3d_mm": 4.2,
+     "max_student_risk": 0.018,
      "max_level_name": "Low"
     },
     {
@@ -414,8 +364,8 @@
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 1.5,
-     "max_student_risk": 0.008,
+     "max_sf3d_mm": 6.0,
+     "max_student_risk": 0.049,
      "max_level_name": "Low"
     },
     {
@@ -424,8 +374,8 @@
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 52.2,
-     "max_student_risk": 0.121,
+     "max_sf3d_mm": 29.3,
+     "max_student_risk": 0.088,
      "max_level_name": "Low"
     },
     {
@@ -434,8 +384,8 @@
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 58.2,
-     "max_student_risk": 0.139,
+     "max_sf3d_mm": 39.9,
+     "max_student_risk": 0.122,
      "max_level_name": "Low"
     },
     {
@@ -444,8 +394,8 @@
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 58.2,
-     "max_student_risk": 0.138,
+     "max_sf3d_mm": 36.9,
+     "max_student_risk": 0.122,
      "max_level_name": "Low"
     },
     {
@@ -454,8 +404,8 @@
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 15.1,
-     "max_student_risk": 0.113,
+     "max_sf3d_mm": 15.5,
+     "max_student_risk": 0.135,
      "max_level_name": "Low"
     },
     {
@@ -464,8 +414,8 @@
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 11.4,
-     "max_student_risk": 0.08,
+     "max_sf3d_mm": 7.5,
+     "max_student_risk": 0.041,
      "max_level_name": "Low"
     },
     {
@@ -474,8 +424,8 @@
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 11.4,
-     "max_student_risk": 0.08,
+     "max_sf3d_mm": 2.6,
+     "max_student_risk": 0.019,
      "max_level_name": "Low"
     },
     {
@@ -484,8 +434,8 @@
      "tiles_rated": 37,
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
-     "max_sf3d_mm": 2.7,
-     "max_student_risk": 0.031,
+     "max_sf3d_mm": 0.0,
+     "max_student_risk": 0.01,
      "max_level_name": "Low"
     },
     {
@@ -495,11 +445,86 @@
      "tiles_moderate_or_high": 0,
      "tiles_high": 0,
      "max_sf3d_mm": 0.0,
-     "max_student_risk": 0.027,
+     "max_student_risk": 0.01,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-20",
+     "max_level": 0,
+     "tiles_rated": 37,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.0,
+     "max_student_risk": 0.005,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-21",
+     "max_level": 0,
+     "tiles_rated": 37,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 0.5,
+     "max_student_risk": 0.004,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-22",
+     "max_level": 0,
+     "tiles_rated": 37,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 4.7,
+     "max_student_risk": 0.004,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-23",
+     "max_level": 0,
+     "tiles_rated": 37,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 4.8,
+     "max_student_risk": 0.007,
+     "max_level_name": "Low"
+    },
+    {
+     "date": "2026-11-24",
+     "max_level": 0,
+     "tiles_rated": 37,
+     "tiles_moderate_or_high": 0,
+     "tiles_high": 0,
+     "max_sf3d_mm": 4.3,
+     "max_student_risk": 0.009,
      "max_level_name": "Low"
     }
    ]
   }
  ],
- "highlights": []
+ "highlights": [
+  {
+   "date": "2026-11-14",
+   "tile_id": "N35.625_E74.375",
+   "region": "Karakoram",
+   "level": 1,
+   "level_name": "Moderate",
+   "lat": 35.625,
+   "lon": 74.375,
+   "sf_3d_mm": 33.5,
+   "gust_max_3d_ms": 12.6,
+   "tmax_rise_3d_c": -3.5
+  },
+  {
+   "date": "2026-11-15",
+   "tile_id": "N35.625_E74.375",
+   "region": "Karakoram",
+   "level": 1,
+   "level_name": "Moderate",
+   "lat": 35.625,
+   "lon": 74.375,
+   "sf_3d_mm": 32.8,
+   "gust_max_3d_ms": 12.6,
+   "tmax_rise_3d_c": -4.8
+  }
+ ]
 }

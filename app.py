@@ -7,8 +7,11 @@ from __future__ import annotations
 import gzip
 import json
 import logging
+import os
 import threading
 import time
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from pathlib import Path
 
@@ -68,7 +71,7 @@ def create_app(config: type[Config] = Config) -> Flask:
         # The portal's own scripts and styles are sent without a lifetime, which lets browsers guess one and keep running an old
         # copy after an update (seen: the tour kept a removed script). "no-cache" = always ask; unchanged files cost a 304 only.
         p = request.path
-        if p.startswith(("/static/js/", "/static/css/")) and "Cache-Control" not in resp.headers:
+        if p.startswith(("/static/js/", "/static/css/", "/static/tour3d/")) and "Cache-Control" not in resp.headers:
             resp.headers["Cache-Control"] = "no-cache"
         return resp
 
@@ -82,18 +85,90 @@ def create_app(config: type[Config] = Config) -> Flask:
     # Terrain elevation tiles  very crucial for the extraction of good  data and dispaly on the portal (open AWS Terrain Tiles, terrarium PNG) for every 3D map. Tiles downloaded by scripts/fetch_dem.py
     # are served from disk and cached by the browser for a year (they never change); anything else is redirected to the public copy.
     dem_dir = config.DATA_DIR / "dem" / "terrarium"
+    # Terrain tiles fetched on demand (open data, may be stored): data/dem/cache/terrarium, git-ignored, so the repo's 6,658 tiles stay as they are.
+    # Every tile any map asks for and the server lacks is downloaded once in the background; from then on it is served from disk, for every browser.
+    dem_cache = config.DATA_DIR / "dem" / "cache" / "terrarium"
+    dem_pool = ThreadPoolExecutor(max_workers=6, thread_name_prefix="dem")
+    dem_wait: set = set()
+    dem_lock = threading.Lock()
+    dem_kept = [0]
+    DEM_SESSION_MAX = 40000           # about 4 GB at most per server run, a safety limit
+
+    def _dem_fetch(z: int, x: int, y: int) -> None:
+        key = (z, x, y)
+        try:
+            with urllib.request.urlopen(f"https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png", timeout=20) as r:
+                data = r.read() if r.status == 200 else b""
+            if data.startswith(b"\x89PNG"):
+                dst = dem_cache / str(z) / str(x) / f"{y}.png"
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                tmp = dst.with_name(f"{y}.{threading.get_ident()}.part")
+                tmp.write_bytes(data)
+                os.replace(tmp, dst)
+                dem_kept[0] += 1
+        except Exception as e:                       # the browser already has the tile from the public copy; try again next time
+            log.debug("terrain tile %s not kept: %s", key, e)
+        finally:
+            with dem_lock:
+                dem_wait.discard(key)
+
+    def _dem_keep(z: int, x: int, y: int) -> None:
+        if z > 12 or dem_kept[0] >= DEM_SESSION_MAX:
+            return
+        key = (z, x, y)
+        with dem_lock:
+            if key in dem_wait or len(dem_wait) > 2000:
+                return
+            dem_wait.add(key)
+        dem_pool.submit(_dem_fetch, z, x, y)
 
     @app.get("/api/dem/<int:z>/<int:x>/<int:y>.png")
     def dem_tile(z: int, x: int, y: int):
         if not (0 <= z <= 15 and 0 <= x < 2 ** z and 0 <= y < 2 ** z):
             abort(404)
-        if (dem_dir / str(z) / str(x) / f"{y}.png").is_file():
-            resp = send_from_directory(dem_dir / str(z) / str(x), f"{y}.png", mimetype="image/png", max_age=31536000)
+        hit = next((d for d in (dem_dir, dem_cache) if (d / str(z) / str(x) / f"{y}.png").is_file()), None)
+        if hit:
+            resp = send_from_directory(hit / str(z) / str(x), f"{y}.png", mimetype="image/png", max_age=31536000)
             resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
         else:
+            # not on disk yet: the browser goes to the public copy at once, and the server keeps its own copy for every later visit
             resp = redirect(f"https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png", 302)
             resp.headers["Cache-Control"] = "public, max-age=86400"
+            _dem_keep(z, x, y)
         resp.headers["Access-Control-Allow-Origin"] = "*"
+        return resp
+
+    @app.get("/api/history/inventory")
+    def api_history_inventory():
+        # The avalanche inventory (forecast/pipeline/avalanche_events_master.csv), every row and field unchanged, for the 3D tour's cards and checks
+        p = config.FORECAST_DIR / "pipeline" / "avalanche_events_master.csv"
+        if not p.is_file():
+            return jsonify(available=False, rows=[]), 200
+        import csv as _csv
+        with open(p, encoding="utf-8-sig", newline="") as f:
+            rows = list(_csv.DictReader(f))
+        resp = jsonify(available=True, source="forecast/pipeline/avalanche_events_master.csv", rows=rows)
+        resp.headers["Cache-Control"] = "no-cache"
+        return resp
+
+    @app.get("/tour3d")
+    def tour3d():
+        # 3D Cinematic Tour (CesiumJS, static/tour3d/): the Historical Overview tour's events in a parallel 3D scene. Opened from the
+        # tour's 3D icon in a full-screen overlay; ?stop=N starts at the N-th stop. Tokens come from .env, sent to this page only.
+        resp = Response(render_template("tour3d.html", title=config.PORTAL_TITLE,
+                                        cfg={"ionToken": config.CESIUM_ION_TOKEN, "mapboxToken": config.MAPBOX_TOKEN}))
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
+
+    @app.get("/kkh")
+    def kkh():
+        # "Settlement & Infrastructure" tab (static/kkh/): the Karakoram Highway N-35, its glaciers, settlements and events, on its own
+        # Mapbox map. The page lives in static/kkh/kkh.html; the Mapbox token comes from .env and is sent to this page only.
+        from flask import render_template_string
+        d = Path(app.static_folder) / "kkh"
+        v = int(max(p.stat().st_mtime for p in [d / "kkh.js", d / "kkh.css", *(d / "data").glob("*.json*")]))
+        resp = Response(render_template_string((d / "kkh.html").read_text(encoding="utf-8"), cfg={"mapboxToken": config.MAPBOX_TOKEN, "v": v}, v=v))
+        resp.headers["Cache-Control"] = "no-store"
         return resp
 
     @app.get("/portal")

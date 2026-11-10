@@ -1,0 +1,257 @@
+{
+ "relation": 2441750,
+ "route_vertices_full": 19856,
+ "route_vertices_simplified": 9416,
+ "length_km": 808.7,
+ "length_km_simplified": 807.9,
+ "gaps_bridged": [
+  {
+   "m": 94,
+   "from": [
+    34.738953,
+    72.956373
+   ],
+   "to": [
+    34.739607,
+    72.955719
+   ]
+  }
+ ],
+ "g314_context_km": 405.5,
+ "g314_straight_joins": [
+  {
+   "m": 47,
+   "from": [
+    39.32947,
+    75.742248
+   ],
+   "to": [
+    39.329871,
+    75.742056
+   ]
+  },
+  {
+   "m": 54,
+   "from": [
+    36.848322,
+    75.46171
+   ],
+   "to": [
+    36.848662,
+    75.461272
+   ]
+  },
+  {
+   "m": 710,
+   "from": [
+    39.331267,
+    75.740482
+   ],
+   "to": [
+    39.327512,
+    75.733795
+   ]
+  },
+  {
+   "m": 878,
+   "from": [
+    39.327219,
+    75.732801
+   ],
+   "to": [
+    39.325319,
+    75.722897
+   ]
+  },
+  {
+   "m": 3088,
+   "from": [
+    38.785747,
+    75.283618
+   ],
+   "to": [
+    38.777187,
+    75.317488
+   ]
+  }
+ ],
+ "welds_under_40m": 8,
+ "side_ways_used": [
+  1270853574
+ ],
+ "attabad_tunnels": [
+  {
+   "way": 370731323,
+   "on_route": true,
+   "length_m": 3355
+  },
+  {
+   "way": 528811846,
+   "on_route": true,
+   "length_m": 2688
+  },
+  {
+   "way": 528811847,
+   "on_route": true,
+   "length_m": 394
+  },
+  {
+   "way": 659187471,
+   "on_route": true,
+   "length_m": 160
+  },
+  {
+   "way": 1036880269,
+   "on_route": true,
+   "length_m": 433
+  }
+ ],
+ "attabad_tunnel_total_km": 7.03,
+ "infrastructure": {
+  "bridge": 117,
+  "tunnel": 11,
+  "avalanche gallery": 4,
+  "dry port": 1
+ },
+ "towns": [
+  {
+   "name": "Hasan Abdal",
+   "lat": 33.8218473,
+   "lon": 72.6873895,
+   "osm": "node/253271394",
+   "place": "town",
+   "chainage_km": 0.7,
+   "offset_to_route_km": 0.25
+  },
+  {
+   "name": "Abbottabad",
+   "lat": 34.1436136,
+   "lon": 73.2132747,
+   "osm": "node/114141293",
+   "place": "city",
+   "chainage_km": 68.5,
+   "offset_to_route_km": 0.1
+  },
+  {
+   "name": "Mansehra",
+   "lat": 34.3286855,
+   "lon": 73.1993125,
+   "osm": "node/114143790",
+   "place": "city",
+   "chainage_km": 93.5,
+   "offset_to_route_km": 0.68
+  },
+  {
+   "name": "Besham",
+   "lat": 34.9239,
+   "lon": 72.8758,
+   "osm": "wikidata/Q3307940",
+   "place": "town (Wikidata; no place point in OSM)",
+   "chainage_km": 217.0,
+   "offset_to_route_km": 0.07
+  },
+  {
+   "name": "Dasu",
+   "lat": 35.2686424,
+   "lon": 73.2240114,
+   "osm": "node/740162446",
+   "place": "town",
+   "chainage_km": 291.6,
+   "offset_to_route_km": 0.08
+  },
+  {
+   "name": "Chilas",
+   "lat": 35.4195035,
+   "lon": 74.0963144,
+   "osm": "node/275277859",
+   "place": "city",
+   "chainage_km": 424.0,
+   "offset_to_route_km": 1.34
+  },
+  {
+   "name": "Raikot",
+   "lat": 35.492461,
+   "lon": 74.591914,
+   "osm": "way/368171428",
+   "place": "named bridge (Raikot Bridge)",
+   "chainage_km": 478.2,
+   "offset_to_route_km": 0.0
+  },
+  {
+   "name": "Gilgit",
+   "lat": 35.9208102,
+   "lon": 74.314044,
+   "osm": "node/58568637",
+   "place": "city",
+   "chainage_km": 555.5,
+   "offset_to_route_km": 5.83
+  },
+  {
+   "name": "Jaglot",
+   "lat": 36.1806745,
+   "lon": 74.3044699,
+   "osm": "node/735104912",
+   "place": "village",
+   "chainage_km": 584.3,
+   "offset_to_route_km": 0.81
+  },
+  {
+   "name": "Hassanabad",
+   "lat": 36.2961309,
+   "lon": 74.5988253,
+   "osm": "node/4025930371",
+   "place": "village",
+   "chainage_km": 632.5,
+   "offset_to_route_km": 0.15
+  },
+  {
+   "name": "Aliabad",
+   "lat": 36.3059806,
+   "lon": 74.6166723,
+   "osm": "node/734223824",
+   "place": "town",
+   "chainage_km": 635.0,
+   "offset_to_route_km": 0.09
+  },
+  {
+   "name": "Gulmit",
+   "lat": 36.3878939,
+   "lon": 74.862464,
+   "osm": "node/271958121",
+   "place": "town",
+   "chainage_km": 671.5,
+   "offset_to_route_km": 0.47
+  },
+  {
+   "name": "Passu",
+   "lat": 36.4658158,
+   "lon": 74.8943261,
+   "osm": "node/271959710",
+   "place": "village",
+   "chainage_km": 686.2,
+   "offset_to_route_km": 0.36
+  },
+  {
+   "name": "Sost",
+   "lat": 36.6897187,
+   "lon": 74.8205541,
+   "osm": "node/2663382639",
+   "place": "town",
+   "chainage_km": 725.4,
+   "offset_to_route_km": 0.07
+  },
+  {
+   "name": "Khunjerab Pass",
+   "lat": 36.8501,
+   "lon": 75.4283,
+   "osm": "node/13681846537",
+   "place": "saddle",
+   "chainage_km": 808.7,
+   "offset_to_route_km": 0.0
+  }
+ ],
+ "files": {
+  "kkh_route.geojson": 202,
+  "kkh_infrastructure.geojson": 24
+ }
+}

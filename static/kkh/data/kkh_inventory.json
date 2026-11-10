@@ -1,0 +1,774 @@
+{
+ "source_file": "CPEC_KKH_Glacier_Inventory.xlsx",
+ "converted": "2026-11-10",
+ "note": "Values exactly as in the workbook (text as stored; 'Not found' kept). Computed fields are under 'computed', never mixed into the rows.",
+ "glaciers": {
+  "title": "Glacier inventory - Hunza basin glaciers along/near CPEC & Karakoram Highway (KKH)",
+  "notes": [
+   "Elevations are published ranges, not live 2026 measurements. 'Not found' = no reliable source located. See 'Notes & Sources' sheet."
+  ],
+  "header_row": 4,
+  "columns": [
+   "Glacier",
+   "Valley / location",
+   "Relation to CPEC / KKH",
+   "Type",
+   "Area (km²)",
+   "Length (km)",
+   "Min elevation (m a.s.l.)",
+   "Max elevation (m a.s.l.)",
+   "Elevation note",
+   "Latitude (°N)",
+   "Longitude (°E)",
+   "Mass budget 1973–2009 (m w.e./yr)",
+   "Observed change",
+   "Nearest settlement(s)",
+   "Distance glacier → settlement (km)",
+   "Distance basis",
+   "Hazard / notes",
+   "Sources",
+   "Confidence"
+  ],
+  "rows": [
+   {
+    "_row": 5,
+    "Glacier": "Batura",
+    "Valley / location": "Passu, Gojal (Upper Hunza); flows west to east",
+    "Relation to CPEC / KKH": "Terminus close to KKH at Passu",
+    "Type": "Debris-covered valley glacier",
+    "Area (km²)": "236",
+    "Length (km)": "57",
+    "Min elevation (m a.s.l.)": "Not found",
+    "Max elevation (m a.s.l.)": "7795",
+    "Elevation note": "Max = Batura Sar summit above the glacier. Terminus was ~0.5 km above KKH (1984).",
+    "Latitude (°N)": "36.53",
+    "Longitude (°E)": "74.65",
+    "Mass budget 1973–2009 (m w.e./yr)": "-0.12",
+    "Observed change": "Terminus retreated ~0.6 km (1999–2017)",
+    "Nearest settlement(s)": "Passu",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "-",
+    "Hazard / notes": "Main meltwater source for Upper Hunza; long debris-covered tongue.",
+    "Sources": "S1, S3, S5",
+    "Confidence": "Medium"
+   },
+   {
+    "_row": 6,
+    "Glacier": "Passu (Pasu)",
+    "Valley / location": "South of Passu village, Gojal",
+    "Relation to CPEC / KKH": "Adjacent to KKH at Passu",
+    "Type": "Debris-free valley glacier",
+    "Area (km²)": "51",
+    "Length (km)": "20.5–38 (sources differ)",
+    "Min elevation (m a.s.l.)": "2686",
+    "Max elevation (m a.s.l.)": "7638",
+    "Elevation note": "Elevation range of the glacier (2025 remote-sensing study).",
+    "Latitude (°N)": "36.4667",
+    "Longitude (°E)": "74.7667",
+    "Mass budget 1973–2009 (m w.e./yr)": "-0.09",
+    "Observed change": "Terminus retreated ~0.3 km (1999–2017); rapid melt reported by local media",
+    "Nearest settlement(s)": "Passu; Hussaini",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "-",
+    "Hazard / notes": "Moraine-dammed Passu Lake at terminus; melt threatens Passu village and a KKH bridge.",
+    "Sources": "S2, S3, S5, S6, S28",
+    "Confidence": "Medium"
+   },
+   {
+    "_row": 7,
+    "Glacier": "Ghulkin (Hussaini-Ghulkin)",
+    "Valley / location": "Gojal; between Ghulkin and Gulmit glaciers (Ultar massif)",
+    "Relation to CPEC / KKH": "Adjacent to KKH near Gulmit",
+    "Type": "Valley glacier",
+    "Area (km²)": "Not found",
+    "Length (km)": "Not found",
+    "Min elevation (m a.s.l.)": "Not found",
+    "Max elevation (m a.s.l.)": "Not found",
+    "Elevation note": "Village sits at ~2,500 m.",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Mass budget 1973–2009 (m w.e./yr)": "Not found",
+    "Observed change": "More stable than Passu/Batura (1999–2017); down-wasting is causing village water shortage",
+    "Nearest settlement(s)": "Ghulkin; Hussaini; Borith",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "Village is ~3 km by jeep track from KKH (not a glacier-to-village distance)",
+    "Hazard / notes": "A June GLOF hit Ghulkin village and blocked the KKH (Dawn); UNDP picked Ghulkin and Passu for glacier-change research.",
+    "Sources": "S5, S15, S23, S25, S29",
+    "Confidence": "Low"
+   },
+   {
+    "_row": 8,
+    "Glacier": "Ghulmit (Gulmit)",
+    "Valley / location": "Gojal; drains Ultar massif",
+    "Relation to CPEC / KKH": "Adjacent to KKH near Gulmit",
+    "Type": "Valley glacier",
+    "Area (km²)": "Not found",
+    "Length (km)": "Not found",
+    "Min elevation (m a.s.l.)": "Not found",
+    "Max elevation (m a.s.l.)": "Not found",
+    "Elevation note": "-",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Mass budget 1973–2009 (m w.e./yr)": "Not found",
+    "Observed change": "More stable than Passu/Batura (1999–2017)",
+    "Nearest settlement(s)": "Gulmit; Ghulkin",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "-",
+    "Hazard / notes": "Ghulkin village lies between this glacier and Ghulkin glacier.",
+    "Sources": "S5, S15, S23",
+    "Confidence": "Low"
+   },
+   {
+    "_row": 9,
+    "Glacier": "Muchuhar",
+    "Valley / location": "Hunza, near Hassanabad",
+    "Relation to CPEC / KKH": "Meltwater stream drains through Hassanabad toward KKH",
+    "Type": "Valley glacier",
+    "Area (km²)": "Not found",
+    "Length (km)": "Not found",
+    "Min elevation (m a.s.l.)": "Not found",
+    "Max elevation (m a.s.l.)": "Not found",
+    "Elevation note": "-",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Mass budget 1973–2009 (m w.e./yr)": "Not found",
+    "Observed change": "Historically surged together with Shishper in 40–45-year cycles; recently only Shishper surged",
+    "Nearest settlement(s)": "Hassanabad",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "-",
+    "Hazard / notes": "Stream passes through Hassanabad village.",
+    "Sources": "S7, S14",
+    "Confidence": "Low"
+   },
+   {
+    "_row": 10,
+    "Glacier": "Shishper (Shispare)",
+    "Valley / location": "West of Hassanabad, near Aliabad (Hunza)",
+    "Relation to CPEC / KKH": "~4 km from KKH; flood path crosses KKH bridge at Hassanabad",
+    "Type": "Surge-type, partly debris-covered",
+    "Area (km²)": "Not found",
+    "Length (km)": "15–16.5 (sources differ)",
+    "Min elevation (m a.s.l.)": "Not found",
+    "Max elevation (m a.s.l.)": "7611",
+    "Elevation note": "Max = Shispare peak above glacier; Hassanabad village is at ~2,100 m.",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Mass budget 1973–2009 (m w.e./yr)": "Not found",
+    "Observed change": "Surge 2018–19: ~2.5 km advance in under a year, ~4 m/day (up to 7 m/day reported); supraglacial lake formed",
+    "Nearest settlement(s)": "Hassanabad (Sherabad, Harum, Roshanabad); Aliabad water supply",
+    "Distance glacier → settlement (km)": "4",
+    "Distance basis": "Reported distance from glacier mouth to Hassanabad village/KKH (Reuters 2019; Dialogue Earth)",
+    "Hazard / notes": "GLOFs in 2020, 2022 (bridge swept away) and Aug 2025 (KKH washed away). Floods reach the village in ~15 minutes.",
+    "Sources": "S7, S8, S9, S13, S14, S16, S22, S27",
+    "Confidence": "High"
+   },
+   {
+    "_row": 11,
+    "Glacier": "Khurdopin",
+    "Valley / location": "Shimshal valley, Gojal",
+    "Relation to CPEC / KKH": "Shimshal River joins Hunza River upstream of KKH at Passu",
+    "Type": "Surge-type, debris-covered",
+    "Area (km²)": "115",
+    "Length (km)": "41",
+    "Min elevation (m a.s.l.)": "3300",
+    "Max elevation (m a.s.l.)": "7760",
+    "Elevation note": "Elevation range of the glacier.",
+    "Latitude (°N)": "36.3383",
+    "Longitude (°E)": "75.4675",
+    "Mass budget 1973–2009 (m w.e./yr)": "-0.05",
+    "Observed change": "Surge cycle ~20 yr (1999/2000, 2017); 2017 surge thickened the glacier end by up to ~80 m and blocked the Shimshal river",
+    "Nearest settlement(s)": "Shimshal",
+    "Distance glacier → settlement (km)": "16.730518804654",
+    "Distance basis": "Straight-line distance from coordinates (formula)",
+    "Hazard / notes": "Dammed lake in 2017 drained by early Aug 2017; may also threaten Passu village downstream.",
+    "Sources": "S3, S4, S11, S12, S20, S24",
+    "Confidence": "High"
+   },
+   {
+    "_row": 12,
+    "Glacier": "Vijerab (Virjerab)",
+    "Valley / location": "Shimshal valley (Vijerab valley)",
+    "Relation to CPEC / KKH": "Same drainage as Khurdopin (indirect link to KKH)",
+    "Type": "Surge-type, debris-covered",
+    "Area (km²)": "113",
+    "Length (km)": "Not found",
+    "Min elevation (m a.s.l.)": "Not found",
+    "Max elevation (m a.s.l.)": "Not found",
+    "Elevation note": "-",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Mass budget 1973–2009 (m w.e./yr)": "-0.22",
+    "Observed change": "Valley repeatedly dammed by Khurdopin",
+    "Nearest settlement(s)": "Shimshal",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "-",
+    "Hazard / notes": "Most negative mass budget of the group.",
+    "Sources": "S3, S12",
+    "Confidence": "Medium"
+   },
+   {
+    "_row": 13,
+    "Glacier": "Yazghil",
+    "Valley / location": "Hunza basin (exact valley not confirmed)",
+    "Relation to CPEC / KKH": "Indirect (Hunza basin)",
+    "Type": "Debris-covered",
+    "Area (km²)": "99",
+    "Length (km)": "Not found",
+    "Min elevation (m a.s.l.)": "Not found",
+    "Max elevation (m a.s.l.)": "Not found",
+    "Elevation note": "-",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Mass budget 1973–2009 (m w.e./yr)": "-0.01",
+    "Observed change": "Two tongues reported advancing (2005 study)",
+    "Nearest settlement(s)": "Not found",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "-",
+    "Hazard / notes": "-",
+    "Sources": "S3",
+    "Confidence": "Low"
+   },
+   {
+    "_row": 14,
+    "Glacier": "Barpu",
+    "Valley / location": "Hopar valley, Nagar",
+    "Relation to CPEC / KKH": "Indirect (Nagar River → Hunza River)",
+    "Type": "Surge-type",
+    "Area (km²)": "90",
+    "Length (km)": "Not found",
+    "Min elevation (m a.s.l.)": "Not found",
+    "Max elevation (m a.s.l.)": "Not found",
+    "Elevation note": "-",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Mass budget 1973–2009 (m w.e./yr)": "-0.15",
+    "Observed change": "~21% area loss 1977–2014 (single study; treat with caution)",
+    "Nearest settlement(s)": "Hopar / Nagar valley villages (not researched)",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "-",
+    "Hazard / notes": "Tributary of the Hispar glacier system.",
+    "Sources": "S3, S18",
+    "Confidence": "Low"
+   },
+   {
+    "_row": 15,
+    "Glacier": "Hispar",
+    "Valley / location": "Hispar valley, Nagar",
+    "Relation to CPEC / KKH": "Indirect (Hispar River → Nagar River → Hunza River)",
+    "Type": "Surge-type, debris-covered",
+    "Area (km²)": "345",
+    "Length (km)": "49",
+    "Min elevation (m a.s.l.)": "2324",
+    "Max elevation (m a.s.l.)": "7864",
+    "Elevation note": "Hispar watershed elevation range (not glacier surface). Hispar Pass is 5,128 m.",
+    "Latitude (°N)": "36.083",
+    "Longitude (°E)": "75.267",
+    "Mass budget 1973–2009 (m w.e./yr)": "-0.14",
+    "Observed change": "Studies conflict: ~26% area loss 1977–2014 vs 114 km² snow-cover loss 1990–2018 (different methods)",
+    "Nearest settlement(s)": "Nagar valley villages (not researched)",
+    "Distance glacier → settlement (km)": "Not found",
+    "Distance basis": "-",
+    "Hazard / notes": "Joins Biafo Glacier at Hispar La to form a ~100 km glacier system.",
+    "Sources": "S3, S18, S19",
+    "Confidence": "Medium"
+   }
+  ],
+  "summary_rows": [
+   {
+    "_row": 16,
+    "Glacier": "Total area (glaciers with data)",
+    "Valley / location": null,
+    "Relation to CPEC / KKH": null,
+    "Type": null,
+    "Area (km²)": "1049",
+    "Length (km)": null,
+    "Min elevation (m a.s.l.)": null,
+    "Max elevation (m a.s.l.)": null,
+    "Elevation note": null,
+    "Latitude (°N)": null,
+    "Longitude (°E)": null,
+    "Mass budget 1973–2009 (m w.e./yr)": null,
+    "Observed change": null,
+    "Nearest settlement(s)": null,
+    "Distance glacier → settlement (km)": null,
+    "Distance basis": null,
+    "Hazard / notes": null,
+    "Sources": null,
+    "Confidence": null
+   }
+  ]
+ },
+ "settlements": {
+  "title": "Settlements near the glaciers - population and exposure",
+  "notes": [
+   "Population figures come from different years and methods; low/high shows the spread between sources. Do not treat the totals as an official count."
+  ],
+  "header_row": 4,
+  "columns": [
+   "Settlement",
+   "Nearest glacier(s)",
+   "Population (low)",
+   "Population (high)",
+   "Midpoint estimate",
+   "Households",
+   "Elevation (m)",
+   "Latitude (°N)",
+   "Longitude (°E)",
+   "Distance to glacier (km)",
+   "Distance basis",
+   "Notes",
+   "Sources",
+   "Confidence"
+  ],
+  "rows": [
+   {
+    "_row": 5,
+    "Settlement": "Hassanabad",
+    "Nearest glacier(s)": "Shishper",
+    "Population (low)": "1500",
+    "Population (high)": "1500",
+    "Midpoint estimate": "1500",
+    "Households": "170–200",
+    "Elevation (m)": "2100",
+    "Latitude (°N)": "36.29806",
+    "Longitude (°E)": "74.595",
+    "Distance to glacier (km)": "4",
+    "Distance basis": "Reported glacier-mouth to village distance",
+    "Notes": "Population ~1,500 is from one general source; 21 households were evacuated as at risk in 2021; ~20 of 170 households displaced in an earlier outburst; 16 homes hit in 2022.",
+    "Sources": "S7, S8, S21, S28",
+    "Confidence": "Medium"
+   },
+   {
+    "_row": 6,
+    "Settlement": "Shimshal",
+    "Nearest glacier(s)": "Khurdopin; Vijerab",
+    "Population (low)": "2000",
+    "Population (high)": "2000",
+    "Midpoint estimate": "2000",
+    "Households": "250",
+    "Elevation (m)": "3100",
+    "Latitude (°N)": "36.4366",
+    "Longitude (°E)": "75.326",
+    "Distance to glacier (km)": "16.730518804654",
+    "Distance basis": "Straight-line from Khurdopin coordinates (formula)",
+    "Notes": "'More than 2,000' residents. Village road damaged and hundreds stranded by the 2017 outburst.",
+    "Sources": "S11, S12",
+    "Confidence": "Medium"
+   },
+   {
+    "_row": 7,
+    "Settlement": "Passu",
+    "Nearest glacier(s)": "Passu; Batura",
+    "Population (low)": "862",
+    "Population (high)": "1000",
+    "Midpoint estimate": "931",
+    "Households": "143",
+    "Elevation (m)": "2500",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Distance to glacier (km)": "Not found",
+    "Distance basis": "-",
+    "Notes": "Lower figure from an ICIMOD survey slide (ambiguous), upper from general sources. Largest settlement on the Passu glacier side; village is on three terraces.",
+    "Sources": "S10, S15, S26",
+    "Confidence": "Medium"
+   },
+   {
+    "_row": 8,
+    "Settlement": "Ghulkin",
+    "Nearest glacier(s)": "Ghulkin; Ghulmit",
+    "Population (low)": "748",
+    "Population (high)": "2000",
+    "Midpoint estimate": "1374",
+    "Households": "184",
+    "Elevation (m)": "2500",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Distance to glacier (km)": "Not found",
+    "Distance basis": "-",
+    "Notes": "Wide range: ICIMOD survey (748) vs travel/general sources (1,500–2,000). ~140 traditional dwellings. Relocation to Shahabad area proposed because of GLOF risk.",
+    "Sources": "S10, S26, S29",
+    "Confidence": "Low"
+   },
+   {
+    "_row": 9,
+    "Settlement": "Hussaini (Hussainabad)",
+    "Nearest glacier(s)": "Ghulkin",
+    "Population (low)": null,
+    "Population (high)": null,
+    "Midpoint estimate": null,
+    "Households": "45",
+    "Elevation (m)": "Not found",
+    "Latitude (°N)": "Not found",
+    "Longitude (°E)": "Not found",
+    "Distance to glacier (km)": "Not found",
+    "Distance basis": "-",
+    "Notes": "Population not found; household count is from an ICIMOD survey sample.",
+    "Sources": "S10",
+    "Confidence": "Low"
+   }
+  ],
+  "summary_rows": [
+   {
+    "_row": 10,
+    "Settlement": "Total (not de-duplicated)",
+    "Nearest glacier(s)": null,
+    "Population (low)": "5110",
+    "Population (high)": "6500",
+    "Midpoint estimate": "5805",
+    "Households": null,
+    "Elevation (m)": null,
+    "Latitude (°N)": null,
+    "Longitude (°E)": null,
+    "Distance to glacier (km)": null,
+    "Distance basis": null,
+    "Notes": null,
+    "Sources": null,
+    "Confidence": null
+   },
+   {
+    "_row": 11,
+    "Settlement": "Midpoint = average of low and high. Total adds only the settlements listed above (Hussaini has no population figure).",
+    "Nearest glacier(s)": null,
+    "Population (low)": null,
+    "Population (high)": null,
+    "Midpoint estimate": null,
+    "Households": null,
+    "Elevation (m)": null,
+    "Latitude (°N)": null,
+    "Longitude (°E)": null,
+    "Distance to glacier (km)": null,
+    "Distance basis": null,
+    "Notes": null,
+    "Sources": null,
+    "Confidence": null
+   }
+  ]
+ },
+ "events": {
+  "title": "Recent surge / GLOF events near the KKH",
+  "notes": [],
+  "header_row": 3,
+  "columns": [
+   "Date",
+   "Glacier / place",
+   "Event",
+   "Impact",
+   "Sources"
+  ],
+  "rows": [
+   {
+    "_row": 4,
+    "Date": "May–Aug 2017",
+    "Glacier / place": "Khurdopin / Shimshal",
+    "Event": "Surge blocked the Shimshal river; lake formed and drained by early August (outburst ~21 July).",
+    "Impact": "Buildings, hanging bridges and farmland damaged; village road cut; hundreds stranded awaiting helicopter evacuation.",
+    "Sources": "S4, S12, S24"
+   },
+   {
+    "_row": 5,
+    "Date": "2018–2019",
+    "Glacier / place": "Shishper / Hassanabad",
+    "Event": "Surge advanced ~1,750 m in three months, ~2.5 km in under a year; supraglacial lake formed.",
+    "Impact": "Two powerhouses closed, leaving ~70–80% of Hunza without electricity; evacuation siren system set up.",
+    "Sources": "S8, S13, S14"
+   },
+   {
+    "_row": 6,
+    "Date": "Late May 2020 (approx.)",
+    "Glacier / place": "Shishper / Hassanabad",
+    "Event": "Lake at glacier base flooded.",
+    "Impact": "At least 20 residents displaced; a half-built power station damaged.",
+    "Sources": "S7, S9"
+   },
+   {
+    "_row": 7,
+    "Date": "7 May 2022",
+    "Glacier / place": "Shishper / Hassanabad",
+    "Event": "Glacier outburst flood.",
+    "Impact": "Historic KKH bridge swept away; 6 houses destroyed (16 homes hit overall), farmland, orchards and two hydropower projects damaged.",
+    "Sources": "S27, S28"
+   },
+   {
+    "_row": 8,
+    "Date": "August 2025",
+    "Glacier / place": "Shishper / Hassanabad; Khunjerab River (Murkhun)",
+    "Event": "Outburst flood and flash floods.",
+    "Impact": "Part of the KKH swept away; officials called it the worst event in the area since 2018.",
+    "Sources": "S16"
+   },
+   {
+    "_row": 9,
+    "Date": "June 2026",
+    "Glacier / place": "Gilgit-Baltistan",
+    "Event": "Met Office issued a second GLOF alert in the month.",
+    "Impact": "Warning that sustained high temperatures were accelerating melt.",
+    "Sources": "S17"
+   }
+  ],
+  "summary_rows": []
+ },
+ "notes_sources": {
+  "title": "Notes, caveats and sources",
+  "notes": [
+   "How to read: 'Not found' means no reliable source was located. These cells were left empty rather than estimated.",
+   "Height: elevations are published ranges (glacier or adjacent peak). No source gives a current (2026) measured height; surging glaciers can change by tens of metres in one event.",
+   "Area: areas come from the 1973–2009 glacier inventory (S3); present-day areas will differ. Where sources conflict (e.g. Passu length 20.5–38 km) the range is shown.",
+   "Distance: only distances reported by a source are shown, except Khurdopin–Shimshal, which is a straight-line formula from coordinates (not a flow-path distance).",
+   "Population: sources differ by year and method; use the 2017 census or the district office for official figures.",
+   "Confidence: High = several consistent sources; Medium = one good source or small conflicts; Low = limited or weak sources.",
+   "Hispar, Barpu, Yazghil and Vijerab are in the Hunza basin but not directly beside the KKH; their settlement and population data were not researched."
+  ],
+  "sources": [
+   {
+    "id": "S1",
+    "source": "Wikipedia - Batura Glacier",
+    "url": "https://en.wikipedia.org/wiki/Batura_Glacier",
+    "_row": 12
+   },
+   {
+    "id": "S2",
+    "source": "Wikipedia - Passu Glacier",
+    "url": "https://en.wikipedia.org/wiki/Passu_Glacier",
+    "_row": 13
+   },
+   {
+    "id": "S3",
+    "source": "Bolch et al. 2017, The Cryosphere 11 - Hunza glaciers",
+    "url": "https://tc.copernicus.org/articles/11/531/2017/tc-11-531-2017.pdf",
+    "_row": 14
+   },
+   {
+    "id": "S4",
+    "source": "Steiner et al. 2018, The Cryosphere 12 - Khurdopin surge",
+    "url": "https://tc.copernicus.org/articles/12/95/2018/",
+    "_row": 15
+   },
+   {
+    "id": "S5",
+    "source": "ISPRS Annals 2018 - Gulmit to Passu glaciers",
+    "url": "https://isprs-annals.copernicus.org/articles/IV-3/7/2018/isprs-annals-IV-3-7-2018.pdf",
+    "_row": 16
+   },
+   {
+    "id": "S6",
+    "source": "MDPI Remote Sensing 2025 - Passu Glacier",
+    "url": "https://www.mdpi.com/2072-4292/17/23/3907",
+    "_row": 17
+   },
+   {
+    "id": "S7",
+    "source": "Dialogue Earth - Shishper / Hassanabad",
+    "url": "https://dialogue.earth/en/?p=20074239",
+    "_row": 18
+   },
+   {
+    "id": "S8",
+    "source": "Reuters via Arab News (May 2019)",
+    "url": "https://arabnews.pk/node/1504131",
+    "_row": 19
+   },
+   {
+    "id": "S9",
+    "source": "Dawn - Glacier outburst displaces people",
+    "url": "https://www.dawn.com/news/1560517",
+    "_row": 20
+   },
+   {
+    "id": "S10",
+    "source": "ICIMOD - SDIP I lessons learnt",
+    "url": "https://www.icimod.org/wp-content/uploads/2019/12/Achievements-and-lessons-learnt-from-SDIP-I-.pdf",
+    "_row": 21
+   },
+   {
+    "id": "S11",
+    "source": "Wikipedia - Shimshal",
+    "url": "https://en.wikipedia.org/wiki/Shimshal",
+    "_row": 22
+   },
+   {
+    "id": "S12",
+    "source": "Karakoram Anomaly Project - Khurdopin",
+    "url": "https://semicircle-potato-j88g.squarespace.com/research-exploration/karakoram-anomaly-project",
+    "_row": 23
+   },
+   {
+    "id": "S13",
+    "source": "Geo.tv - Shisper glacier surge (2019)",
+    "url": "https://geo.tv/latest/228705-shisper-glacier-surge",
+    "_row": 24
+   },
+   {
+    "id": "S14",
+    "source": "The High Asia Herald (2019)",
+    "url": "https://thehighasia.com/?p=4445",
+    "_row": 25
+   },
+   {
+    "id": "S15",
+    "source": "Pamir Times - Passu / Ghulkin water",
+    "url": "https://pamirtimes.net/?p=54393",
+    "_row": 26
+   },
+   {
+    "id": "S16",
+    "source": "Dawn - Glacial flood sweeps away part of KKH (Aug 2025)",
+    "url": "https://www.dawn.com/news/1930099",
+    "_row": 27
+   },
+   {
+    "id": "S17",
+    "source": "Dawn - Pakistan's Ground Zero (June 2026)",
+    "url": "https://www.dawn.com/news/2015802",
+    "_row": 28
+   },
+   {
+    "id": "S18",
+    "source": "ISPRS Archives 2019 - Hispar, Barpu, Bualtar",
+    "url": "https://isprs-archives.copernicus.org/articles/XLII-2-W13/1781/2019/isprs-archives-XLII-2-W13-1781-2019.pdf",
+    "_row": 29
+   },
+   {
+    "id": "S19",
+    "source": "Econ. Environ. Geol. - Hispar glacier",
+    "url": "https://www.econ-environ-geol.org/index.php/ojs/article/download/868/465/2142",
+    "_row": 30
+   },
+   {
+    "id": "S20",
+    "source": "Scroll.in - Khurdopin surge thickness",
+    "url": "https://scroll.in/article/848345/scroll_in",
+    "_row": 31
+   },
+   {
+    "id": "S21",
+    "source": "Wikiwand - Hassanabad, Hunza",
+    "url": "https://www.wikiwand.com/en/articles/Hassanabad,_Hunza",
+    "_row": 32
+   },
+   {
+    "id": "S22",
+    "source": "Wikipedia - Shispare",
+    "url": "https://en.wikipedia.org/wiki/Shispare",
+    "_row": 33
+   },
+   {
+    "id": "S23",
+    "source": "Wikipedia - Ultar (glaciers of the massif)",
+    "url": "https://en.wikipedia.org/wiki/Ultar",
+    "_row": 34
+   },
+   {
+    "id": "S24",
+    "source": "Dawn - Khurdopin surge (2017)",
+    "url": "https://www.dawn.com/news/1336633",
+    "_row": 35
+   },
+   {
+    "id": "S25",
+    "source": "Wikipedia - Borith Lake",
+    "url": "https://en.wikipedia.org/wiki/Borith_Lake",
+    "_row": 36
+   },
+   {
+    "id": "S26",
+    "source": "General web - Passu / Ghulkin population",
+    "url": "https://vepakistan.com/location/pakistan/gilgit-baltistan/passu-gojal/",
+    "_row": 37
+   },
+   {
+    "id": "S27",
+    "source": "Dawn, 7 May 2022 (via Wikipedia Hassanabad page)",
+    "url": "https://wiki.riteme.site/wiki/Hassanabad,_Hunza",
+    "_row": 38
+   },
+   {
+    "id": "S28",
+    "source": "Dialogue Earth - 2022 Hassanabad flood",
+    "url": "https://dialogue.earth/en/?p=20091989",
+    "_row": 39
+   },
+   {
+    "id": "S29",
+    "source": "Dawn - Glacial lakes pose threat to Gojal villages",
+    "url": "https://www.dawn.com/news/330034/glacial-lakes-pose-threat-to-gojal-villages",
+    "_row": 40
+   }
+  ]
+ },
+ "computed": {
+  "glaciers": {
+   "Batura": {
+    "located": true,
+    "coordinate_source": "inventory",
+    "road_distance_km": 13.2,
+    "road_chainage_km": 703.3,
+    "nearest_road_point": [
+     74.79047,
+     36.5665
+    ],
+    "basis": "straight line from the inventory's glacier coordinate to the nearest point of the N-35 line (not a flow path)"
+   },
+   "Passu (Pasu)": {
+    "located": true,
+    "coordinate_source": "inventory",
+    "road_distance_km": 8.2,
+    "road_chainage_km": 698.2,
+    "nearest_road_point": [
+     74.81776,
+     36.52852
+    ],
+    "basis": "straight line from the inventory's glacier coordinate to the nearest point of the N-35 line (not a flow path)"
+   },
+   "Ghulkin (Hussaini-Ghulkin)": {
+    "located": false,
+    "reason": "coordinates 'Not found' in the inventory"
+   },
+   "Ghulmit (Gulmit)": {
+    "located": false,
+    "reason": "coordinates 'Not found' in the inventory"
+   },
+   "Muchuhar": {
+    "located": false,
+    "reason": "coordinates 'Not found' in the inventory"
+   },
+   "Shishper (Shispare)": {
+    "located": false,
+    "reason": "coordinates 'Not found' in the inventory"
+   },
+   "Khurdopin": {
+    "located": true,
+    "coordinate_source": "inventory",
+    "road_distance_km": 52.1,
+    "road_chainage_km": 682.4,
+    "nearest_road_point": [
+     74.9043,
+     36.45424
+    ],
+    "basis": "straight line from the inventory's glacier coordinate to the nearest point of the N-35 line (not a flow path)"
+   },
+   "Vijerab (Virjerab)": {
+    "located": false,
+    "reason": "coordinates 'Not found' in the inventory"
+   },
+   "Yazghil": {
+    "located": false,
+    "reason": "coordinates 'Not found' in the inventory"
+   },
+   "Barpu": {
+    "located": false,
+    "reason": "coordinates 'Not found' in the inventory"
+   },
+   "Hispar": {
+    "located": true,
+    "coordinate_source": "inventory",
+    "road_distance_km": 43.8,
+    "road_chainage_km": 662.6,
+    "nearest_road_point": [
+     74.87657,
+     36.32057
+    ],
+    "basis": "straight line from the inventory's glacier coordinate to the nearest point of the N-35 line (not a flow path)"
+   }
+  }
+ }
+}

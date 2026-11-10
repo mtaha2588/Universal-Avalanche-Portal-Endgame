@@ -145,6 +145,33 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
 
 - The home map stops redrawing and flying while the tour or the alert dashboard covers it (`covered()` in home.html): measured on an RTX 5050, the tour went from 37 to 59 fps. Never let a hidden 3D map keep moving.
 
+- Map loading (measured: outside map servers answer in 1.2-1.5 s from this PC): /api/dem keeps every terrain tile it lacks (redirect to AWS at once, background download to `data/dem/cache/terrarium`, git-ignored; z <= 12, 40,000 per run); sw.js trims its caches once per 500 new tiles, not after every tile (listing 30,000 entries per tile slowed every map).
+
+- 3D Cinematic Tour (/tour3d, owner's request): `templates/tour3d.html`, `static/tour3d/tour3d.js|css`, CesiumJS 1.122.0 from jsDelivr on that page only.
+  Same events, order and text as HistTour (it reads /api/history/events and the Batura files, merged exactly like `HistTour.load`; keep the two in step).
+  Tokens: `CESIUM_ION_TOKEN` and `MAPBOX_TOKEN` from .env via the template (`cfg`); never hard-code. Terrain / exaggeration / imagery: `CFG` at the top
+  of tour3d.js (one line each). Opened from the 3D icon in the tour's top bar (`HistTour.open3d()`) and on the Historical Overview hero (`.hx-3d`) as a
+  full-screen iframe; it posts `tour3d:close` with the event id and the 2D tour carries on there (`HistTour.open({tour, at})`). Paths are the tour's own
+  (illustrative scenarios; Batura = NGT model). "Location approximate" ring: tier C-E, or the inventory has no coordinates or a precision other
+  than `source_coords` (`approx()` in tour3d.js; `scripts/check_tour3d.py` fails if a stop breaks this). Map points are the 2D tour's; the card
+  also shows the inventory's coordinates and the distance when they differ by 1 km or more. Low-confidence records get a short card only.
+  Opening: the title covers the first stop's own view while it loads (3-10 s), then fades onto it (no flight from space). Quality governor
+  (`govern()`): shadows off while flying; steps down shadow size / render scale when frames are slow. No CSS backdrop blur on this page
+  (it re-blurs every frame over the 3D view). The portal prefetches Cesium.js (never runs it) while the Historical Overview tab is open.
+  Avalanche look = the 2D engine's "real" look (static/js/avalanche.js) in 3D: `prepBody()` builds a mesh along the path draped on sampled
+  terrain; `BODY_GLSL` draws crown, patchy track layer, flowing tongue and deposit from uniforms (sHead, sTail, ...); powder cloud, boiling
+  head and flank spray are ParticleSystems; deposit blocks a BillboardCollection. Zoom: mouse wheel / + - 0 / bar buttons set `zoomT`
+  (0.25-2.5), applied in every shot (Cesium's own mouse camera is off; the film drives the camera).
+  The body is raised off the ground in its own vertex shader (`BODY_VS`, `thick()`), lit like the terrain (sun only, no headlight).
+  Winter snow: the imagery is a summer composite, so `prepSnow()` paints snow around each release only (snowline just below the release,
+  none on rock > ~55°, ragged edges), as a GroundPrimitive with a baked-light texture; the HUD note says it is painted on.
+  Slope routes: `reroute()` redraws each illustrative scenario (never the Batura model) down the fall line of Cesium's own terrain from the
+  same release point, keeping the scenario's times, speeds, distance and drop (the 2D tour's path came from coarser tiles and could cut
+  across a spur). Frame-time profiling: `?off=ov,warm,fx,body,snow,route,gov`, `?q=<0-3>` pins quality, `?dbg=1` loads unminified Cesium.
+  Findings: particles left in the scene after their snow settled, the hidden preload view, and a low flight over unloaded ground each cost
+  10-20 fps; all three are gone (particles are removed after the run, the next stop is prepared without a second view, the climb is a pull-back).
+  While the 3D overlay is open, body.t3d-open stops the home map (`covered()`) and hides the page's map canvases.
+
 ## Gotchas
 
 - The map container id is `map-canvas`. An element with id `map` would make the browser scroll to it on `#map`.

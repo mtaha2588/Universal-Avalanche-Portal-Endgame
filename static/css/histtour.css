@@ -378,3 +378,11 @@ body.ht-open { overflow: hidden; }
   .ht-cap.on { animation: none; opacity: 1; } .ht-pin i { animation: none; }
   .ht-ev > *, .ht-ev-pulse, .ht-pins .ht-ring, .ht-ctl button.big.on { animation: none !important; }
 }
+
+/* 3D Cinematic Tour: the icon in the top bar and the full-screen overlay that hosts /tour3d (static/tour3d/) */
+.ht-tools .ht-3d { display: inline-grid; place-items: center; padding: 0 9px; }
+.ht-tools .ht-3d svg { width: 16px; height: 16px; }
+.ht3d-frame { position: fixed; inset: 0; width: 100vw; height: 100vh; border: 0; z-index: 10070; background: #03060c; }
+
+/* while the 3D Cinematic Tour covers the page, the page's own maps are hidden (nothing redraws behind it) */
+body.t3d-open .mapboxgl-canvas, body.t3d-open .maplibregl-canvas { visibility: hidden; }

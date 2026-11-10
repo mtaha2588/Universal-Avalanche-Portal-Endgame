@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D Cinematic Tour · {{ title }}</title>
+<link rel="icon" href="/static/img/ndma-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<!-- CesiumJS is loaded on this page only, one pinned version (the main portal never loads it) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.122.0/Build/Cesium/Widgets/widgets.css">
+<link rel="stylesheet" href="/static/tour3d/tour3d.css">
+<script>
+  // tokens come from the server (.env), never from source
+  window.TOUR3D = {{ cfg | tojson }};
+  window.CESIUM_BASE_URL = "https://cdn.jsdelivr.net/npm/cesium@1.122.0/Build/Cesium/";
+</script>
+</head>
+<body>
+<div class="t3" id="t3">
+  <div class="t3-map" id="t3-map"></div>
+  <div class="t3-vig" aria-hidden="true"></div>
+  <div class="t3-load" id="t3-load"><i></i><b>Preparing the 3D terrain…</b><span>Cesium World Terrain · Mapbox satellite</span></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/cesium@1.122.0/Build/{{ 'CesiumUnminified' if request.args.get('dbg') else 'Cesium' }}/Cesium.js" onerror="window.__cesiumFailed = true"></script>
+<script src="/static/tour3d/tour3d.js"></script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});</script>
+</body>
+</html>

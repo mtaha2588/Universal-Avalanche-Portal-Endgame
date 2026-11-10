@@ -747,6 +747,9 @@
   .hx-rec-m em { font-style: normal; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
   .hx-rec-m em.s1 { color: #fde68a; background: rgba(251, 191, 36, .13); } .hx-rec-m em.s2 { color: #fdba74; background: rgba(249, 115, 22, .17); }
   .hx-rec-m em.s3 { color: #fee2e2; background: rgba(239, 68, 68, .3); box-shadow: inset 0 0 0 1px rgba(248, 113, 113, .55); } .hx-rec-m em.s0 { color: var(--muted); font-weight: 500; padding-left: 0; }
+  .hx-3d { position: absolute; top: 14px; right: 14px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 999px; cursor: pointer;
+    font: 700 11px var(--font); letter-spacing: .08em; color: #e0f2fe; background: rgba(6, 16, 34, .7); border: 1px solid rgba(125, 211, 252, .45); backdrop-filter: blur(6px); }
+  .hx-3d:hover { background: rgba(56, 189, 248, .22); color: #fff; }
   @media (max-width: 860px) { .hx-hero, .hx-feat { grid-template-columns: 1fr; } .hx-f input { width: 100%; } }
   @media (prefers-reduced-motion: reduce) { .hx-bg, .hx-snow, .hx-h small::before { animation: none; } }
   .hev-ic svg { width: 17px; height: 17px; } .hev-ic.big { width: 46px; height: 46px; border-radius: 13px; } .hev-ic.big svg { width: 26px; height: 26px; }
@@ -1251,6 +1254,8 @@ const M = [
     f: ["Timeline of every window from 15 Dec to 15 Apr", "Model run time, input range, lead time and uncertainty per window", "Class distribution and output table when predictions exist", "Missing windows are shown as missing, never filled in"] },
   { id: "alertforecast", t: "Avalanche Alert Forecast", s: "ECMWF IFS · daily tile alerts, 15-day lead", c: "--red", ic: "alert", dash: true,
     d: "Full-screen dashboard (static/js/alertdash.js) of the live forecast engine (forecast/): 150 calibrated 0.25° tiles on 3D terrain, region cards and a 15-day tile deep dive." },
+  // Settlement & Infrastructure: the Karakoram Highway tab (static/kkh/, page /kkh) opens in its own full-screen overlay
+  { id: "kkh", t: "Settlement & Infrastructure", s: "Karakoram Highway · glaciers · CPEC", c: "--amber", ic: "settle", kkh: true },
   { id: "hindukush", t: "Hindu Kush", s: "RGI 14-01 · terrain screening & hotspots", c: "--blue", ic: "mountain", go: ["hindukush", "hindu_kush"] },
   { id: "karakoram", t: "Karakoram", s: "RGI 14-02 · hotspots", c: "--red", ic: "mountain", go: ["karakoram", "karakoram"] },
   { id: "himalaya", t: "Western Himalaya", s: "RGI 14-03 · risk map for the region", c: "--emerald", ic: "mountain", go: ["map", "western_himalaya"] },
@@ -1265,10 +1270,10 @@ const M = [
   { id: "launch", n: "▶", t: "Launch Live Portal", s: "Open the full interactive system", c: "--cyan", ic: "rocket", hero: true },
 ];
 
-M.filter(m => !m.hero && !m.go).forEach((m, k) => { m.n = String(k + 1).padStart(2, "0"); });
+M.filter(m => !m.hero && !m.go && !m.kkh).forEach((m, k) => { m.n = String(k + 1).padStart(2, "0"); });   // (the KKH tile takes no number: the others keep theirs)
 // Module tab colours: members of SLOT_COL; the mountain-system tabs use exactly their glacier-system colour on the map.
 const TAB_COL = { overview: "#FFFF00", map: "#0047FF", outlook: "#8F00FF", alertforecast: "#FFC107", hindukush: SYS_COL["Hindu Kush"], karakoram: SYS_COL["Karakoram"],
-  himalaya: SYS_COL["West Himalaya"], history: "#FF00FF", climate: "#00FFFF", exposure: "#FF3D00", reports: "#D00020", launch: "#0047FF" };
+  himalaya: SYS_COL["West Himalaya"], history: "#FF00FF", climate: "#00FFFF", exposure: "#FF3D00", reports: "#D00020", kkh: "#FF8A00", launch: "#0047FF" };
 const TAB_BAR = { launch: "linear-gradient(180deg, #00FFFF, #0047FF, #8F00FF)" };
 const tabVars = m => { const c = TAB_COL[m.id] || "#00FFFF";
   return `--pc:${c};--ink:${inkOn(c)};--g1:${c};--g2:color-mix(in srgb, ${c} 55%, #000);--bar:${TAB_BAR[m.id] || c}`; };
@@ -1481,6 +1486,11 @@ function historyHTML(m) {
     root.querySelectorAll(".hev, .hx-feat").forEach(b => b.addEventListener("click", () => openEvent(b.dataset.ev)));
     root.querySelector("[data-tour]").onclick = () => HistTour.open({ tour: true });
     root.querySelector(".hx-map").onclick = () => HistTour.open({});
+    root.querySelector(".hx-3d").onclick = () => HistTour.open3d();      // 3D Cinematic Tour (/tour3d) in a full-screen overlay
+    // the 3D tour's library goes into the browser cache while this tab is open (downloaded only, never run here), so the 3D click is fast
+    if (!document.querySelector("link[data-cz]")) (window.requestIdleCallback || (f => setTimeout(f, 4000)))(() => {
+      ["Cesium.js", "Widgets/widgets.css"].forEach(f => { const l = document.createElement("link"); l.rel = "prefetch"; l.dataset.cz = 1; l.href = "https://cdn.jsdelivr.net/npm/cesium@1.122.0/Build/Cesium/" + f; document.head.appendChild(l); });
+    }, { timeout: 6000 });
     HistTour.warm();                                  // builds the 3D tour (map, terrain, tiles) in the background now, so opening it is instant
     HistTour.load().then(d => {                      // the compiled records (scripts/build_history_events.py), listed as supplied
       const DEC = HistTour.DEC || {}, col = x => DEC[x] || "#94a3b8", recs = d.recs.filter(r => !r.model), anim = d.recs.filter(r => r.anim).length;
@@ -1521,6 +1531,7 @@ function historyHTML(m) {
   const e = HIST[0];
   return `<section class="hx" id="hx">
     <div class="hx-hero"><div class="hx-bg" aria-hidden="true"></div><div class="hx-snow" aria-hidden="true"></div>
+      <button type="button" class="hx-3d" title="3D Cinematic Tour" aria-label="3D Cinematic Tour"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 19.5 9 8.5l3.6 6 2.4-3.8 6.5 8.8z"/><path d="M7.2 11.6 9 13l1.6-1.5"/><path d="M16.5 4.5h4v4M20.5 4.5l-3 3" stroke-width="1.5"/></svg><span>3D</span></button>
       <div class="hx-h"><small>Signature experience · guided 3D tour</small>
         <h4>Half a century of avalanches,<br><span>replayed where they happened</span></h4>
         <p>A guided tour on the 3D satellite terrain: each located snow avalanche runs down the real slopes where it happened, in date order. Every record is on the event map.</p>
@@ -2321,11 +2332,12 @@ function lightbox(src, cap) {
 
 /* ---------- window controller ---------- */
 const win = document.getElementById("win"), scrim = document.getElementById("scrim");
-const WM = M.filter(m => !m.hero && !m.go && !m.dash);
+const WM = M.filter(m => !m.hero && !m.go && !m.dash && !m.kkh);
 let curW = -1;
 function openWin(i) {
   const m = M[i]; if (!m || m.hero) return;
   if (m.dash) { if (curW >= 0) closeWin(); return window.AlertDash && AlertDash.open(); }   // the alert forecast opens as its own full-screen dashboard
+  if (m.kkh) { if (curW >= 0) closeWin(); return openKKH(); }                                // the Karakoram Highway tab: its own page in an overlay
   curW = WM.indexOf(m);
   win.style.setProperty("--c", `var(${m.c})`);
   document.getElementById("win-ic").innerHTML = ICON[m.ic];
@@ -2341,6 +2353,19 @@ function openWin(i) {
   win.classList.add("open"); scrim.classList.add("open");
   document.getElementById("close").focus({ preventScroll: true });
 }
+// Settlement & Infrastructure (static/kkh/): its page in a full-screen frame. Its Mapbox map lives in that page, so it is created when the
+// tab opens and removed with the frame; body.t3d-open holds this page's own maps still meanwhile (covered(), histtour.css).
+function openKKH() {
+  if (document.querySelector(".kkh-frame")) return;
+  const f = document.createElement("iframe"); f.className = "kkh-frame"; f.title = "Settlement & Infrastructure"; f.src = "/kkh"; f.allow = "fullscreen";
+  f.style.cssText = "position:fixed;inset:0;width:100%;height:100%;border:0;z-index:10060;background:#04070d";
+  document.body.appendChild(f); document.body.classList.add("t3d-open"); f.focus();
+}
+addEventListener("message", e => {
+  if (e.origin !== location.origin || !e.data || e.data.type !== "kkh:close") return;
+  const f = document.querySelector(".kkh-frame"); if (f) f.remove();
+  if (!document.querySelector(".ht3d-frame")) document.body.classList.remove("t3d-open");
+});
 function closeWin() { closeExperience(); win.querySelectorAll("video").forEach(v => v.pause()); win.classList.remove("open"); scrim.classList.remove("open"); curW = -1; }
 function step(d) { if (curW < 0) return; openWin(M.indexOf(WM[(curW + d + WM.length) % WM.length])); }
 document.getElementById("close").onclick = closeWin;
@@ -3408,7 +3433,8 @@ const bgMap = (() => {
   }
 
   // The historical tour and the alert forecast cover this map completely: it must not redraw a second 3D scene behind them (that halved the tour's frame rate).
-  const covered = () => document.body.classList.contains("ht-open") || document.body.classList.contains("ad-open");
+  // (also while the 3D Cinematic Tour's overlay is open: body.t3d-open, set by HistTour.open3d)
+  const covered = () => document.body.classList.contains("ht-open") || document.body.classList.contains("ad-open") || document.body.classList.contains("t3d-open");
   function tour() {
     const name = GLACIER_ORDER[tourIdx++ % GLACIER_ORDER.length];
     const c = GLACIERS.centers[name];

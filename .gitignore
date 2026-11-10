@@ -8,3 +8,6 @@ dist/
 forecast/output/archive/
 forecast/logs/
 forecast/output/run.lock
+data/dem/cache/
+
+6 -*++-/

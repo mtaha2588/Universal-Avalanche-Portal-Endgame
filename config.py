@@ -17,6 +17,8 @@ class Config:
 
     # Public Mapbox browser token (pk.*). Restrict it to your domains in the Mapbox account.
     MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN", "").strip()
+    # Cesium ion token for the 3D Cinematic Tour (/tour3d): Cesium World Terrain and the fallback imagery. Only that page receives it.
+    CESIUM_ION_TOKEN = os.getenv("CESIUM_ION_TOKEN", "").strip()
 
     DATA_DIR = Path(os.getenv("PORTAL_DATA_DIR", BASE_DIR / "data"))
     MODEL_DIR = Path(os.getenv("PORTAL_MODEL_DIR", BASE_DIR / "model"))

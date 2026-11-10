@@ -107,7 +107,7 @@ const HistTour = (() => {
       <header class="ht-top">
         ${window.HOME_BTN || ""}<button type="button" class="ht-exit" title="Close the tour (Esc)">← Historical Overview</button>
         <div class="ht-brand"><b>Historic avalanche tour</b><span>Pakistan · compiled records 1974–2026 · illustrative scenarios on real terrain</span></div>
-        <div class="ht-tools"><button type="button" class="ht-overview" title="Show every record on the map">Event map</button>
+        <div class="ht-tools"><button type="button" class="ht-3d" title="3D Cinematic Tour" aria-label="3D Cinematic Tour"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 19.5 9 8.5l3.6 6 2.4-3.8 6.5 8.8z"/><path d="M7.2 11.6 9 13l1.6-1.5"/><path d="M16.5 4.5h4v4M20.5 4.5l-3 3" stroke-width="1.5"/></svg></button><button type="button" class="ht-overview" title="Show every record on the map">Event map</button>
           <button type="button" class="ht-listbtn" aria-pressed="true">Records</button><button type="button" class="ht-fs" title="Full screen">⛶</button></div>
       </header>
       <aside class="ht-list" aria-label="Historical records"><div class="ht-lh"><b>Records <em class="ht-cnt"></em></b><label><input type="checkbox" class="ht-only"> only tour events</label></div>
@@ -137,6 +137,7 @@ const HistTour = (() => {
       q(".ht-exit").onclick = close;
       q(".ht-fs").onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen?.().catch(() => {}); };
       q(".ht-overview").onclick = () => overview(true);
+      q(".ht-3d").onclick = () => open3d();
       q(".ht-listbtn").onclick = () => setList(!el.classList.contains("list-on"));
       q(".ht-only").onchange = renderList;
       el.querySelectorAll(".ht-ctl [data-a]").forEach(b => b.onclick = () => action(b.dataset.a));
@@ -199,7 +200,7 @@ const HistTour = (() => {
     renderList();
     if (pref("pins") === "1") setPins(true);
     const f = opt.focus && data.recs.find(r => r.event_id === opt.focus);
-    if (opt.tour) start(0);
+    if (opt.tour) start(opt.at ? Math.max(0, stops.findIndex(r => r.event_id === opt.at)) : 0);
     else if (f) focus(f, false);
     else overview(false);
   }
@@ -784,6 +785,31 @@ const HistTour = (() => {
     };
   }
 
-  return { open, close, load, warm, isOpen: () => visible, map: () => map, DEC };   // map(): test helper; DEC: decade colours (home page module)
+  // ------------------------------------------------------------ 3D Cinematic Tour (/tour3d, static/tour3d/): a full-screen overlay on top of this tour.
+  // It opens at the event on screen (or the first) and, when closed, this tour carries on from the event the 3D tour was showing.
+  let f3d = null;
+  function open3d() {
+    if (f3d) return;
+    const list = allStops || stops, r = cur >= 0 ? stops[cur] : null, n = r ? list.indexOf(r) + 1 : 0;
+    if (visible) stopTour();                                       // the 2D scene holds still underneath
+    if (wx) wx.level(0);                                           // and its snowfall stops drawing
+    // nothing else on this page draws while the 3D tour is open (the home map stops its orbit; the page's maps are hidden):
+    // only one 3D scene renders at a time
+    document.body.classList.add("t3d-open");
+    f3d = document.createElement("iframe"); f3d.className = "ht3d-frame"; f3d.title = "3D Cinematic Tour"; f3d.allow = "fullscreen";
+    f3d.src = (n > 0 ? `/tour3d?stop=${n}&` : "/tour3d?") + `t0=${Date.now()}`;
+    document.body.appendChild(f3d); f3d.focus();
+  }
+  addEventListener("message", e => {
+    if (e.origin !== location.origin || !e.data || e.data.type !== "tour3d:close" || !f3d) return;
+    f3d.remove(); f3d = null;
+    document.body.classList.remove("t3d-open");
+    const id = e.data.id;
+    if (!id) return;
+    if (visible) { const list = stops, i = list.findIndex(r => r.event_id === id); start(i >= 0 ? i : 0, true); }
+    else open({ tour: true, at: id });
+  });
+
+  return { open, close, load, warm, open3d, isOpen: () => visible, map: () => map, DEC };   // map(): test helper; DEC: decade colours (home page module)
 })();
 window.HistTour = HistTour;
