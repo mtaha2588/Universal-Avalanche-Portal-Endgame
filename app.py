@@ -160,6 +160,54 @@ def create_app(config: type[Config] = Config) -> Flask:
         resp.headers["Cache-Control"] = "no-store"
         return resp
 
+    @app.get("/models")
+    def models_page():
+        # "Model Framework & Prediction Engines" tab (static/models/): how the portal's engines work (physics models, the rule engine, the
+        # ML teacher-student model), built from the forecast package's own files. Opened from the home tile in a full-screen overlay.
+        from flask import render_template_string
+        d = Path(app.static_folder) / "models"
+        v = int(max(p.stat().st_mtime for p in d.glob("models.*")))
+        resp = Response(render_template_string((d / "models.html").read_text(encoding="utf-8"), v=v, title=config.PORTAL_TITLE))
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
+
+    @app.get("/api/models/framework")
+    def models_framework():
+        # read-only facts for the Model Framework tab, straight from forecast/data (the analysis team's calibrated package): rule
+        # validation, the per-tile thresholds, the student model's score thresholds and file size, the region split. Nothing is computed here.
+        import csv
+        fd = config.FORECAST_DIR / "data"
+
+        def rows(name):
+            p = fd / name
+            if not p.exists():
+                return []
+            with open(p, newline="", encoding="utf-8") as fh:
+                return list(csv.DictReader(fh))
+
+        def js(p):
+            try:
+                return json.loads(p.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                return {}
+
+        txt = {"tile_id", "HIGH_rule", "MODERATE_rule"}
+        tiles = []
+        for r in rows("tile_thresholds.csv"):
+            try:
+                tiles.append({k: (v if k in txt or v in ("", None) else float(v)) for k, v in r.items()})
+            except ValueError:
+                continue
+        settings = {k: v for k, v in js(config.FORECAST_DIR / "config" / "settings.json").items() if k not in ("apikey", "_comment")}
+        st = fd / "student.joblib"
+        resp = jsonify(available=bool(tiles), meta=js(fd / "thresholds_meta.json"), validation=rows("final_rule_validation.csv"),
+                       best_rules=rows("best_rules.csv"), student_thresholds=rows("student_thresholds.csv"),
+                       student_file_bytes=st.stat().st_size if st.exists() else None, tiles=tiles, settings=settings,
+                       regions=js(config.FORECAST_DIR / "config" / "regions.json"),
+                       source="forecast/data (avalanche_portal_package_2026-10-30, analysis team)")
+        resp.headers["Cache-Control"] = "no-cache"
+        return resp
+
     @app.get("/kkh")
     def kkh():
         # "Settlement & Infrastructure" tab (static/kkh/): the Karakoram Highway N-35, its glaciers, settlements and events, on its own
@@ -169,7 +217,18 @@ def create_app(config: type[Config] = Config) -> Flask:
         v = int(max(p.stat().st_mtime for p in [d / "kkh.js", d / "kkh.css", *(d / "data").glob("*.json*")]))
         resp = Response(render_template_string((d / "kkh.html").read_text(encoding="utf-8"), cfg={"mapboxToken": config.MAPBOX_TOKEN, "v": v}, v=v))
         resp.headers["Cache-Control"] = "no-store"
+        log.info("kkh: page served (%s)", (request.headers.get("User-Agent") or "")[:90])
         return resp
+
+    @app.post("/kkh/log")
+    def kkh_log():
+        # what the Settlement & Infrastructure page reports while it starts (stages and errors), so a blank tab can be diagnosed
+        try:
+            j = request.get_json(force=True, silent=True) or {}
+            log.info("kkh client: %s %s", str(j.get("stage", ""))[:40], str(j.get("msg", ""))[:300])
+        except Exception:  # noqa: BLE001
+            pass
+        return Response(status=204)
 
     @app.get("/portal")
     def portal():
@@ -249,6 +308,44 @@ def create_app(config: type[Config] = Config) -> Flask:
     def api_roads():
         feats = store.roads(region_arg(), request.args.get("window"))
         return jsonify(type="FeatureCollection", features=feats, metadata=store.meta("roads"))
+
+    # 5 km Road Exposure Corridor (scripts/build_road_corridor.py -> data/road_corridor/): statistics, and the two layers gzip-cached
+    corridor_dir = config.DATA_DIR / "road_corridor"
+    corridor_cache: dict = {}
+
+    @app.get("/api/roadcorridor/stats")
+    def api_roadcorridor_stats():
+        p = corridor_dir / "road_corridor_stats.json"
+        if not p.exists():
+            return jsonify(available=False, message="The corridor has not been built. Run: python scripts/build_road_corridor.py"), 200
+        d = json.loads(p.read_text(encoding="utf-8"))
+        d.pop("signature", None)
+        return jsonify(available=True, **d)
+
+    @app.get("/api/roadcorridor/<name>.geojson")
+    def api_roadcorridor_layer(name):
+        files = {"corridor": "road_corridor_5km.geojson", "centrelines": "road_centrelines.geojson"}
+        if name not in files:
+            abort(404)
+        p = corridor_dir / files[name]
+        if not p.exists():
+            return jsonify(type="FeatureCollection", available=False, features=[]), 200
+        mt = p.stat().st_mtime_ns
+        c = corridor_cache.get(name)
+        if not c or c["mt"] != mt:
+            raw = p.read_bytes()
+            c = corridor_cache[name] = {"mt": mt, "raw": raw, "gz": gzip.compress(raw, 6)}
+        etag = f'"rc-{name}-{mt}"'
+        if request.headers.get("If-None-Match") == etag:
+            return Response(status=304, headers={"ETag": etag})
+        use_gz = "gzip" in request.headers.get("Accept-Encoding", "")
+        resp = Response(c["gz" if use_gz else "raw"], mimetype="application/geo+json")
+        if use_gz:
+            resp.headers["Content-Encoding"] = "gzip"
+        resp.headers.update({"ETag": etag, "Cache-Control": "no-cache", "Vary": "Accept-Encoding"})
+        if request.args.get("download"):
+            resp.headers["Content-Disposition"] = f'attachment; filename="{files[name]}"'
+        return resp
 
     @app.get("/api/predictions")
     def api_predictions():

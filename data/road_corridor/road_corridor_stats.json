@@ -1,0 +1,487 @@
+{
+ "signature": {
+  "version": 3,
+  "roads": [
+   1794373890393254300,
+   11957774
+  ],
+  "study_area": [
+   1793186086044844500,
+   95339
+  ],
+  "events": [
+   1793612305096078500,
+   193152
+  ],
+  "incidents": [
+   1793186086021501100,
+   3566
+  ],
+  "forecast": [
+   1794284727175371400,
+   1063181
+  ],
+  "hk_hotspots": [
+   1793186119170781400,
+   3524870
+  ],
+  "kk_hotspots": [
+   1793186119152922200,
+   5566
+  ],
+  "glaciers": [
+   1793186119010818100,
+   10014196
+  ],
+  "settlements": [
+   1793186086033629300,
+   4530
+  ]
+ },
+ "meta": {
+  "crs_analysis": "EPSG:32643 (WGS 84 / UTM zone 43N, metres)",
+  "crs_output": "EPSG:4326",
+  "buffer_m_each_side": 5000,
+  "roads_source": "OpenStreetMap contributors (ODbL)",
+  "roads_downloaded": "2026-11-11",
+  "built_utc": "2026-11-11 05:20",
+  "forecast_days": [
+   "2026-11-10",
+   "2026-11-24"
+  ]
+ },
+ "inputs": {
+  "roads": "available",
+  "study_area": "available",
+  "events": "available",
+  "incidents": "available",
+  "forecast": "available",
+  "hk_hotspots": "available",
+  "kk_hotspots": "available",
+  "glaciers": "available",
+  "settlements": "available"
+ },
+ "cleaning": {
+  "outside the study area": 2603,
+  "ways without a name or reference": 1727
+ },
+ "roads": 395,
+ "road_length_km": 10500.6,
+ "corridor_area_km2": 51111.4,
+ "by_class": {
+  "motorway": {
+   "roads": 4,
+   "length_km": 669.3
+  },
+  "trunk": {
+   "roads": 49,
+   "length_km": 3709.7
+  },
+  "primary": {
+   "roads": 102,
+   "length_km": 1582.1
+  },
+  "secondary": {
+   "roads": 240,
+   "length_km": 4539.9
+  }
+ },
+ "totals": {
+  "historical_events": 15,
+  "historical_event_list": [
+   "PK015 Bahrain, Swat (1993)",
+   "PK024 Bahrain, Swat (2020-12-14)",
+   "PK022 Swat (2019-07-11)",
+   "PK012 Serigal village, Damil area, Arandu regi (2026-01-23)",
+   "PK016 Lowari Top (Chitral side) (2003-01-26)",
+   "PK019 Lowari Top (2008-04-05)",
+   "PK018 Ziarat checkpoint near the Lowari Rail T (2008-01-08)",
+   "PK020 Sambu company workshop, north portal of  (2017-02-17)",
+   "PK031 Khawaja Seri village, Neelum Valley (2005-02-09)",
+   "PK033 Janawai village, Neelum Valley (2005-02-11)",
+   "PK034 village in Astore valley (name not given (2005-02-11)",
+   "PK009 Dombabaho area, Astore (2020-01-14)"
+  ],
+  "seed_incidents": 2,
+  "seed_incident_list": [
+   "PAK-AV-2020-001 Surgan / Neelum Valley",
+   "PAK-AV-2017-001 Ursoon village area, Chitral"
+  ],
+  "release_hotspots": 4170,
+  "settlements_in_corridor": 19,
+  "settlement_names": [
+   "Astore",
+   "Athmuqam",
+   "Besham",
+   "Booni",
+   "Chilas",
+   "Chitral",
+   "Dir",
+   "Drosh",
+   "Gilgit",
+   "Gupis",
+   "Kalam",
+   "Karimabad (Hunza)",
+   "Kel",
+   "Khaplu",
+   "Muzaffarabad",
+   "Naran",
+   "Shigar",
+   "Skardu",
+   "Sost"
+  ],
+  "nearest_settlements": [
+   "Gilgit (0.0 km)",
+   "Skardu (0.0 km)",
+   "Karimabad (Hunza) (0.0 km)"
+  ],
+  "glaciers": 517,
+  "glacier_area_km2": 158.3,
+  "km_by_alert": {
+   "High": 0.0,
+   "Moderate": 0.0,
+   "Low": 4812.5,
+   "Not rated": 5009.1
+  },
+  "km_no_forecast_tile": 679.1,
+  "worst_alert": "Low",
+  "worst_alert_date": "2026-11-10",
+  "km_snowfall_10mm": 1493.2,
+  "km_snowfall_25mm": 706.2,
+  "max_snowfall_3d_mm": 81.5,
+  "max_snow_depth_m": 1.75
+ },
+ "ranking_rule": "Road km under alert High, then Moderate (worst day of the forecast), then located historical events and seed incidents within 5 km, then terrain-screened release hotspots, then glacier area in the corridor.",
+ "top_roads": [
+  {
+   "exposure_rank": 1,
+   "road_id": "R0388",
+   "name": "N-45 · Mardan - Malakand Road",
+   "road_class": "trunk",
+   "length_km": 377.8,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 195.7,
+    "Not rated": 182.0
+   },
+   "historical_events": 5,
+   "seed_incidents": 1,
+   "release_hotspots": 403,
+   "glaciers": 0,
+   "glacier_area_km2": 0.0,
+   "settlements_in_corridor": 3,
+   "max_snowfall_3d_mm": 23.6,
+   "lon": 71.9056,
+   "lat": 34.8582
+  },
+  {
+   "exposure_rank": 2,
+   "road_id": "R0393",
+   "name": "N-95 · Mingora Road",
+   "road_class": "trunk",
+   "length_km": 139.7,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 106.3,
+    "Not rated": 33.4
+   },
+   "historical_events": 3,
+   "seed_incidents": 0,
+   "release_hotspots": 255,
+   "glaciers": 3,
+   "glacier_area_km2": 0.4,
+   "settlements_in_corridor": 1,
+   "max_snowfall_3d_mm": 34.0,
+   "lon": 72.4698,
+   "lat": 34.9783
+  },
+  {
+   "exposure_rank": 3,
+   "road_id": "R0029",
+   "name": "Astore - Minimarg Road",
+   "road_class": "primary",
+   "length_km": 100.2,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 100.2,
+    "Not rated": 0.0
+   },
+   "historical_events": 2,
+   "seed_incidents": 0,
+   "release_hotspots": 0,
+   "glaciers": 8,
+   "glacier_area_km2": 0.5,
+   "settlements_in_corridor": 1,
+   "max_snowfall_3d_mm": 49.6,
+   "lon": 74.9279,
+   "lat": 35.2125
+  },
+  {
+   "exposure_rank": 4,
+   "road_id": "R0132",
+   "name": "Jeep Track Neelum Road",
+   "road_class": "secondary",
+   "length_km": 63.9,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 63.9,
+    "Not rated": 0.0
+   },
+   "historical_events": 2,
+   "seed_incidents": 0,
+   "release_hotspots": 0,
+   "glaciers": 2,
+   "glacier_area_km2": 0.1,
+   "settlements_in_corridor": 1,
+   "max_snowfall_3d_mm": 39.9,
+   "lon": 74.4859,
+   "lat": 34.7998
+  },
+  {
+   "exposure_rank": 5,
+   "road_id": "R0217",
+   "name": "Neelum Valley Road",
+   "road_class": "secondary",
+   "length_km": 71.9,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 71.9,
+    "Not rated": 0.0
+   },
+   "historical_events": 1,
+   "seed_incidents": 1,
+   "release_hotspots": 0,
+   "glaciers": 0,
+   "glacier_area_km2": 0.0,
+   "settlements_in_corridor": 1,
+   "max_snowfall_3d_mm": 34.9,
+   "lon": 73.9694,
+   "lat": 34.6877
+  },
+  {
+   "exposure_rank": 6,
+   "road_id": "R0426",
+   "name": "Unnamed secondary roads (no name in OpenStreetMap)",
+   "road_class": "secondary",
+   "length_km": 2284.1,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 756.5,
+    "Not rated": 1392.1
+   },
+   "historical_events": 1,
+   "seed_incidents": 0,
+   "release_hotspots": 995,
+   "glaciers": 124,
+   "glacier_area_km2": 41.0,
+   "settlements_in_corridor": 12,
+   "max_snowfall_3d_mm": 61.5,
+   "lon": 72.4856,
+   "lat": 34.4781
+  },
+  {
+   "exposure_rank": 7,
+   "road_id": "R0386",
+   "name": "N-35 · Karakoram Highway",
+   "road_class": "trunk",
+   "length_km": 819.4,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 488.2,
+    "Not rated": 124.8
+   },
+   "historical_events": 1,
+   "seed_incidents": 0,
+   "release_hotspots": 654,
+   "glaciers": 190,
+   "glacier_area_km2": 73.6,
+   "settlements_in_corridor": 4,
+   "max_snowfall_3d_mm": 47.3,
+   "lon": 73.8875,
+   "lat": 35.4782
+  },
+  {
+   "exposure_rank": 8,
+   "road_id": "R0384",
+   "name": "N-145 · Garam Chasma Road",
+   "road_class": "trunk",
+   "length_km": 17.0,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 17.0,
+    "Not rated": 0.0
+   },
+   "historical_events": 0,
+   "seed_incidents": 1,
+   "release_hotspots": 69,
+   "glaciers": 0,
+   "glacier_area_km2": 0.0,
+   "settlements_in_corridor": 1,
+   "max_snowfall_3d_mm": 5.8,
+   "lon": 71.8104,
+   "lat": 35.9263
+  },
+  {
+   "exposure_rank": 9,
+   "road_id": "R0139",
+   "name": "K2 Highway",
+   "road_class": "secondary",
+   "length_km": 64.9,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 60.4,
+    "Not rated": 0.0
+   },
+   "historical_events": 1,
+   "seed_incidents": 0,
+   "release_hotspots": 0,
+   "glaciers": 12,
+   "glacier_area_km2": 2.9,
+   "settlements_in_corridor": 1,
+   "max_snowfall_3d_mm": 61.5,
+   "lon": 75.642,
+   "lat": 35.5276
+  },
+  {
+   "exposure_rank": 10,
+   "road_id": "R0377",
+   "name": "D131501 · سرک از دوکلام الی ولسوالى نورستان",
+   "road_class": "secondary",
+   "length_km": 3.0,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 3.0,
+    "Not rated": 0.0
+   },
+   "historical_events": 1,
+   "seed_incidents": 0,
+   "release_hotspots": 0,
+   "glaciers": 0,
+   "glacier_area_km2": 0.0,
+   "settlements_in_corridor": 0,
+   "max_snowfall_3d_mm": 0.0,
+   "lon": 71.5404,
+   "lat": 35.2985
+  },
+  {
+   "exposure_rank": 11,
+   "road_id": "R0383",
+   "name": "N-140 · Shandur - Gilgit Road",
+   "road_class": "trunk",
+   "length_km": 361.3,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 258.3,
+    "Not rated": 0.0
+   },
+   "historical_events": 0,
+   "seed_incidents": 0,
+   "release_hotspots": 1143,
+   "glaciers": 54,
+   "glacier_area_km2": 5.7,
+   "settlements_in_corridor": 3,
+   "max_snowfall_3d_mm": 81.5,
+   "lon": 73.0183,
+   "lat": 36.1811
+  },
+  {
+   "exposure_rank": 12,
+   "road_id": "R0385",
+   "name": "N-15 · Babusar Highway",
+   "road_class": "trunk",
+   "length_km": 229.1,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 223.1,
+    "Not rated": 6.1
+   },
+   "historical_events": 0,
+   "seed_incidents": 0,
+   "release_hotspots": 279,
+   "glaciers": 41,
+   "glacier_area_km2": 4.2,
+   "settlements_in_corridor": 2,
+   "max_snowfall_3d_mm": 34.3,
+   "lon": 73.6337,
+   "lat": 34.8822
+  },
+  {
+   "exposure_rank": 13,
+   "road_id": "R0405",
+   "name": "S-16",
+   "road_class": "secondary",
+   "length_km": 64.6,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 64.6,
+    "Not rated": 0.0
+   },
+   "historical_events": 0,
+   "seed_incidents": 0,
+   "release_hotspots": 256,
+   "glaciers": 0,
+   "glacier_area_km2": 0.0,
+   "settlements_in_corridor": 0,
+   "max_snowfall_3d_mm": 0.8,
+   "lon": 72.0474,
+   "lat": 35.3249
+  },
+  {
+   "exposure_rank": 14,
+   "road_id": "R0413",
+   "name": "S-4A",
+   "road_class": "primary",
+   "length_km": 76.1,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 76.1,
+    "Not rated": 0.0
+   },
+   "historical_events": 0,
+   "seed_incidents": 0,
+   "release_hotspots": 237,
+   "glaciers": 0,
+   "glacier_area_km2": 0.0,
+   "settlements_in_corridor": 0,
+   "max_snowfall_3d_mm": 0.0,
+   "lon": 71.702,
+   "lat": 35.0616
+  },
+  {
+   "exposure_rank": 15,
+   "road_id": "R0425",
+   "name": "Unnamed primary roads (no name in OpenStreetMap)",
+   "road_class": "primary",
+   "length_km": 274.9,
+   "km_by_alert": {
+    "High": 0.0,
+    "Moderate": 0.0,
+    "Low": 91.4,
+    "Not rated": 183.5
+   },
+   "historical_events": 0,
+   "seed_incidents": 0,
+   "release_hotspots": 236,
+   "glaciers": 0,
+   "glacier_area_km2": 0.0,
+   "settlements_in_corridor": 4,
+   "max_snowfall_3d_mm": 21.3,
+   "lon": 72.3084,
+   "lat": 34.5333
+  }
+ ]
+}

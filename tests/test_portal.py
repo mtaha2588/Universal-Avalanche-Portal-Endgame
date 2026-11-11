@@ -466,3 +466,38 @@ def test_climate_module_has_both_views_and_required_wording(client):
     assert "Historical Climate Records Since 1970" in js and "Projection Till 2100" in js and "ClimateWS.html()" in js   # the workspace stays in the first view
     cp = client.get("/static/js/climateprojections.js").data.decode("utf-8")
     assert "not of avalanche numbers or losses" in cp and "use the 20-year periods for trends" in cp   # the package's required text
+
+
+# ------------------------------------------------------------------ Model Framework tab (static/models/)
+def test_models_page_and_framework_api(client):
+    r = client.get("/models")
+    assert r.status_code == 200 and b"models.js" in r.data and b"background.mp4" in r.data
+    fw = client.get("/api/models/framework").get_json()
+    assert fw["available"] and len(fw["tiles"]) == 150 and fw["meta"]["calibrated"] is True
+    final = {v["level"]: v for v in fw["validation"] if v["rule"].startswith("final")}
+    assert final["MODERATE"]["events_caught"] == "17" and final["HIGH"]["events_caught"] == "11"   # served exactly as the CSV stores them
+    assert "apikey" not in fw["settings"]                                                          # never sent to the browser
+    assert fw["student_file_bytes"] and fw["student_file_bytes"] > 0
+
+
+def test_models_sources_json_matches_the_workbook():
+    root = Path(__file__).resolve().parent.parent
+    sys.path.insert(0, str(root / "static" / "kkh" / "tools"))
+    import xlsx
+    js = json.loads((root / "static" / "models" / "media" / "models_sources.json").read_text(encoding="utf-8"))
+    cells = {c.strip() for rows in xlsx.read(str(root / "static" / "models" / "media" / "avalanche_models_sources.xlsx")).values() for r in rows for c in r if c}
+    assert [m["Technology"] for m in js["models"]] == ["Climate model", "Weather forecast model", "Rule-based system"]
+    for m in js["models"] + js["links"]:                                                           # every value is a cell of the sheet, unchanged
+        assert all(v in cells for v in m.values() if v)
+
+
+def test_models_page_has_no_drawn_background():
+    root = Path(__file__).resolve().parent.parent / "static" / "models"
+    assert not (root / "models.scene.js").exists()                                                 # the owner's film replaced the drawn scene
+    assert (root / "media" / "background.mp4").stat().st_size > 1_000_000
+    assert "kkh:close" in (root / "models.js").read_text(encoding="utf-8")                          # closes through the home page's frame
+
+
+def test_kkh_page_served(client):
+    r = client.get("/kkh")
+    assert r.status_code == 200 and b"kkh.js" in r.data and r.headers["Cache-Control"] == "no-store"

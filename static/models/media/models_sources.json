@@ -1,0 +1,61 @@
+{
+ "source": "avalanche_models_sources.xlsx",
+ "sheet": "Models and sources",
+ "title": "Models used in the avalanche warning system and their sources",
+ "note": "Prepared 11 Nov 2026, Tech Early Warning Wing, NGT, NDMA",
+ "models": [
+  {
+   "Technology": "Climate model",
+   "How it works": "Physics-based mathematical simulation",
+   "Purpose": "Projects climate up to 2100",
+   "Repository / source": "NASA NEX-GDDP-CMIP6 (downscaled CMIP6, daily, 0.25°)",
+   "Details": "Models: ACCESS-CM2, EC-Earth3, GFDL-ESM4, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0. Scenarios SSP2-4.5 and SSP5-8.5; historical 1985-2014."
+  },
+  {
+   "Technology": "Weather forecast model",
+   "How it works": "Physics-based numerical weather prediction",
+   "Purpose": "Predicts weather over the next 10-15 days",
+   "Repository / source": "ECMWF IFS (0.25°, open data, CC-BY 4.0) via Open-Meteo",
+   "Details": "Main forecast plus 51-member ensemble. Free for non-commercial use; operational use needs an Open-Meteo API key."
+  },
+  {
+   "Technology": "Rule-based system",
+   "How it works": "Predefined conditions and thresholds",
+   "Purpose": "Determines warning levels",
+   "Repository / source": "Built in-house (NDMA NGT); thresholds from ERA5 reanalysis 1970-2026 and recorded avalanches",
+   "Details": "Code: step3_local_rules.py, step8_projection_rule.py. Thresholds: rules\\tile_thresholds.csv, projection\\projection_rule.json."
+  }
+ ],
+ "links": [
+  {
+   "Technology": "Climate model",
+   "Link name": "NEX-GDDP-CMIP6, NASA NCCS",
+   "URL": "https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6"
+  },
+  {
+   "Technology": "Climate model",
+   "Link name": "NEX-GDDP-CMIP6 THREDDS download",
+   "URL": "https://ds.nccs.nasa.gov/thredds/catalog/AMES/NEX/GDDP-CMIP6/catalog.html"
+  },
+  {
+   "Technology": "Climate model",
+   "Link name": "NEX-GDDP-CMIP6 on AWS",
+   "URL": "https://registry.opendata.aws/nex-gddp-cmip6/"
+  },
+  {
+   "Technology": "Weather forecast model",
+   "Link name": "Open-Meteo ECMWF API",
+   "URL": "https://open-meteo.com/en/docs/ecmwf-api"
+  },
+  {
+   "Technology": "Weather forecast model",
+   "Link name": "Open-Meteo Ensemble API",
+   "URL": "https://open-meteo.com/en/docs/ensemble-api"
+  },
+  {
+   "Technology": "Rule-based system",
+   "Link name": "ERA5 hourly data on single levels (Copernicus)",
+   "URL": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
+  }
+ ]
+}

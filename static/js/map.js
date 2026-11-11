@@ -14,6 +14,7 @@ const MapView = (() => {
     { id: "incidents", label: "Historical incidents (proxy loc.)", sw: "#e3a93f", visible: true, opacity: 0.25, layers: ["inc-halo", "inc-pt"], prop: null },
     { id: "settlements", label: "Settlements", sw: "#e4ecf6", visible: true, opacity: 1, layers: ["set-pt", "set-lbl"], prop: null },
     { id: "roads", label: "Roads / highways (analysed)", sw: "#22c7d8", visible: true, opacity: 0.9, layers: ["road-line"], prop: "line-opacity" },
+    { id: "corridor", label: "5 km Road Exposure Corridor", sw: "rgba(255,79,163,.6)", visible: true, opacity: 0.22, layers: ["cor-fill"], extra: ["cor-line", "cor-road", "cor-sel", "cor-hit"], prop: "fill-opacity" },
     { id: "regions", label: "Study-area extents (indicative)", sw: "transparent;border:1px dashed #22c7d8", visible: true, opacity: 1, layers: ["reg-line", "reg-sel"], prop: null },
     { id: "hillshade", label: "Terrain hillshade (DEM)", sw: "linear-gradient(135deg,#ddd,#333)", visible: true, opacity: 0.35, layers: ["hillshade"], prop: "hillshade-exaggeration" },
     { id: "snow", label: "Snow cover (satellite)", sw: "#ffffff", visible: false, opacity: 0.5, layers: [], prop: null, why: "No operational snow product connected" },
@@ -96,10 +97,18 @@ const MapView = (() => {
     src("regions", fc(S.regions.filter(r => r.properties.id !== "all")));
     src("hazards", fc()); src("predictions", fc()); src("roads", fc());
     src("settlements", fc()); src("incidents", fc()); src("inc-halos", fc());
+    src("corridor", fc()); src("cor-roads", fc());
 
     map.addLayer({ id: "pred-fill", type: "fill", source: "predictions", paint: {
       "fill-color": ["match", ["get", "risk_class"], ...Object.entries(RISK_COLORS).flat(), "#7f93ae"], "fill-opacity": 0.6 } });
     map.addLayer({ id: "haz-fill", type: "fill", source: "hazards", paint: { "fill-color": "#db8c3c", "fill-opacity": 0.45, "fill-outline-color": "#ffb36b" } });
+    // 5 km Road Exposure Corridor: the dissolved corridor (semi-transparent), its outline, the centrelines on top; per-road polygons take the clicks
+    map.addLayer({ id: "cor-fill", type: "fill", source: "corridor", filter: ["==", ["get", "kind"], "dissolved"], paint: { "fill-color": "#ff4fa3", "fill-opacity": 0.22 } });
+    map.addLayer({ id: "cor-hit", type: "fill", source: "corridor", filter: ["==", ["get", "kind"], "road"], paint: { "fill-color": "#ff4fa3", "fill-opacity": 0 } });
+    map.addLayer({ id: "cor-line", type: "line", source: "corridor", filter: ["==", ["get", "kind"], "dissolved"], paint: { "line-color": "#ff4fa3", "line-width": 1.3, "line-opacity": 0.9 } });
+    map.addLayer({ id: "cor-sel", type: "line", source: "corridor", filter: ["==", ["get", "road_id"], "__none__"], paint: { "line-color": "#ffffff", "line-width": 2.4, "line-dasharray": [2, 1.5] } });
+    map.addLayer({ id: "cor-road", type: "line", source: "cor-roads", layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#ffe3f1",
+      "line-width": ["interpolate", ["linear"], ["zoom"], 5, ["match", ["get", "road_class"], ["motorway", "trunk"], 1.3, 0.6], 11, ["match", ["get", "road_class"], ["motorway", "trunk"], 3.4, 2]] } });
     map.addLayer({ id: "reg-line", type: "line", source: "regions", paint: { "line-color": "#22c7d8", "line-width": 1.2, "line-dasharray": [3, 3], "line-opacity": 0.7 } });
     map.addLayer({ id: "reg-sel", type: "line", source: "regions", filter: ["==", ["get", "id"], "__none__"], paint: { "line-color": "#22c7d8", "line-width": 2.6 } });
     map.addLayer({ id: "road-line", type: "line", source: "roads", paint: { "line-color": "#22c7d8", "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.2, 10, 3], "line-opacity": 0.9 } });
@@ -117,6 +126,17 @@ const MapView = (() => {
       map.on("mouseenter", l, () => map.getCanvas().style.cursor = "pointer");
       map.on("mouseleave", l, () => map.getCanvas().style.cursor = "");
     });
+    // a click on a centreline picks that road; on the corridor, the most specific road there (smallest corridor); other layers keep priority
+    const corClick = e => {
+      if (map.queryRenderedFeatures(e.point, { layers: ["inc-pt", "set-pt", "haz-fill", "pred-fill"].filter(l => map.getLayer(l)) }).length) return;
+      const onLine = map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]], { layers: ["cor-road"] })[0];
+      const hits = map.queryRenderedFeatures(e.point, { layers: ["cor-hit"] });
+      const id = onLine ? onLine.properties.road_id : hits.length ? hits.sort((a, b) => a.properties.corridor_area_km2 - b.properties.corridor_area_km2)[0].properties.road_id : null;
+      const f = id && cor.features.find(x => x.properties.road_id === id);
+      if (f) showDetail("cor", f);
+    };
+    map.on("click", "cor-hit", corClick); map.on("click", "cor-road", corClick);
+    map.on("mouseenter", "cor-road", () => map.getCanvas().style.cursor = "pointer"); map.on("mouseleave", "cor-road", () => map.getCanvas().style.cursor = "");
   }
 
   function availability(id) {
@@ -127,6 +147,7 @@ const MapView = (() => {
       case "roads": return data.roads.length ? [true] : [false, (cat("roads") || {}).status === "missing" ? "Run scripts/fetch_osm.py roads" : "No roads in region"];
       case "incidents": return data.incidents.length ? [true, "Seed records — proxy locations"] : [false, "No incidents for filter"];
       case "settlements": return data.settlements.length ? [true, "Reference town centres"] : [false, "None in region"];
+      case "corridor": return cor.stats ? [true, `${UI.fmtNum(cor.stats.roads)} roads · 5 km each side · click a road or the corridor`] : [false, "Run scripts/build_road_corridor.py"];
       case "regions": return [true, "Not official boundaries"];
       case "hillshade": return [true, engine === "mapbox" ? "Mapbox Terrain-DEM" : "AWS Terrain Tiles (Mapzen)"];
       default: return [false, LAYERS.find(l => l.id === id).why];
@@ -161,7 +182,7 @@ const MapView = (() => {
 
   function applyVisibility() {
     if (!ready) return;
-    LAYERS.forEach(l => l.layers.forEach(id => {
+    LAYERS.forEach(l => l.layers.concat(l.extra || []).forEach(id => {
       if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", l.visible && availability(l.id)[0] ? "visible" : "none");
     }));
     BASEMAPS.forEach(b => {
@@ -181,6 +202,7 @@ const MapView = (() => {
     rows.push(`<div class="li"><span class="sw" style="background:rgba(227,169,63,.25);border:1px solid #e3a93f"></span>Location uncertainty radius</div>`);
     rows.push(`<div class="li"><span class="ring" style="background:#e4ecf6"></span>Settlement (reference)</div>`);
     if (data.roads.length) rows.push(`<div class="li"><span class="sw" style="background:#22c7d8;height:3px"></span>Road centerline (OSM)</div>`);
+    if (cor.stats) rows.push(`<div class="li"><span class="sw" style="background:rgba(255,79,163,.4);border:1px solid #ff4fa3"></span>5 km road exposure corridor (each side)</div>`);
     rows.push(`<div class="li"><span class="sw" style="border:1px dashed #22c7d8"></span>Study area — indicative, not official</div>`);
     document.getElementById("map-legend").innerHTML = rows.join("");
   }
@@ -219,6 +241,28 @@ const MapView = (() => {
       dsId = "roads"; title = p.name || p.ref || p.osm_id;
       rows = [["Route", UI.dash(p.ref)], ["Class", UI.dash(p.highway)], ["Length (km)", UI.dash(p.length_km)], ["Hazard-affected km", UI.dash(p.hazard_affected_km)],
         ["Relevant incidents", UI.dash((Array.isArray(p.relevant_incidents) ? p.relevant_incidents : JSON.parse(p.relevant_incidents || "[]")).join(", "))], ["Status", UI.dash(p.status_wording)], ["OSM ID", UI.dash(p.osm_id)]];
+    } else if (layer === "cor") {
+      dsId = null; title = p.name;
+      const J = v => typeof v === "string" && /^[\[{]/.test(v) ? JSON.parse(v) : v, na = '<span class="muted">unavailable</span>';
+      const n = v => v == null ? na : UI.esc(String(v)), ka = J(p.km_by_alert), ev = J(p.historical_event_list) || [], si = J(p.seed_incident_list) || [], ns = J(p.nearest_settlements), sn = J(p.settlement_names) || [];
+      rows = [["Road classification", n(p.road_class) + (p.named === false || p.named === "false" ? ' <span class="tag warn">no name in OSM</span>' : "")],
+        ["Total length", `${n(p.length_km)} km <span class="muted">(${n(p.osm_ways)} OSM ways, in ${COR_CRS})</span>`],
+        ["Buffer width", `<b>${n(p.buffer_each_side_km)} km on each side</b> <span class="muted">(${p.buffer_each_side_km * 2} km wide; ${n(p.corridor_area_km2)} km²)</span>`],
+        ["Exposure rank", `${n(p.exposure_rank)} of ${cor.stats ? cor.stats.roads : "—"}`],
+        ["Historical avalanches ≤ 5 km", p.historical_events == null ? na : `<b>${p.historical_events}</b>${ev.length ? "<br><small>" + ev.map(UI.esc).join("<br>") + "</small>" : ""}`],
+        ["Seed incidents ≤ 5 km", p.seed_incidents == null ? na : `${p.seed_incidents}${si.length ? "<br><small>" + si.map(UI.esc).join("<br>") + "</small>" : ""}`],
+        ["Predicted risk (alert forecast)", ka ? `worst level <b>${n(p.worst_alert)}</b><br><small>High ${ka.High} km · Moderate ${ka.Moderate} km · Low ${ka.Low} km · Not rated ${ka["Not rated"]} km · no forecast tile ${n(p.km_no_forecast_tile)} km</small>` : na],
+        ["Forecast snowfall", p.max_snowfall_3d_mm == null ? na : `up to ${p.max_snowfall_3d_mm} mm in 3 days · ${p.km_snowfall_10mm} km with ≥ 10 mm · ${p.km_snowfall_25mm} km with ≥ 25 mm`],
+        ["Terrain release hotspots", n(p.release_hotspots)], ["Glaciers in the corridor", p.glaciers == null ? na : `${p.glaciers} (${p.glacier_area_km2} km²)`],
+        ["Settlements in the corridor", p.settlements_in_corridor == null ? na : `${p.settlements_in_corridor}${sn.length ? ": " + sn.map(UI.esc).join(", ") : ""}`],
+        ["Nearest settlements", ns ? ns.map(UI.esc).join(", ") : na],
+        ["Coordinates (road midpoint)", `<span class="mono">${(+p.lat).toFixed(4)}, ${(+p.lon).toFixed(4)}</span>`], ["Road ID", `<span class="mono">${n(p.road_id)}</span>`]];
+      el.innerHTML = `<button class="close" aria-label="Close">×</button><div class="eyebrow">5 km Road Exposure Corridor</div><h4>${UI.esc(title)}</h4>${UI.dl(rows)}
+        <div class="notice" style="margin-top:12px;font-size:12px"><strong>Source:</strong> roads © OpenStreetMap contributors; corridor and intersections by scripts/build_road_corridor.py.<br>
+        <strong>Limitations:</strong> potential exposure only: a road inside the corridor is not closed or at risk by that fact. Alert levels are the forecast's worst day; “unavailable” means the dataset is not loaded, not zero.</div>`;
+      el.hidden = false; el.querySelector(".close").onclick = () => { el.hidden = true; map.setFilter("cor-sel", ["==", ["get", "road_id"], "__none__"]); };
+      map.setFilter("cor-sel", ["==", ["get", "road_id"], p.road_id]);
+      return;
     } else if (layer === "pred-fill") {
       dsId = null; title = `Model output — ${p.risk_class}`;
       rows = Object.entries(p).map(([k, v]) => [k, UI.dash(v)]);
@@ -234,7 +278,48 @@ const MapView = (() => {
     el.querySelector(".close").onclick = () => el.hidden = true;
   }
 
+
+  // ------------------------------------------------------------------ 5 km Road Exposure Corridor (data/road_corridor/, scripts/build_road_corridor.py)
+  const COR_CRS = "UTM 43N";
+  const cor = { stats: null, loaded: false, features: [] };
+  async function loadCorridor() {
+    if (cor.loaded) return; cor.loaded = true;
+    try {
+      const [st, poly, lines] = await Promise.all([UI.api("roadcorridor/stats"), fetch("/api/roadcorridor/corridor.geojson").then(r => r.json()), fetch("/api/roadcorridor/centrelines.geojson").then(r => r.json())]);
+      cor.stats = st.available ? st : null; cor.features = poly.features || [];
+      if (ready) { map.getSource("corridor").setData(poly); map.getSource("cor-roads").setData(lines); }
+    } catch (e) { console.warn("Road corridor:", e); }
+    renderCorridorStats(); renderLayerPanel(); applyVisibility();
+  }
+  function renderCorridorStats() {
+    const panel = document.getElementById("layer-panel"); if (!panel) return;
+    let box = document.getElementById("cor-stats");
+    if (!box) { box = document.createElement("div"); box.id = "cor-stats"; (document.getElementById("map-date") || panel.lastElementChild).before(box);
+      const st = document.createElement("style"); st.textContent = `#cor-stats{margin:10px 0;font-size:12px}#cor-stats .g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:6px 0}
+        #cor-stats .g div{padding:6px 7px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}#cor-stats .g b{display:block;font-size:15px}#cor-stats .g small{opacity:.7}
+        #cor-stats .bar{display:flex;height:9px;border-radius:5px;overflow:hidden;margin:6px 0 3px;background:#1e293b}#cor-stats .top button{display:block;width:100%;text-align:left;padding:5px 7px;margin:3px 0;border-radius:7px;
+        border:1px solid rgba(255,255,255,.1);background:rgba(255,79,163,.07);color:inherit;cursor:pointer;font:inherit}#cor-stats .top button:hover{background:rgba(255,79,163,.18)}#cor-stats .dl a{margin-right:10px;color:#ff9bc8}`; document.head.appendChild(st); }
+    const s = cor.stats;
+    if (!s) { box.innerHTML = `<div class="panel-h">5 km road exposure corridor</div><div class="why">Not built. Run <code>python scripts/build_road_corridor.py</code></div>`; return; }
+    const t = s.totals, na = v => v == null ? "unavailable" : UI.fmtNum(v), ka = t.km_by_alert, L = s.road_length_km;
+    const seg = ka ? [["High", "#d7322b", ka.High], ["Moderate", "#f2a93b", ka.Moderate], ["Low", "#3a9b8c", ka.Low], ["Not rated", "#94a3b8", ka["Not rated"]], ["No forecast tile", "#334155", t.km_no_forecast_tile]] : [];
+    box.innerHTML = `<div class="panel-h">5 km road exposure corridor</div>
+      <div class="g"><div><b>${na(s.roads)}</b><small>roads</small></div><div><b>${na(Math.round(L))}</b><small>road km</small></div><div><b>${na(Math.round(s.corridor_area_km2))}</b><small>corridor km²</small></div>
+        <div><b>${na(t.historical_events)}</b><small>historical avalanches ≤ 5 km</small></div><div><b>${na(t.settlements_in_corridor)}</b><small>settlements inside</small></div><div><b>${na(t.glaciers)}</b><small>glaciers inside</small></div></div>
+      ${ka ? `<div>Road km by forecast alert (worst day, ${UI.esc((s.meta.forecast_days || []).join(" to "))})</div><div class="bar">${seg.map(x => `<i style="width:${x[2] / L * 100}%;background:${x[1]}" title="${x[0]}: ${x[2]} km"></i>`).join("")}</div>
+        <div class="muted">${seg.map(x => `<span style="color:${x[1] === "#334155" ? "#94a3b8" : x[1]}">●</span> ${x[0]} <b>${UI.fmtNum(Math.round(x[2]))}</b> km`).join(" · ")}</div>
+        <div style="margin-top:5px">Forecast snowfall ≥ 10 mm in 3 days: <b>${UI.fmtNum(Math.round(t.km_snowfall_10mm))} km</b> · ≥ 25 mm: <b>${UI.fmtNum(Math.round(t.km_snowfall_25mm))} km</b></div>` : `<div class="why">Avalanche forecast: unavailable (not a zero)</div>`}
+      <div style="margin-top:5px">Terrain release hotspots inside: <b>${na(t.release_hotspots)}</b> · seed incidents: <b>${na(t.seed_incidents)}</b></div>
+      <div class="top"><div style="margin-top:8px"><b>Highest exposure</b></div>${s.top_roads.slice(0, 6).map(r => `<button type="button" data-rid="${r.road_id}">${r.exposure_rank}. ${UI.esc(r.name)}<br><small class="muted">${r.road_class} · ${r.length_km} km · ${r.historical_events == null ? "events unavailable" : r.historical_events + " historical"} · ${na(r.release_hotspots)} hotspots · ${na(r.glaciers)} glaciers</small></button>`).join("")}</div>
+      <div class="why">${UI.esc(s.ranking_rule)}</div>
+      <div class="dl" style="margin-top:6px"><a href="/api/roadcorridor/corridor.geojson?download=1">⇩ Corridor GeoJSON</a><a href="/api/roadcorridor/centrelines.geojson?download=1">⇩ Centrelines GeoJSON</a></div>
+      <div class="why">Buffer ${s.meta.buffer_m_each_side / 1000} km on each side, measured in ${UI.esc(s.meta.crs_analysis)}. Built ${UI.esc(s.meta.built_utc)} UTC.</div>`;
+    box.querySelectorAll("[data-rid]").forEach(b => b.onclick = () => { const f = cor.features.find(x => x.properties.road_id === b.dataset.rid); if (!f) return;
+      map.flyTo({ center: [f.properties.lon, f.properties.lat], zoom: 8.6, duration: 1400 }); showDetail("cor", f); });
+  }
+
   async function refreshData() {
+    loadCorridor();
     const params = { region: S.region, window: S.window };
     const [inc, set, roads, haz, pred] = await Promise.all([
       UI.api("incidents", { region: S.region }), UI.api("settlements", params), UI.api("roads", params),

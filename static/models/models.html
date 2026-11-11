@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Framework &amp; Prediction Engines</title>
+<link rel="icon" href="/static/img/ndma-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/static/models/models.css?v={{ v }}">
+</head>
+<body class="mf-body mf-hero">
+<!-- background: the owner's film (static/models/media/background.mp4, shared on Drive 11 Nov 2026). The ambient layer is the same film,
+     drawn tiny into a canvas and scaled up (a soft glow of its own colours); the framed player shows it sharp on the overview. -->
+<canvas class="mf-amb" id="mf-amb" width="64" height="36" aria-hidden="true"></canvas>
+<div class="mf-veil" aria-hidden="true"></div>
+<figure class="mf-film" id="mf-film">
+  <video id="mf-vid" src="/static/models/media/background.mp4" muted loop playsinline preload="auto" aria-label="Atmospheric and orographic physical processes in High-Mountain Asia, with the climate model's horizontal and vertical grid"></video>
+  <figcaption><span><b>Atmospheric &amp; orographic processes in High-Mountain Asia</b> · climate-model grid (latitude × longitude × pressure / height)</span>
+    <em>AI-generated illustration supplied by NGT · not data</em>
+    <button type="button" data-film="play" aria-label="Pause the film">❚❚</button><button type="button" data-film="full" aria-label="Full screen">⤢</button></figcaption>
+</figure>
+<div class="mf-app" id="mf-app" data-title="{{ title }}"></div>
+<script type="module" src="/static/models/models.js?v={{ v }}"></script>
+</body>
+</html>

@@ -565,3 +565,46 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   systems take `SYS_COL` (Hindu Kush #00FFFF, Karakoram #FF0000, West Himalaya #39FF00), and the mountain-system tabs use exactly those.
   `SYS_LABEL_COL` overrides the map's system name label and that system's glacier name labels (Karakoram: red #FF0000, user request).
   `GLACIER_COLORS` and `INTRO_COLORS` both point at `SYS_COL`; `GLACIER_LIGHT` holds the bright outline tints.
+
+## Settlement & Infrastructure (KKH) · tour, danger display, bottom panel
+
+- Page `/kkh` = `static/kkh/kkh.html|js|css`, opened from the home tile `kkh` in a full-screen frame (`openKKH(src, title)` in home.html; closes with `kkh:close`).
+- CPEC Safety Tour (`startTour` in kkh.js) is ONE free-camera controller (`setFreeCameraOptions`) per frame, everything eased: it aims at a smoothed copy of
+  the road (~1 km box blur, switchbacks averaged) and heads along a ~3.5 km smoothed stretch; pace per km (5 / 10 / 17 km/s for High / Moderate / other)
+  is min-filtered and blurred so braking starts BEFORE a stretch; camera height = the road's terrain height low-passed (jumpTo re-read the terrain under
+  the centre every frame: that was the vibration). Stations: brake in, hold 4.8 s with a slow swing, accelerate out (no easeTo, no snap back). Touching the
+  map pauses and hands the camera over; Resume blends back. Space = pause. Do not reintroduce per-frame jumpTo/easeTo.
+- Danger colours (`DZ`): lower #22E07A, moderate #FFA31A, high #FF2D55 (white hazard stripes + slow pulse), not rated #8A9AB0; dark casing under the line;
+  `kkh-dz-zone` tints the 5 km band each side (ground-scaled width) where the road is Moderate/High; "HIGH EXPOSURE km a-b" labels. Settlements are filled,
+  structures ringed, with the class of the road beside them (settlement card says it is the road's class, not an assessment of the settlement).
+- Bottom panel (owner: map gets the full screen): docked strip `.kkh-dzp` at the bottom, height measured into `--dzh` (`fit()`); toolbar row (controls,
+  class summary chips, tour button, ▾ collapse) + hazard profile (road elevation from the portal's z9 DEM tiles, class-coloured, snowfall bars, stations,
+  records, towns, hover read-out) + "road at risk per day" columns (click = pick day) + events on a true time axis (lanes assigned by measured label width,
+  never overlapping). Side list, legend and card stop above `--dzh`.
+
+## Model Framework & Prediction Engines (home tile `models`, page `/models`)
+
+- `static/models/models.html|js|css`, route `/models` + read-only `/api/models/framework` in app.py (forecast/data: thresholds_meta, final_rule_validation,
+  best_rules, tile_thresholds, student_thresholds, student.joblib size, settings without apikey, regions.json). Same frame as KKH (`kkh: "/models"` in `M`).
+- Overview = ONE SCREEN, no scrolling (owner: "i need no scroll down, one pager display of all three factors"): left the owner's film (framed, moved into the page's slot by `Film.place`), right the three engines as a pipeline (Climate -> Weather -> Rule), each row = number/badge/horizon | one big figure from its file + one plain sentence + source (NGT sheet) | live mini-chart. Rule row shows today's level per region and Moderate/High days ahead. Checked at 1900x900, 1600x1000 and 1366x768 (compact mode hides secondary lines). Do not turn it back into a long scrolling page.
+- Sub-tab 1 Global & Physics Models: Overview, Climate
+  model (MathML equations, /api/climate/projections interactive chart / period slider / area bars), Weather forecast (live ECMWF run), Rule engine (workflow,
+  validation rings, read-only threshold workbench: what-if sliders run `forecast_core.apply_rules(final=True)` line by line on a tile's calibrated thresholds;
+  presets Chitral/Gilgit/Skardu/Naran/Astore from settlements.geojson, Hispar from the KKH inventory; scatter of all 150 tiles).
+  Sub-tab 2 Machine Learning: Overview, ML model (concept neural network vs the real boosted-trees view), Teacher-student (distillation diagram).
+- BACKGROUND = THE OWNER'S FILM, not a drawn scene: `static/models/media/background.mp4` (= Drive `gemini_generated_video_c4b3389b.mp4`, 1280x720, 10 s,
+  AI-generated illustration, labelled so). Framed on the overview (pillarbox cropped: aspect 1112:720, object-fit cover), and a 64x36 canvas of its own
+  frames scaled up as an ambient glow on every page. A code-drawn scene was tried and REJECTED by the owner ("fake") and deleted; do not bring it back.
+- Sources: `static/models/media/avalanche_models_sources.xlsx` (Drive, NGT, 11 Nov 2026) -> `models_sources.json` via `python scripts/build_models_sources.py`
+  (cells unchanged; test checks it). Used on the overview's "Models and sources" card and on the climate / weather / rule pages (models list, licence, links).
+- Honesty: no feature-importance, ROC/AUC, teacher model or compression ratio (not in the package; the pages say so). "Response time" is the measured fetch
+  of stored tile scores, labelled as such. The engine has no "Extreme" level. AWS telemetry chip = not connected (no station feed exists).
+
+- KKH revisions (owner, 11 Nov): forecast squares are NOT solid fills over the 3D relief (they smeared across ridges like spilt paint) but a light
+  tint + fine diagonal hatching for Moderate/High + crisp outline (`kkh-fc`, `kkh-fc-h1|h2`, `kkh-fc-l`); the danger band along the road is ~1.2 km,
+  crisp, no blur. The events time axis was REMOVED from the page at the owner's request (`.kkh-tl` is deleted in `initDanger`). Side panels are slim
+  (glacier list 232 px, legend 206 px, one short line per item; the full rule is the legend's ⓘ tooltip). Bottom strip = toolbar + [donut summary of
+  the road by class | hazard profile (gradient fills, lit crest, tour position marker `tourK`) | km at risk per day (rounded gradient bars)].
+  Tour caption: "Dock left" button puts it as a vertical panel on the left (`kkh-capleft`, remembered in localStorage `kkh.capDock`).
+- Model Framework: EVERY page is one screen (`dash()` + `panel()` + `fit()` in models.js; charts drawn at their panel's pixel size one frame after
+  layout). Checked with zero scroll and zero clipped panels at 1900x900, 1600x1000, 1366x768. Keep new content inside that rule.
