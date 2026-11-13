@@ -10,6 +10,9 @@ foreign officials, so visual polish matters. Data honesty matters more.
 
 - `run.bat` creates `.venv`, installs requirements, starts the server and opens Chrome full screen at http://127.0.0.1:5000/
 - `python app.py` serves with Waitress. Set `FLASK_DEBUG=1` in `.env` for auto-reload while editing.
+- From a terminal (VS Code): `.\start.cmd` (or `.\start.cmd open` to also open Chrome) runs the server in that terminal (Ctrl+C stops it), with
+  run.bat's preparation and no prompts; says so and exits if port 5000 is already serving. The workspace folder above the project has a shortcut
+  `start-portal.cmd` and `.vscode/tasks.json` (Ctrl+Shift+B = "Start portal"). A .cmd, not .ps1: PowerShell scripts are blocked by default here.
 - `python -m pytest -q` runs 20 tests (date windows, spatial logic, API, exports, security, Hindu Kush screening).
 - Restart the server after editing anything in `templates/`, because Flask caches templates when not
   in debug mode. Edits to `static/` only need a browser refresh (Ctrl+F5).

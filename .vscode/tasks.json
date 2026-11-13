@@ -1,0 +1,26 @@
+{
+  // Start the portal from VS Code when this project folder is opened: Ctrl+Shift+B (default build task), or Terminal > Run Task...
+  // The server runs in a VS Code terminal panel; its log shows there and the bin icon / Ctrl+C stops it. From any terminal: .\start.cmd
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start portal",
+      "type": "shell",
+      "command": "${workspaceFolder}\\start.cmd",
+      "options": { "shell": { "executable": "cmd.exe", "args": ["/d", "/c"] } },
+      "isBackground": true,
+      "problemMatcher": [],
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+    },
+    {
+      "label": "Start portal + open Chrome",
+      "type": "shell",
+      "command": "${workspaceFolder}\\start.cmd open",
+      "options": { "shell": { "executable": "cmd.exe", "args": ["/d", "/c"] } },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+    }
+  ]
+}
