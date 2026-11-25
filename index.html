@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Avalanche Prediction Portal · Demo</title>
+<meta name="description" content="Recorded walkthrough of the Avalanche Prediction Portal: AI-powered avalanche monitoring and forecasting for the glacier systems of northern Pakistan.">
+<meta name="theme-color" content="#060b16">
+<link rel="icon" href="assets/ndma-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="demo.css">
+</head>
+<body class="is-gate">
+<div class="app" id="app">
+
+  <!-- the recorded film: the real portal, captured from the running system -->
+  <video id="film" class="film" src="assets/demo.mp4" poster="assets/poster.jpg" preload="auto" playsinline muted
+         aria-label="Recorded walkthrough of the running portal"></video>
+
+  <!-- access code (a courtesy door, see config.js) -->
+  <section class="gate" id="gate" aria-labelledby="gate-t">
+    <div class="gate-bg" aria-hidden="true"></div>
+    <div class="gate-card">
+      <div class="brand"><img src="assets/ngt-logo.jpg" alt="NGT"><img src="assets/ndma-logo.png" alt="NDMA"></div>
+      <p class="kick">Project demo</p>
+      <h1 id="gate-t">Avalanche Prediction Portal</h1>
+      <p class="sub">Enter the four-digit access code</p>
+      <form id="gate-form" autocomplete="off">
+        <div class="pin" role="group" aria-label="Access code">
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 1" required>
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 2" required>
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 3" required>
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 4" required>
+        </div>
+        <p class="gate-msg" id="gate-msg" role="status" aria-live="polite"></p>
+        <button type="submit" class="btn primary" id="gate-go">Open demo</button>
+      </form>
+      <div class="load" aria-hidden="true"><i id="load-bar"></i></div>
+    </div>
+  </section>
+
+  <!-- opening title, 6 s -->
+  <section class="open" id="open" aria-hidden="true">
+    <div class="open-bg"></div>
+    <div class="open-txt">
+      <div class="brand"><img src="assets/ngt-logo.jpg" alt=""><img src="assets/ndma-logo.png" alt=""></div>
+      <h1><span>Avalanche Prediction Portal</span></h1>
+      <p class="sub2">AI-Powered Avalanche Monitoring and Forecasting System</p>
+      <p class="tag">“Reading Glaciers Before They Move.”</p>
+      <p class="who">National Disaster Management Authority · Next Generation Technologies · Northern Pakistan</p>
+      <div class="open-load" aria-hidden="true"><i id="open-bar"></i></div>
+    </div>
+  </section>
+
+  <!-- chapter card -->
+  <aside class="card" id="card" aria-live="polite">
+    <p class="c-kick"><b id="c-num"></b><span id="c-of"></span></p>
+    <h2 id="c-title"></h2>
+    <ul id="c-points"></ul>
+    <p class="c-src" id="c-src"></p>
+  </aside>
+
+  <!-- end card -->
+  <section class="end" id="end" aria-labelledby="end-t" hidden>
+    <div class="end-in">
+      <p class="kick">How it works</p>
+      <h2 id="end-t">From open data to a warning level for every 25 km square</h2>
+      <div class="arch" id="arch"></div>
+      <p class="end-note" id="end-note"></p>
+      <div class="end-btns">
+        <button type="button" class="btn primary" data-act="replay">↺ Replay demo</button>
+        <a class="btn" id="src-link" href="#" rel="noopener">View source code</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- controls -->
+  <div class="bar" id="bar" role="toolbar" aria-label="Demo controls">
+    <div class="chaps" id="chaps" role="tablist" aria-label="Chapters"></div>
+    <div class="row">
+      <button type="button" class="ib" data-act="prev" aria-label="Previous section" title="Previous section (←)"><svg viewBox="0 0 24 24"><path d="M6 5v14M19 5l-10 7 10 7z"/></svg></button>
+      <button type="button" class="ib main" data-act="play" aria-label="Pause" title="Play / pause (Space)"><svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg><svg class="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg></button>
+      <button type="button" class="ib" data-act="next" aria-label="Next section" title="Next section (→)"><svg viewBox="0 0 24 24"><path d="M18 5v14M5 5l10 7-10 7z"/></svg></button>
+      <span class="time" id="time">0:00 / 0:00</span>
+      <span class="now" id="now"></span>
+      <span class="grow"></span>
+      <button type="button" class="tb" data-act="skip" id="skip">Skip intro</button>
+      <button type="button" class="tb" data-act="replay" title="Replay from the start">↺ Replay</button>
+      <button type="button" class="ib" data-act="full" aria-label="Fullscreen" title="Fullscreen (F)"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button type="button" class="tb exit" data-act="exit" title="Leave the demo">Exit demo</button>
+    </div>
+  </div>
+
+  <p class="note" id="note"></p>
+</div>
+<noscript><p style="color:#fff;padding:24px;font-family:sans-serif">This demo needs JavaScript. The recording itself: <a href="assets/demo.mp4" style="color:#7dd3fc">assets/demo.mp4</a></p></noscript>
+<script src="config.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>
