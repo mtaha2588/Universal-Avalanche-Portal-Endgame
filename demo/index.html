@@ -30,10 +30,10 @@
       <p class="sub">Enter the four-digit access code</p>
       <form id="gate-form" autocomplete="off">
         <div class="pin" role="group" aria-label="Access code">
-          <input inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 1" required>
-          <input inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 2" required>
-          <input inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 3" required>
-          <input inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 4" required>
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 1" required>
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 2" required>
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 3" required>
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 4" required>
         </div>
         <p class="gate-msg" id="gate-msg" role="status" aria-live="polite"></p>
         <button type="submit" class="btn primary" id="gate-go">Open demo</button>

@@ -28,8 +28,10 @@ body.is-gate .film, body.is-open .film { visibility: hidden; }
 .gate h1 { margin: 10px 0 4px; font: 700 26px/1.15 var(--disp); letter-spacing: -.01em; }
 .gate .sub { margin: 0 0 18px; color: var(--mute); }
 .pin { display: flex; justify-content: center; gap: 10px; }
+/* the digits are masked (type="password"); the dot is drawn a little larger so the boxes do not look empty */
 .pin input { width: 54px; height: 62px; border-radius: 12px; border: 1px solid rgba(148, 180, 230, .3); background: rgba(3, 8, 18, .7);
-  text-align: center; font: 700 26px var(--disp); caret-color: var(--ice); transition: border-color .2s, box-shadow .2s; }
+  text-align: center; font: 700 30px/1 var(--disp); letter-spacing: 0; caret-color: var(--ice); transition: border-color .2s, box-shadow .2s; }
+.pin input:not(:placeholder-shown), .pin input[value] { color: var(--ice); }
 .pin input:focus { outline: none; border-color: var(--ice); box-shadow: 0 0 0 3px rgba(125, 211, 252, .2); }
 .gate.bad .pin { animation: shake .4s; } .gate.bad .pin input { border-color: #f87171; }
 @keyframes shake { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
