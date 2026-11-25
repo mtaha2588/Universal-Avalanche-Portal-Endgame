@@ -1,4 +1,4 @@
-/* Avalanche Prediction Portal: interview demo player (static; the film is a recording of the running portal) */
+/* Avalanche Prediction Portal: project demo player (static; the film is a recording of the running portal) */
 :root {
   --bg: #060b16; --panel: rgba(8, 15, 30, .82); --line: rgba(148, 180, 230, .18); --ink: #eef4fc; --mute: #9fb3cf; --dim: #6f86a6;
   --ice: #7dd3fc; --cyan: #22d3ee; --accent: #38bdf8; --hk: #00ffff; --kk: #ff3b3b; --wh: #39ff00;
@@ -57,6 +57,11 @@ body.is-open .open-bg { animation: drift 7s ease-out forwards; }
 .open .sub2 { margin: 0; font: 600 clamp(11px, 1.4vw, 15px) var(--font); letter-spacing: .26em; text-transform: uppercase; color: var(--ice); }
 .open .tag { margin: 22px 0 0; font: 500 clamp(16px, 2.2vw, 24px) var(--disp); color: #e2e8f0; }
 .open .who { margin: 26px 0 0; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+/* shown only while the title is waiting for the film (slow connection), so it is never a frozen screen */
+.open-load { width: min(320px, 70vw); height: 2px; margin: 22px auto 0; border-radius: 2px; background: rgba(148, 180, 230, .16); opacity: 0; transition: opacity .4s; }
+.open-load i { display: block; height: 100%; width: 0; border-radius: 2px; background: var(--ice); transition: width .3s; }
+.open.waiting .open-load { opacity: 1; }
+.open.waiting .who::after { content: " · preparing the film…"; color: var(--ice); }
 .open .brand, .open h1, .open .sub2, .open .tag, .open .who { opacity: 0; transform: translateY(10px); }
 body.is-open .open .brand { animation: rise .8s .1s forwards; } body.is-open .open h1 { animation: rise .9s .35s forwards; }
 body.is-open .open .sub2 { animation: rise .8s .9s forwards; } body.is-open .open .tag { animation: rise .8s 1.6s forwards; }

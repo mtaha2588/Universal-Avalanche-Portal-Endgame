@@ -1,4 +1,4 @@
-/* Avalanche Prediction Portal: interview demo player.
+/* Avalanche Prediction Portal: project demo player.
    The film (assets/demo.mp4) is a screen recording of the running portal (scripts/record_demo.py); chapter times come from
    data/chapters.json and every figure in the captions from data/facts.json (scripts/build_demo_data.py, read from the
    portal's own data files). Nothing here is a live forecast. */
@@ -96,8 +96,13 @@
   (function preload() {
     const loadBar = $("#load-bar");
     const pct = () => { const d = film.duration, b = film.buffered; if (!d || !b.length) return 0; return Math.min(1, b.end(b.length - 1) / d); };
+    const bar2 = $("#open-bar");
     const done = () => { if (ready) return; ready = true; $(".load").classList.add("done"); if (loadBar) loadBar.style.width = "100%"; if (wantStart) afterOpening(); };
-    film.addEventListener("progress", () => { if (loadBar && !ready) loadBar.style.width = (pct() * 100).toFixed(1) + "%"; if (pct() > 0.999) done(); });
+    film.addEventListener("progress", () => {
+      const p = (pct() * 100).toFixed(1) + "%";
+      if (!ready) { if (loadBar) loadBar.style.width = p; if (bar2) bar2.style.width = p; }
+      if (pct() > 0.999) done();
+    });
     film.addEventListener("canplaythrough", done);
     film.addEventListener("error", () => { $("#gate-msg").textContent = "The recording could not be loaded."; });
     film.load();
@@ -153,10 +158,23 @@
     body.classList.add("is-open"); body.classList.remove("paused");
     clearTimeout(opening); opening = setTimeout(afterOpening, reduce ? 1500 : OPEN_S * 1000);
   }
-  function afterOpening() {
+  // The title holds until the film can play without stopping. On a slow line that could be a long, silent wait, so the
+  // title shows how far the download has got and, after WAIT_CAP, starts anyway as soon as there is something to play.
+  const WAIT_CAP = 9000;
+  let waitT = null;
+  function afterOpening(force) {
     clearTimeout(opening); wantStart = true;
-    if (!ready) return;                       // keep the title up until the film is fully loaded
-    wantStart = false; body.classList.remove("is-open"); started = true; film.play().catch(() => body.classList.add("paused")); poke();
+    if (!ready && !force) {
+      if (!waitT) {                           // first time we are made to wait: say so, and cap the wait
+        $("#open").classList.add("waiting");
+        waitT = setTimeout(() => { if (film.readyState >= 2) afterOpening(true); }, WAIT_CAP);
+      }
+      return;
+    }
+    clearTimeout(waitT); waitT = null; wantStart = false;
+    $("#open").classList.remove("waiting");
+    body.classList.remove("is-open"); started = true;
+    film.play().catch(() => body.classList.add("paused")); poke();
   }
 
   /* ------------------------------------------------------------ chapters + progress */

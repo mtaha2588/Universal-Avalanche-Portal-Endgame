@@ -37,7 +37,7 @@ WORK = ROOT / "demo" / ".record"            # frames + per-scene clips (git-igno
 OUT = ROOT / "demo" / "assets" / "demo.mp4"
 CHAPTERS = ROOT / "demo" / "data" / "chapters.json"
 W, H, FPS, XFADE = 1920, 1080, 30, 0.7
-OUT_CRF, OUT_W = 33, 1600            # the published film: small enough to stream on a slow connection (--crf / --width)
+OUT_CRF, OUT_W = 29, 1920            # the published film: native resolution (--crf / --width change it)
 CHROME = next((p for p in [r"C:\Program Files\Google\Chrome\Application\chrome.exe",
                            r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"] if Path(p).exists()), "chrome")
 
