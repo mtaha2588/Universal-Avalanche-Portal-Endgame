@@ -37,6 +37,7 @@ WORK = ROOT / "demo" / ".record"            # frames + per-scene clips (git-igno
 OUT = ROOT / "demo" / "assets" / "demo.mp4"
 CHAPTERS = ROOT / "demo" / "data" / "chapters.json"
 W, H, FPS, XFADE = 1920, 1080, 30, 0.7
+OUT_CRF, OUT_W = 33, 1600            # the published film: small enough to stream on a slow connection (--crf / --width)
 CHROME = next((p for p in [r"C:\Program Files\Google\Chrome\Application\chrome.exe",
                            r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"] if Path(p).exists()), "chrome")
 
@@ -56,13 +57,21 @@ SCENES = [
     dict(id="karakoram", title="Karakoram: the Batura model", url="/portal#karakoram", settle=7, actions=[("wait", 5.0)]),
     dict(id="alert", title="15-day Avalanche Alert Forecast", url="/#alertforecast", settle=17, actions=[
         ("wait", 3.5), ("js", "document.querySelector('.ad-fab').click()"), ("wait", 3.8)]),
+    # K2 Bottleneck 2008 (PK003): snow and ice the whole way down, and the run is still going while we record
     dict(id="history", title="Historical avalanches replayed in 3D", url="/#history", settle=6,
-         pre=[("js", "HistTour.open({ tour: true })"), ("wait", 15.0)], actions=[("wait", 8.0)]),
+         pre=[("js", "HistTour.open({ tour: true, only: ['PK003', 'batura_1974'] })"), ("wait", 11.0)], actions=[("wait", 9.0)]),
     dict(id="tour3d", title="3D cinematic tour (CesiumJS)", url="/tour3d", settle=20, actions=[("wait", 7.0)]),
-    dict(id="climate", title="Climate 1970-2010 and projections to 2100", url="/#climate", settle=12,
+    dict(id="climate", title="Climate 1970-2010: every factor mapped", url="/#climate", settle=12,
          pre=[("js", "document.querySelector('[data-view=proj]').click()"), ("wait", 9.0),
               ("js", "document.querySelector('[data-view=forecast]').click()"), ("wait", 4.0)], actions=[
-        ("wait", 3.5), ("js", "document.querySelector('[data-view=proj]').click()"), ("wait", 4.5)]),
+        ("wait", 1.8),                                                     # air temperature (the layer it opens on)
+        ("js", "document.querySelector('[data-ly=snowd]').click()"), ("wait", 1.7),
+        ("js", "document.querySelector('[data-ly=snowf]').click()"), ("wait", 1.7),
+        ("js", "document.querySelector('[data-ly=cover]').click()"), ("wait", 1.7),
+        ("js", "document.querySelector('[data-ly=precip]').click()"), ("wait", 1.7),
+        ("js", "document.querySelector('[data-ly=melt]').click()"), ("wait", 1.7)]),
+    dict(id="projections", title="Projections to 2100", url="/#climate", settle=12,
+         pre=[("js", "document.querySelector('[data-view=proj]').click()"), ("wait", 9.0)], actions=[("wait", 5.5)]),
     dict(id="models", title="Model framework", url="/models", settle=12, actions=[("wait", 4.5)]),
     dict(id="kkh", title="Karakoram Highway safety tour", url="/kkh", settle=16, actions=[
         ("js", "document.querySelector('[data-tour]').click()"), ("wait", 7.5)]),
@@ -233,7 +242,7 @@ def encode_scene(ff, sc):
     return clip, length
 
 
-def join(ff, clips):
+def join(ff, clips, crf=None, width=None):
     """crossfade the scene clips into one film; returns chapter start times"""
     inputs, starts, t = [], [], 0.0
     for i, (clip, length) in enumerate(clips):
@@ -243,6 +252,7 @@ def join(ff, clips):
     if len(clips) == 1:
         shutil.copy(clips[0][0], OUT)
         return starts, clips[0][1]
+
     chain, prev, off = [], "[0:v]", 0.0
     for i in range(1, len(clips)):
         off += clips[i - 1][1] - XFADE
@@ -250,8 +260,12 @@ def join(ff, clips):
         chain.append(f"{prev}[{i}:v]xfade=transition=fade:duration={XFADE}:offset={off:.3f}{out}")
         prev = out
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    w = width or OUT_W
+    if w != W:
+        chain.append(f"{prev}scale={w}:-2:flags=lanczos[vs]")
+        prev = "[vs]"
     subprocess.run([ff, "-y", "-loglevel", "error", *inputs, "-filter_complex", ";".join(chain), "-map", prev,
-                    "-c:v", "libx264", "-preset", "slower", "-crf", "29", "-tune", "film", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+                    "-c:v", "libx264", "-preset", "veryslow", "-crf", str(crf or OUT_CRF), "-pix_fmt", "yuv420p", "-movflags", "+faststart",
                     "-r", str(FPS), str(OUT)], check=True)
     return starts, t + XFADE
 
@@ -264,6 +278,8 @@ def main():
     ap.add_argument("--only", default="")
     ap.add_argument("--encode-only", action="store_true")
     ap.add_argument("--screen", default="1920,0", help="top-left of the monitor to record on")
+    ap.add_argument("--crf", type=int, help=f"quality of the published film (default {OUT_CRF}; lower = better and bigger)")
+    ap.add_argument("--width", type=int, help=f"width of the published film (default {OUT_W})")
     ap.add_argument("--screencast", action="store_true", help="headless DevTools screencast instead of screen recording")
     a = ap.parse_args()
     ff = imageio_ffmpeg.get_ffmpeg_exe()
@@ -294,7 +310,7 @@ def main():
     for sc in SCENES:
         clip, length = encode_scene(ff, sc)
         clips.append((clip, length))
-    starts, total = join(ff, clips)
+    starts, total = join(ff, clips, a.crf, a.width)
     CHAPTERS.parent.mkdir(parents=True, exist_ok=True)
     CHAPTERS.write_text(json.dumps({"duration": round(total, 2), "recorded": time.strftime("%Y-%m-%d"), "chapters": [{"id": sc["id"], "title": sc["title"], "start": s}
                                                                               for sc, s in zip(SCENES, starts)]}, indent=1), encoding="utf-8")

@@ -55,14 +55,19 @@
         "Shares its event list with the 2D tour; the two stay in step"],
         src: "CesiumJS 1.122 · Cesium World Terrain · Mapbox satellite imagery" },
       history: { t: "Historical avalanches replayed in 3D", pts: [
-        `<b>${fmtN(h.records)}</b> compiled avalanche records, <b>${fmtN(h.located)}</b> placed on the map, <b>${fmtN(h.replayed_3d)}</b> replayed on real terrain`,
-        `<b>${fmtN(h.deaths_reported)}</b> deaths as reported in the records`,
+        "K2 Bottleneck, 1 Aug 2008: the serac fall that killed 11 climbers, replayed down the real face",
+        `<b>${fmtN(h.records)}</b> compiled records, <b>${fmtN(h.located)}</b> placed on the map, <b>${fmtN(h.replayed_3d)}</b> replayed on real terrain, <b>${fmtN(h.deaths_reported)}</b> deaths as reported`,
         "Runs start from the peak above each documented place: illustrative scenarios, never presented as observed paths"],
         src: "NGT compiled event inventory · OpenStreetMap geocoding · portal DEM" },
-      climate: { t: "Climate records and projections to 2100", pts: [
-        `ERA5-Land winters: <b>${fmtN(e.tiles)}</b> tiles × <b>${fmtN(e.winters)}</b> winters (${e.period || "1970-2010"})`,
+      climate: { t: "Winter climate 1970–2010: every factor mapped", pts: [
+        `ERA5-Land reanalysis: <b>${fmtN(e.tiles)}</b> tiles × <b>${fmtN(e.winters)}</b> winters (${e.period || "1970-2010"}), six variables`,
+        "Air temperature, snow depth, snowfall, snow cover, precipitation and snowmelt, each on its own map and colour scale",
+        "Every winter plays in sequence; scales are fixed across all years, so the colours are comparable"],
+        src: "ERA5-Land (Copernicus) · reanalysis, a model reconstruction of past weather, not station measurements" },
+      projections: { t: "Projections to 2100", pts: [
         `CMIP6 (NASA NEX-GDDP), adjusted to ERA5, <b>${(p.models || {}).ssp245 || "—"}</b> / <b>${(p.models || {}).ssp585 || "—"}</b> climate models per scenario`,
-        `Very-high emissions, 2081-2100: avalanche-alarm days <b>${p.alarm_days_baseline} → ${p85.alarm_days}</b> a winter; snow share <b>${p85.snow_share_change_pts > 0 ? "+" : "−"}${Math.abs(p85.snow_share_change_pts).toFixed(1)} points</b>`],
+        `Very-high emissions, 2081–2100: avalanche-alarm days <b>${p.alarm_days_baseline} → ${p85.alarm_days}</b> a winter; snow share <b>${p85.snow_share_change_pts > 0 ? "+" : "−"}${Math.abs(p85.snow_share_change_pts).toFixed(1)} points</b>`,
+        "Every 5-year window to 2100, with an accuracy panel for the rule behind it"],
         src: `Baseline ${p.baseline || "1995-2014"} · projections of weather conditions, not of avalanche numbers` },
       models: { t: "Model framework", pts: [
         "Physics: ECMWF weather for the next 15 days and CMIP6 climate to 2100",
@@ -135,11 +140,10 @@
     e.preventDefault();
     const code = pins.map(x => x.value).join("");
     if (!/^\d{4}$/.test(code)) return;
-    if ((await sha256(SALT + code)) === CFG.codeHash) { try { sessionStorage.setItem("demo-ok", "1"); } catch { /* private mode */ } unlock(); }
+    if ((await sha256(SALT + code)) === CFG.codeHash) unlock();   // asked for every visit: nothing is remembered
     else { const g = $("#gate"); $("#gate-msg").textContent = "That code is not right. Please try again."; g.classList.remove("bad"); void g.offsetWidth; g.classList.add("bad"); pins.forEach(x => x.value = ""); pins[0].focus(); }
   });
-  let passed = false; try { passed = sessionStorage.getItem("demo-ok") === "1"; } catch { /* */ }
-  if (!CFG.codeHash || passed) setTimeout(unlock, 50); else pins[0].focus();
+  if (!CFG.codeHash) setTimeout(unlock, 50); else pins[0].focus();
 
   function unlock() { body.classList.remove("is-gate"); startOpening(); }
 
