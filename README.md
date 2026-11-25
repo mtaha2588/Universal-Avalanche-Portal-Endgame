@@ -12,7 +12,7 @@
 &nbsp;
 <a href="#run-locally"><img src="https://img.shields.io/badge/VIEW%20SOURCE%20CODE-1e293b?style=for-the-badge&logo=github&logoColor=white" alt="View source code" height="46"></a>
 
-<sub>A 90-second recording of the running system with chapters. The demo page asks for a four-digit access code.
+<sub>A 71-second recording of the running system, in 11 chapters. The page asks for a four-digit access code (supplied with the application).
 If the page is not available, the recording itself is <a href="demo/assets/demo.mp4">demo/assets/demo.mp4</a>.</sub>
 
 </div>
@@ -101,8 +101,8 @@ The forecast engine has its own environment: `forecast\install.bat`, then `forec
 
 ## The interview demo
 
-`demo/` is a self-contained static page: a recording of the running portal with a title opening, chapters, captions and
-an architecture summary. It needs no server, Python or API keys, and is published by `.github/workflows/demo-pages.yml`.
+`demo/` is a self-contained static page: a recording of the running portal with a title opening, 11 chapters, captions and
+an architecture summary. It plays as a video, so nothing renders or loads while it runs: no server, Python or API keys.
 
 | Task | Command |
 |---|---|
@@ -110,6 +110,7 @@ an architecture summary. It needs no server, Python or API keys, and is publishe
 | Refresh the caption figures from the data | `.venv\Scripts\python.exe scripts/build_demo_data.py` |
 | Re-take the README screenshots | `powershell -ExecutionPolicy Bypass -File scripts\demo_capture.ps1` |
 | Change the access code | `python scripts/demo_set_code.py 1234` (or `off`) |
+| Publish the demo to GitHub Pages | `python scripts/publish_demo.py` (pushes `demo/` to the `gh-pages` branch) |
 | Preview locally | `python -m http.server 8080 -d demo`, then http://127.0.0.1:8080/ |
 
 The access code is checked in the browser: it keeps casual visitors out but is **not security**. Nothing confidential
@@ -117,7 +118,7 @@ belongs in `demo/`.
 
 ## Deployment
 
-- **Demo:** GitHub Pages (free), from `demo/` only. One-time: *Settings → Pages → Source: GitHub Actions*.
+- **Demo:** [GitHub Pages](https://mtaha2588.github.io/Universal-Avalanche-Portal-Endgame/) (free), served from the `gh-pages` branch, which holds `demo/` and nothing else. Update it with `python scripts/publish_demo.py`. (`deploy/github-pages-workflow.yml` does the same through Actions if your token has the `workflow` scope.)
 - **Full portal:** Docker image (`Dockerfile`) on Railway (`deploy/RAILWAY.md`) or an Oracle Cloud Always Free VM with
   nginx and HTTPS (`deploy/DEPLOY.md`). Secrets (`MAPBOX_TOKEN`, `SECRET_KEY`, `OPENMETEO_APIKEY`) live in the host's
   environment, never in the repository.
