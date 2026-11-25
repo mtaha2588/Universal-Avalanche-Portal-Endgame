@@ -1,7 +1,8 @@
-# Publishes ONLY the static interview demo (demo/) to GitHub Pages:
-#   https://mtaha2588.github.io/Universal-Avalanche-Portal-Endgame/
-# The portal itself (Flask, forecast engine, data) is not deployed by this workflow.
-# One-time setup: repository Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+# Optional: publishes ONLY the static interview demo (demo/) to GitHub Pages from main.
+# The demo is currently published from the "gh-pages" branch instead (scripts/publish_demo.py), because the
+# GitHub token in use has no "workflow" scope. To use this workflow instead: copy it to
+# .github/workflows/demo-pages.yml, push with a token that has the workflow scope, and set
+# Settings -> Pages -> Source: "GitHub Actions".
 name: Demo on GitHub Pages
 
 on:
