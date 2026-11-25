@@ -240,6 +240,8 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
 ## Home dock, Hindu Kush side list and regional hotspot register
 
 - Home page: the left window panel and the "How it works" / "Launch" buttons are gone (the "Launch Live Portal" tile is an `<a href="/portal">`).
+  The three mountain-system tabs are ONE tab, "Mountain Systems" (`group` in `M`, owner's request): it unfolds in the dock into Hindu Kush / Karakoram / Western
+  Himalaya (`.tsubs` / `.tsub`, each in its SYS_COL), which open the same portal pages as before; `/#systems` unfolds it.
   The right dock is one column of module tabs (dark glass; each tab's colour is only an accent: left bar, icon badge, faint tint); Incidents, Precautions, Data & Model, How it works, Principles
   and Live Preview tiles were removed. Modules renumber automatically.
 - `#hindukush` forecast mode: the right-hand list follows the icon that is on (`HKF.sideList()` feeds `HK.renderList()`): General risk = main
@@ -378,8 +380,14 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
 - Projections: analysis team's fixed results copied unchanged to `data/climate/projections/` (summary JSON, flat CSV, tile GeoJSON, README) and `static/img/projections/` (figures);
   API `/api/climate/projections`, `/tiles.geojson`, `/projections_by_region.csv`. Replace the files when the team sends an update; nothing is scheduled. Filters (`P`) live in the module
   and survive switching views. Same page as the Historical Climate workspace (owner's request): reuses its `.cw-*` classes, layout, chart drawing and looping playback; only the map (the package's tiles) and values are its own. Plain figures: "was X", change as ▲▼ amounts; % and model ranges live in Statistics. Notes, figures and downloads live in Data Explorer.
-  The tile layer has only 4 periods (2041-2060, 2050, 2081-2100, 2100): other periods show the nearest layer, labelled. Tiles with zero baseline have no % change. The package has values for 119 of the 305 grid
-  tiles; `static/projections/tiles_full.json` (`scripts/build_projection_tiles.py`, needs shapely) draws the rest as a grey "No data" class clipped to the Pakistan outline so the north is covered. Never colour those tiles: they have no data.
+  Current package: generated 2026-11-10, copied 24 Nov from `avalanche_portal_package_2026-11-24.zip` (climate models adjusted to ERA5 1995-2014; SSP2-4.5 5 models, SSP5-8.5 4; every
+  number changed: baseline alarm days 5.12 -> 6.51, snow share 35 % -> 72 %). The previous (3 Nov, unadjusted) files are kept in `data/climate/projections/_previous_2026-11-03/`.
+  The tile layer has every period (5- and 20-year); a missing one would show the nearest layer, labelled. Tiles with zero baseline have no % change. Every one of the 305 grid tiles has a `status`:
+  `projected` (119, rule tested), `projected_glacier` (87) / `projected_era5_gap` (68) = values but the rule was not tested there: same solid colours as the old format (owner: "old format, new values")
+  with a fine dotted white edge (`prj-weak`), noted in the map caption, Data Explorer and the tooltip (`status_text`); `not_rated_low` / `no_data` (31) have no values: `static/projections/tiles_full.json` (`scripts/build_projection_tiles.py`, needs shapely; run it with
+  `.venv\Scripts\python.exe`) draws them as the grey "No data" class with the package's reason. Never colour those tiles: they have no data.
+  Accuracy tab (lower tabs): the package's `accuracy` (also `accuracy.json`): projection rule at MODERATE (sensitivity, storms caught on unseen storms, TSS, accuracy, error rate,
+  precision / F1 marked "lower bound"), its notes, and the climate-model-vs-ERA5 bias table (amber = |bias| > 25 % or r < 0.5; wind is not adjusted).
   Map regions use the package's own 4-region rule (`regionOf`, Hindu Kush / Kohistan-Hazara / Kashmir / Karakoram), separate from the forecast's 3 regions. No NASA logo or "verified" badge: data source text only.
 - Shows a 1970–2026 axis, but the supplied run ends at winter 2010: 2011–2025 is drawn as an empty hatched band ("not in the supplied run"), never filled.
   2026–27 is the separate seasonal snow outlook (% of normal snowfall), labelled "not this scale". 1974 is estimated: hatched, left out of trends,
@@ -508,6 +516,18 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   (`uncalibrated` in tiles_clip.json) and a click there gets the place's weather with `level_kind` "none" (no level) or
   "indicative" (thresholds borrowed from a calibrated tile within 0.3 deg); `level_kind` "calibrated" only inside a calibrated tile.
   Fill / line layers are draped on the Mapbox terrain (checked at pitch 72); no extrusion or z-offset is needed.
+- Engine update 2026-11-18 (`avalanche_portal_package_2026-11-18`, analysis team; previous engine kept in `forecast/_backup_engine_2026-11-10/`): adds
+  `terrain_core.py` (Copernicus GLO-90 DEM in `forecast/data/dem/`, git-ignored, 45 tiles ~225 MB, downloaded by the engine itself; per-tile slope /
+  aspect / share of 30-45 deg slopes in `data/tile_terrain.csv`; DEM re-checked every 30 days), the terrain danger matrix (final `level` = weather level x
+  terrain class T0-T3; `weather_level`, `terrain_class`, `steep_share`, `advisory` in the output), `ml_core.py` + `data/ml_classifier.joblib` (Gradient Boosting, `ml_risk`,
+  `ml_level`, secondary only), rule+ML fusion (`data/fusion.json`, shipped with `use: false`: step 23 found no gain, so ML stays a second opinion; switching it on needs `use: true` there),
+  `alerts_bulletin.json/.txt` (alert episodes per region), `data/avalanche_sites.csv`, `model_results/` (scoreboard). `requirements.txt` adds rasterio (in `forecast/.venv`).
+  Two local changes must be re-applied after every package update: `forecast_core.region()` (3 regions, `config/regions.json`) and `run_forecast.py`'s
+  run lock + `--if-stale`; `terrain_core.dem_update` also retries a reset HEAD request (one failure used to skip the whole terrain step silently).
+- App side: `/api/alertforecast/latest` also returns `alerts` (bulletin episodes) and `scoreboard_best`; `/api/alertforecast/bulletin` and `/bulletin.txt` serve the
+  bulletin. The dashboard layout is unchanged: terrain / ML / weather-level values sit in the existing tile chips, 15-day detail cells, third gauge (ML risk
+  index, else student score) and the method popover (alert episodes). Ensemble values are called "agreement with warning conditions", never probabilities.
+  `point_forecast.py` applies the same terrain matrix (tile's class, calibrated tiles only) so a clicked place agrees with its tile.
 - Tiles are drawn clipped to the study area: `static/alertdash/tiles_clip.json` (+ region outlines), built by
   `scripts/build_forecast_tile_clip.py` (shapely; re-run if the tile grid or forecast/config/regions.json changes). Display only.
 - Mapbox v3.6 throws in `_preloadTiles` ("reading 'tileZoom'") when a `preloadOnly` camera call is deferred to a still-loading
@@ -611,3 +631,20 @@ The window is chosen with the portal's "Reporting window" selector (and `?window
   Tour caption: "Dock left" button puts it as a vertical panel on the left (`kkh-capleft`, remembered in localStorage `kkh.capDock`).
 - Model Framework: EVERY page is one screen (`dash()` + `panel()` + `fit()` in models.js; charts drawn at their panel's pixel size one frame after
   layout). Checked with zero scroll and zero clipped panels at 1900x900, 1600x1000, 1366x768. Keep new content inside that rule.
+
+## Interview demo (demo/, GitHub Pages)
+
+- `demo/` is a static page, separate from the portal: a code gate, a 6 s title opening ("Avalanche Prediction Portal", owner's wording), then a
+  SCREEN RECORDING of the running portal (`demo/assets/demo.mp4`, 1080p, ~86 s, 9 chapters) with chapter cards, controls (prev / play / next,
+  replay, skip intro, fullscreen, exit), a chapter progress bar and an architecture end card. Owner: "video type, no loading time, no render
+  issues", so no live map, WebGL or API in the demo; the film buffers behind the code screen and starts on `canplaythrough`.
+- Recorded by `scripts/record_demo.py` (scratch venv with websocket-client + imageio-ffmpeg): full-screen Chrome on the second monitor
+  (`--screen 1920,0`, 1920x1080, ffmpeg gdigrab 30 fps; Chrome's own screencast gave only ~10 fps). Each scene's page settles BEFORE recording;
+  `pre` actions warm views off-camera. Chapter times -> `demo/data/chapters.json`. Raw frames in `demo/.record/` (git-ignored).
+- Every caption figure comes from `demo/data/facts.json` (`scripts/build_demo_data.py`, from the portal's own files); never type numbers into
+  demo.js. README screenshots: `scripts/demo_capture.ps1` -> `demo/assets/shots/`. Poster = cropped globe frame of the film.
+- Access code: 4 digits, only a salted SHA-256 hash in `demo/config.js` (`scripts/demo_set_code.py`). A courtesy door, NOT security (the
+  check is in the browser, the files are public): nothing confidential in demo/.
+- Preview with `python scripts/serve_demo.py` (adds HTTP Range; plain `http.server` cannot seek in the video, so chapter jumps fail there).
+- Published by `.github/workflows/demo-pages.yml` (demo/ only) once Pages is set to "GitHub Actions"; URL
+  https://mtaha2588.github.io/Universal-Avalanche-Portal-Endgame/ (README button). Not deployed until the owner says so.

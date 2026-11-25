@@ -11,3 +11,11 @@ forecast/output/run.lock
 data/dem/cache/
 
 6 -*++-/
+# forecast engine: Copernicus DEM downloaded by terrain_core, engine backup
+forecast/data/dem/
+forecast/_backup_engine_*/
+forecast/output/latest_prev/
+forecast/output/_latest_tmp/
+
+# interview demo: raw recording frames and per-scene clips (scripts/record_demo.py)
+demo/.record/

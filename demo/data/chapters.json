@@ -1,0 +1,61 @@
+{
+ "duration": 70.85,
+ "recorded": "2026-11-25",
+ "chapters": [
+  {
+   "id": "intro",
+   "title": "Opening: Earth to Pakistan",
+   "start": 0.0
+  },
+  {
+   "id": "mapping",
+   "title": "Northern Pakistan: terrain mapping",
+   "start": 8.3
+  },
+  {
+   "id": "home",
+   "title": "Command portal: three glacier systems",
+   "start": 13.1
+  },
+  {
+   "id": "screening",
+   "title": "Hotspots and avalanche simulation",
+   "start": 20.83
+  },
+  {
+   "id": "karakoram",
+   "title": "Karakoram: the Batura model",
+   "start": 27.65
+  },
+  {
+   "id": "alert",
+   "title": "15-day Avalanche Alert Forecast",
+   "start": 31.95
+  },
+  {
+   "id": "history",
+   "title": "Historical avalanches replayed in 3D",
+   "start": 38.56
+  },
+  {
+   "id": "tour3d",
+   "title": "3D cinematic tour (CesiumJS)",
+   "start": 45.86
+  },
+  {
+   "id": "climate",
+   "title": "Climate 1970-2010 and projections to 2100",
+   "start": 52.16
+  },
+  {
+   "id": "models",
+   "title": "Model framework",
+   "start": 59.53
+  },
+  {
+   "id": "kkh",
+   "title": "Karakoram Highway safety tour",
+   "start": 63.33
+  }
+ ]
+}
